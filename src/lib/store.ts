@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 export type SectionId = 
   | 'home' 
@@ -23,44 +22,55 @@ interface AppState {
   isBookmarked: (id: string) => boolean
 }
 
-export const useAppStore = create<AppState>()(
-  persist(
-    (set, get) => ({
-      activeSection: 'home',
-      setActiveSection: (section) => set({ activeSection: section, mobileMenuOpen: false }),
-      mobileMenuOpen: false,
-      setMobileMenuOpen: (open) => set({ mobileMenuOpen: open }),
-      theme: 'light',
-      setTheme: (theme) => {
-        set({ theme })
-        if (typeof document !== 'undefined') {
-          document.documentElement.classList.toggle('dark', theme === 'dark')
-        }
-      },
-      toggleTheme: () => {
-        const newTheme = get().theme === 'light' ? 'dark' : 'light'
-        set({ theme: newTheme })
-        if (typeof document !== 'undefined') {
-          document.documentElement.classList.toggle('dark', newTheme === 'dark')
-        }
-      },
-      bookmarks: [],
-      toggleBookmark: (id) => {
-        const bookmarks = get().bookmarks
-        if (bookmarks.includes(id)) {
-          set({ bookmarks: bookmarks.filter(b => b !== id) })
-        } else {
-          set({ bookmarks: [...bookmarks, id] })
-        }
-      },
-      isBookmarked: (id) => get().bookmarks.includes(id),
-    }),
-    {
-      name: 'alta7reer-store',
-      partialize: (state) => ({ 
-        theme: state.theme, 
-        bookmarks: state.bookmarks 
-      }),
+function getStoredTheme(): 'light' | 'dark' {
+  if (typeof window === 'undefined') return 'light'
+  try {
+    const stored = localStorage.getItem('alta7reer-theme')
+    if (stored === 'dark' || stored === 'light') return stored
+  } catch {}
+  return 'light'
+}
+
+function getStoredBookmarks(): string[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const stored = localStorage.getItem('alta7reer-bookmarks')
+    if (stored) return JSON.parse(stored)
+  } catch {}
+  return []
+}
+
+export const useAppStore = create<AppState>()((set, get) => ({
+  activeSection: 'home',
+  setActiveSection: (section) => set({ activeSection: section, mobileMenuOpen: false }),
+  mobileMenuOpen: false,
+  setMobileMenuOpen: (open) => set({ mobileMenuOpen: open }),
+  theme: getStoredTheme(),
+  setTheme: (theme) => {
+    set({ theme })
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('alta7reer-theme', theme)
+      document.documentElement.classList.toggle('dark', theme === 'dark')
     }
-  )
-)
+  },
+  toggleTheme: () => {
+    const newTheme = get().theme === 'light' ? 'dark' : 'light'
+    set({ theme: newTheme })
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('alta7reer-theme', newTheme)
+      document.documentElement.classList.toggle('dark', newTheme === 'dark')
+    }
+  },
+  bookmarks: getStoredBookmarks(),
+  toggleBookmark: (id) => {
+    const bookmarks = get().bookmarks
+    const newBookmarks = bookmarks.includes(id)
+      ? bookmarks.filter(b => b !== id)
+      : [...bookmarks, id]
+    set({ bookmarks: newBookmarks })
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('alta7reer-bookmarks', JSON.stringify(newBookmarks))
+    }
+  },
+  isBookmarked: (id) => get().bookmarks.includes(id),
+}))

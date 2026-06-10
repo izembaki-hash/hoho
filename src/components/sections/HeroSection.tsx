@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { 
   BookOpen, Mic, Pen, Video, User, Mail, ChevronLeft, 
   Sparkles, GraduationCap, Users, School, ArrowRight,
-  PlayCircle, Calendar, Download, MessageCircle 
+  PlayCircle, Calendar, Download, MessageCircle, Star, Quote
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -88,6 +88,27 @@ const features = [
     icon: <MessageCircle className="h-6 w-6" />,
     title: 'محتوى مخصص',
     description: 'محتوى مصمم خصيصاً للطلبة والأساتذة والتلاميذ',
+  },
+]
+
+const testimonials = [
+  {
+    name: 'أحمد بلقاسم',
+    role: 'طالب ماجستير',
+    text: 'ساعدتني الدروس المباشرة على تطوير مهارات العرض التقديمي بشكل كبير. أنصح بها كل طالب جامعي.',
+    rating: 5,
+  },
+  {
+    name: 'فاطمة الزهراء',
+    role: 'أستاذة جامعية',
+    text: 'محتوى متقن ومنهجي يوفر للأساتذة أدوات تعليمية قيمة في مجال التحرير الكتابي.',
+    rating: 5,
+  },
+  {
+    name: 'يوسف مرابط',
+    role: 'تلميذ في الثانوية',
+    text: 'الشروحات مبسطة وواضحة، تعلمت كيف أكتب مقالاً منظماً بفضل الدروس المسجلة.',
+    rating: 5,
   },
 ]
 
@@ -280,6 +301,49 @@ export default function HeroSection() {
                     <div className="flex items-center text-primary text-sm font-medium group-hover:gap-2 transition-all duration-300">
                       <span>استكشف المزيد</span>
                       <ArrowRight className="h-4 w-4 mr-1 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* Testimonials */}
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-50px' }}
+      >
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3">ماذا يقول طلابنا؟</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            آراء حقيقية من مستخدمي المنصة الذين استفادوا من المحتوى التعليمي
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonials.map((testimonial, idx) => (
+            <motion.div key={idx} variants={itemVariants}>
+              <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 h-full">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-1 mb-3">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <div className="mb-4">
+                    <Quote className="h-5 w-5 text-primary/30 mb-2" />
+                    <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.text}</p>
+                  </div>
+                  <div className="flex items-center gap-3 pt-3 border-t border-border">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                      {testimonial.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm">{testimonial.name}</h4>
+                      <p className="text-xs text-muted-foreground">{testimonial.role}</p>
                     </div>
                   </div>
                 </CardContent>
