@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -16,7 +16,7 @@ import {
   MessageSquare, Phone, Mail, User, Bookmark, BookmarkCheck,
   Send, AlertCircle, Eye 
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface LiveLesson {
   id: string
@@ -126,7 +126,21 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 15 },
-  visible: { opacity: 1, y: 0 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+}
+
+// Typing indicator component
+function TypingIndicator() {
+  return (
+    <div className="flex items-center gap-1 px-3 py-2 bg-muted rounded-xl rounded-bl-none max-w-fit">
+      <span className="text-xs text-muted-foreground ml-1">الأستاذ يكتب</span>
+      <div className="flex items-center gap-0.5">
+        <span className="typing-dot w-1.5 h-1.5 rounded-full bg-muted-foreground/60" />
+        <span className="typing-dot w-1.5 h-1.5 rounded-full bg-muted-foreground/60" />
+        <span className="typing-dot w-1.5 h-1.5 rounded-full bg-muted-foreground/60" />
+      </div>
+    </div>
+  )
 }
 
 export default function LiveLessonsSection() {
@@ -142,6 +156,19 @@ export default function LiveLessonsSection() {
     { user: 'الأستاذ', message: 'أهلاً وسهلاً، سنخصص وقتاً لذلك إن شاء الله' },
   ])
   const [newMessage, setNewMessage] = useState('')
+  const [showTyping, setShowTyping] = useState(false)
+
+  // Show typing indicator briefly after sending a message
+  useEffect(() => {
+    if (chatMessages.length > 3 && chatMessages[chatMessages.length - 1].user === 'أنت') {
+      setShowTyping(true)
+      const timer = setTimeout(() => {
+        setShowTyping(false)
+        setChatMessages(prev => [...prev, { user: 'الأستاذ', message: 'شكراً لمشاركتك! سأكون سعيداً بالإجابة على أسئلتك.' }])
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [chatMessages.length])
 
   const handleRegister = async () => {
     if (!selectedLesson || !formData.name || !formData.email) return
@@ -192,88 +219,108 @@ export default function LiveLessonsSection() {
         shareTitle="دروس مباشرة - التحرير الكتابي والشفهي"
       />
 
-      {/* Live Stream */}
+      {/* Live Stream with Glowing Border */}
       <motion.div variants={itemVariants}>
-        <Card className="border-0 shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-l from-red-600 to-red-800 p-1.5">
-            <div className="flex items-center justify-center gap-2 text-white text-sm font-medium">
-              <Radio className="h-4 w-4 animate-pulse" />
-              <span>بث مباشر الآن</span>
-            </div>
-          </div>
-          <CardContent className="p-0">
-            <div className="grid grid-cols-1 lg:grid-cols-3">
-              {/* Video Area */}
-              <div className="lg:col-span-2 bg-gradient-to-bl from-gray-900 to-black aspect-video flex items-center justify-center relative">
-                {/* Decorative grid */}
-                <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                <div className="text-center text-white relative z-10">
-                  <div className="w-20 h-20 rounded-full bg-red-600/30 flex items-center justify-center mx-auto mb-4 animate-pulse">
-                    <Video className="h-10 w-10" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">{liveLesson.title}</h3>
-                  <p className="text-white/70 text-sm mb-4 max-w-md mx-auto">{liveLesson.description}</p>
-                  <div className="flex items-center justify-center gap-3">
-                    <Badge variant="destructive" className="gap-1 animate-pulse">
-                      <Radio className="h-3 w-3" />
-                      مباشر
-                    </Badge>
-                    <span className="text-white/50 text-sm">{liveLesson.instructor}</span>
-                  </div>
-                </div>
-                <div className="absolute top-4 left-4 flex items-center gap-2">
-                  <Badge variant="destructive" className="gap-1 bg-red-600">
-                    <Eye className="h-3 w-3" />
-                    {liveLesson.viewers} مشاهد
-                  </Badge>
-                </div>
+        <div className="animate-glow-pulse rounded-2xl" style={{ '--glow-color': 'rgba(239, 68, 68, 0.4)' } as React.CSSProperties}>
+          <Card className="border-0 shadow-xl overflow-hidden">
+            <div className="bg-gradient-to-l from-red-600 to-red-800 p-1.5">
+              <div className="flex items-center justify-center gap-2 text-white text-sm font-medium">
+                <Radio className="h-4 w-4 animate-pulse" />
+                <span>بث مباشر الآن</span>
               </div>
-              
-              {/* Chat Area */}
-              <div className="border-r border-border flex flex-col h-full min-h-[300px] lg:min-h-0 bg-muted/20">
-                <div className="p-3 border-b border-border bg-muted/50 flex items-center justify-between">
-                  <h4 className="font-medium text-sm flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4 text-primary" />
-                    المحادثة المباشرة
-                  </h4>
-                  <Badge variant="secondary" className="text-xs">{chatMessages.length} رسالة</Badge>
-                </div>
-                <div className="flex-1 overflow-y-auto p-3 space-y-3 max-h-[300px] custom-scrollbar">
-                  {chatMessages.map((msg, idx) => (
-                    <div key={idx} className="text-sm group">
-                      <div className={`inline-block max-w-[85%] rounded-xl px-3 py-2 ${
-                        msg.user === 'أنت' 
-                          ? 'bg-primary text-primary-foreground rounded-br-none' 
-                          : msg.user === 'الأستاذ'
-                          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-foreground rounded-bl-none'
-                          : 'bg-muted rounded-bl-none'
-                      }`}>
-                        <span className={`font-medium text-xs block mb-0.5 ${
-                          msg.user === 'أنت' ? 'text-primary-foreground/70' : 'text-primary'
-                        }`}>{msg.user}</span>
-                        <span>{msg.message}</span>
-                      </div>
+            </div>
+            <CardContent className="p-0">
+              <div className="grid grid-cols-1 lg:grid-cols-3">
+                {/* Video Area */}
+                <div className="lg:col-span-2 bg-gradient-to-bl from-gray-900 to-black aspect-video flex items-center justify-center relative">
+                  {/* Decorative grid */}
+                  <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                  <div className="text-center text-white relative z-10">
+                    <div className="w-20 h-20 rounded-full bg-red-600/30 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                      <Video className="h-10 w-10" />
                     </div>
-                  ))}
+                    <h3 className="text-xl font-bold mb-2">{liveLesson.title}</h3>
+                    <p className="text-white/70 text-sm mb-4 max-w-md mx-auto">{liveLesson.description}</p>
+                    <div className="flex items-center justify-center gap-3">
+                      <Badge variant="destructive" className="gap-1 animate-pulse">
+                        <Radio className="h-3 w-3" />
+                        مباشر
+                      </Badge>
+                      <span className="text-white/50 text-sm">{liveLesson.instructor}</span>
+                    </div>
+                  </div>
+                  <div className="absolute top-4 left-4 flex items-center gap-2">
+                    <Badge variant="destructive" className="gap-1 bg-red-600">
+                      <Eye className="h-3 w-3" />
+                      {liveLesson.viewers} مشاهد
+                    </Badge>
+                  </div>
                 </div>
-                <div className="p-3 border-t border-border">
-                  <div className="flex gap-2">
-                    <Input
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder="اكتب رسالتك..."
-                      className="text-sm"
-                      onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                    />
-                    <Button size="icon" onClick={handleSendMessage} className="shrink-0">
-                      <Send className="h-4 w-4" />
-                    </Button>
+                
+                {/* Chat Area with slide-in animation */}
+                <div className="border-r border-border flex flex-col h-full min-h-[300px] lg:min-h-0 bg-muted/20">
+                  <div className="p-3 border-b border-border bg-muted/50 flex items-center justify-between">
+                    <h4 className="font-medium text-sm flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4 text-primary" />
+                      المحادثة المباشرة
+                    </h4>
+                    <Badge variant="secondary" className="text-xs">{chatMessages.length} رسالة</Badge>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-3 space-y-3 max-h-[300px] custom-scrollbar">
+                    <AnimatePresence initial={false}>
+                      {chatMessages.map((msg, idx) => (
+                        <motion.div
+                          key={`${msg.user}-${idx}`}
+                          initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                          animate={{ opacity: 1, x: 0, scale: 1 }}
+                          transition={{ duration: 0.3, ease: 'easeOut' }}
+                          className="text-sm"
+                        >
+                          <div className={`inline-block max-w-[85%] rounded-xl px-3 py-2 ${
+                            msg.user === 'أنت' 
+                              ? 'bg-primary text-primary-foreground rounded-br-none' 
+                              : msg.user === 'الأستاذ'
+                              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-foreground rounded-bl-none'
+                              : 'bg-muted rounded-bl-none'
+                          }`}>
+                            <span className={`font-medium text-xs block mb-0.5 ${
+                              msg.user === 'أنت' ? 'text-primary-foreground/70' : 'text-primary'
+                            }`}>{msg.user}</span>
+                            <span>{msg.message}</span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                    {/* Typing indicator */}
+                    {showTyping && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <TypingIndicator />
+                      </motion.div>
+                    )}
+                  </div>
+                  <div className="p-3 border-t border-border">
+                    <div className="flex gap-2">
+                      <Input
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="اكتب رسالتك..."
+                        className="text-sm"
+                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                      />
+                      <Button size="icon" onClick={handleSendMessage} className="shrink-0">
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </motion.div>
 
       {/* Upcoming Lessons Schedule */}

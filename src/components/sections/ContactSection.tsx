@@ -7,11 +7,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { 
   Mail, Phone, MapPin, Send, CheckCircle, 
   Clock, MessageSquare, User, AtSign, 
-  HelpCircle, BookOpen, Video, Mic 
+  HelpCircle, BookOpen, Video, Mic,
+  Printer, Clock as ClockIcon
 } from 'lucide-react'
+import { useAppStore } from '@/lib/store'
 import { motion } from 'framer-motion'
 
 const containerVariants = {
@@ -28,13 +31,46 @@ const itemVariants = {
 }
 
 const faqs = [
-  { q: 'كيف يمكنني التسجيل في الدروس المباشرة؟', a: 'يمكنك التسجيل من خلال صفحة الدروس المباشرة بالضغط على زر "انضمام" بجانب الدرس المراد والقيام بملء بياناتك.' },
-  { q: 'هل الدروس المسجلة مجانية؟', a: 'نعم، جميع الدروس المسجلة متاحة مجاناً مع مرفقاتها التعليمية.' },
-  { q: 'كيف يمكنني التواصل مع الأستاذ؟', a: 'يمكنك التواصل من خلال نموذج المراسلة في هذه الصفحة أو عبر البريد الإلكتروني المباشر.' },
-  { q: 'هل المحتوى مناسب لجميع المستويات؟', a: 'نعم، المحتوى مصمم لثلاث فئات: التلاميذ والطلبة والأساتذة الجامعيين، كل فئة لها محتوى مخصص.' },
+  { 
+    q: 'كيف يمكنني التسجيل في الدروس المباشرة؟', 
+    a: 'يمكنك التسجيل من خلال صفحة الدروس المباشرة بالضغط على زر "انضمام" بجانب الدرس المراد والقيام بملء بياناتك. سيتم إرسال رابط الدرس إلى بريدك الإلكتروني قبل الموعد المحدد.',
+    icon: <Video className="h-4 w-4" />,
+    color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+  },
+  { 
+    q: 'هل الدروس المسجلة مجانية؟', 
+    a: 'نعم، جميع الدروس المسجلة متاحة مجاناً مع مرفقاتها التعليمية. يمكنك تصفحها ومشاهدتها في أي وقت.',
+    icon: <BookOpen className="h-4 w-4" />,
+    color: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
+  },
+  { 
+    q: 'كيف يمكنني التواصل مع الأستاذ؟', 
+    a: 'يمكنك التواصل من خلال نموذج المراسلة في هذه الصفحة أو عبر البريد الإلكتروني المباشر. كما يمكنك المشاركة في الدروس المباشرة وطرح أسئلتك مباشرة.',
+    icon: <Mic className="h-4 w-4" />,
+    color: 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400'
+  },
+  { 
+    q: 'هل المحتوى مناسب لجميع المستويات؟', 
+    a: 'نعم، المحتوى مصمم لثلاث فئات: التلاميذ والطلبة والأساتذة الجامعيين، كل فئة لها محتوى مخصص يناسب مستواها واحتياجاتها.',
+    icon: <HelpCircle className="h-4 w-4" />,
+    color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+  },
+  { 
+    q: 'كيف أستخدم ميزة الاستماع إلى المحتوى؟', 
+    a: 'يمكنك الضغط على زر السماعة الموجود في أسفل الصفحة للاستماع إلى محتوى القسم الحالي. سيتم تحويل النص إلى كلام تلقائياً.',
+    icon: <MessageSquare className="h-4 w-4" />,
+    color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'
+  },
+  { 
+    q: 'هل يمكنني طباعة المحتوى التعليمي؟', 
+    a: 'نعم، يمكنك طباعة أي صفحة من الموقع باستخدام زر الطباعة المتاح في أعلى كل قسم أو من خلال اختيار طباعة من متصفحك. المحتوى مُحسّن للطباعة.',
+    icon: <Printer className="h-4 w-4" />,
+    color: 'bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400'
+  },
 ]
 
 export default function ContactSection() {
+  const { setActiveSection } = useAppStore()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -73,6 +109,11 @@ export default function ContactSection() {
     }
   }
 
+  const handleQuickNav = (section: 'live-lessons' | 'recorded-lessons' | 'oral-expression') => {
+    setActiveSection(section)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <motion.div
       variants={containerVariants}
@@ -89,12 +130,9 @@ export default function ContactSection() {
       {/* Quick Help */}
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => {
-            const store = useAppStore
-            import('@/lib/store').then(m => m.useAppStore.getState().setActiveSection('live-lessons'))
-          }}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => handleQuickNav('live-lessons')}>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600 shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0 group-hover:scale-110 transition-transform">
                 <Video className="h-5 w-5" />
               </div>
               <div>
@@ -103,11 +141,9 @@ export default function ContactSection() {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => {
-            import('@/lib/store').then(m => m.useAppStore.getState().setActiveSection('recorded-lessons'))
-          }}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => handleQuickNav('recorded-lessons')}>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0 group-hover:scale-110 transition-transform">
                 <BookOpen className="h-5 w-5" />
               </div>
               <div>
@@ -116,11 +152,9 @@ export default function ContactSection() {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => {
-            import('@/lib/store').then(m => m.useAppStore.getState().setActiveSection('oral-expression'))
-          }}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => handleQuickNav('oral-expression')}>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600 shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0 group-hover:scale-110 transition-transform">
                 <Mic className="h-5 w-5" />
               </div>
               <div>
@@ -135,7 +169,8 @@ export default function ContactSection() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Contact Form */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <div className="h-1 bg-gradient-to-l from-primary to-emerald-600" />
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -260,7 +295,8 @@ export default function ContactSection() {
         {/* Contact Info */}
         <div className="space-y-4">
           <motion.div variants={itemVariants}>
-            <Card className="border-0 shadow-md">
+            <Card className="border-0 shadow-md overflow-hidden">
+              <div className="h-1 bg-gradient-to-l from-primary to-emerald-600" />
               <CardContent className="p-6">
                 <h3 className="font-bold text-lg mb-4">معلومات التواصل</h3>
                 <div className="space-y-4">
@@ -268,7 +304,7 @@ export default function ContactSection() {
                     { icon: <Mail className="h-5 w-5" />, title: 'البريد الإلكتروني', value: 'contact@alta7reer.com', dir: 'ltr' },
                     { icon: <Phone className="h-5 w-5" />, title: 'رقم الهاتف', value: '+213 555 123 456', dir: 'ltr' },
                     { icon: <MapPin className="h-5 w-5" />, title: 'العنوان', value: 'الجزائر العاصمة، الجزائر', dir: 'rtl' },
-                    { icon: <Clock className="h-5 w-5" />, title: 'ساعات العمل', value: 'الأحد - الخميس: 8:00 - 17:00', dir: 'rtl' },
+                    { icon: <ClockIcon className="h-5 w-5" />, title: 'ساعات العمل', value: 'الأحد - الخميس: 8:00 - 17:00', dir: 'rtl' },
                   ].map((info, idx) => (
                     <div key={idx} className="flex items-start gap-3 group">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
@@ -303,32 +339,74 @@ export default function ContactSection() {
               </CardContent>
             </Card>
           </motion.div>
+
+          {/* Quick Stats */}
+          <motion.div variants={itemVariants}>
+            <Card className="border-0 shadow-md">
+              <CardContent className="p-6">
+                <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-primary" />
+                  إحصائيات سريعة
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-center">
+                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">150+</div>
+                    <div className="text-xs text-muted-foreground">درس مسجل</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-center">
+                    <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">5000+</div>
+                    <div className="text-xs text-muted-foreground">طالب نشط</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-teal-50 dark:bg-teal-950/30 text-center">
+                    <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">25+</div>
+                    <div className="text-xs text-muted-foreground">أستاذ</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-primary/5 dark:bg-primary/10 text-center">
+                    <div className="text-2xl font-bold text-primary">9</div>
+                    <div className="text-xs text-muted-foreground">موضوع تعليمي</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
 
-      {/* FAQ Section */}
+      {/* FAQ Section with Accordion */}
       <motion.div variants={itemVariants}>
-        <Card className="border-0 shadow-md">
+        <Card className="border-0 shadow-md overflow-hidden">
+          <div className="h-1 bg-gradient-to-l from-primary via-emerald-600 to-amber-500" />
           <CardContent className="p-6 sm:p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                 <HelpCircle className="h-5 w-5" />
               </div>
-              <h3 className="text-xl font-bold">الأسئلة الشائعة</h3>
+              <div>
+                <h3 className="text-xl font-bold">الأسئلة الشائعة</h3>
+                <p className="text-sm text-muted-foreground">إجابات على أكثر الأسئلة تكراراً</p>
+              </div>
             </div>
-            <div className="space-y-3">
+            <Accordion type="single" collapsible className="space-y-3">
               {faqs.map((faq, idx) => (
-                <div key={idx} className="p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-                  <h4 className="font-medium text-sm mb-1 flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs h-5 w-5 p-0 flex items-center justify-center rounded-full">
-                      {idx + 1}
-                    </Badge>
-                    {faq.q}
-                  </h4>
-                  <p className="text-sm text-muted-foreground mr-9">{faq.a}</p>
-                </div>
+                <AccordionItem 
+                  key={idx} 
+                  value={`faq-${idx}`}
+                  className="border border-border/50 rounded-xl px-4 data-[state=open]:bg-muted/30 data-[state=open]:border-primary/20 transition-all duration-300"
+                >
+                  <AccordionTrigger className="hover:no-underline py-4">
+                    <div className="flex items-center gap-3 text-right flex-1">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${faq.color}`}>
+                        {faq.icon}
+                      </div>
+                      <span className="font-medium text-sm">{faq.q}</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-4 pr-11">
+                    <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+                  </AccordionContent>
+                </AccordionItem>
               ))}
-            </div>
+            </Accordion>
           </CardContent>
         </Card>
       </motion.div>

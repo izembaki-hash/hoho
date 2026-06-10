@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAppStore, type SectionId } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { Menu, BookOpen, Mic, Pen, Video, User, Mail, Home, Sun, Moon, Search } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const navItems: { id: SectionId; label: string; icon: React.ReactNode }[] = [
   { id: 'home', label: 'الرئيسية', icon: <Home className="h-4 w-4" /> },
@@ -20,6 +21,8 @@ export default function Navbar() {
   const { activeSection, setActiveSection, mobileMenuOpen, setMobileMenuOpen, theme, toggleTheme } = useAppStore()
   const [scrolled, setScrolled] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const navRef = useRef<HTMLDivElement>(null)
+  const [pillStyle, setPillStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 })
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,6 +31,20 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Pill indicator: calculate position of active nav item
+  useEffect(() => {
+    if (!navRef.current) return
+    const activeBtn = navRef.current.querySelector(`[data-nav-id="${activeSection}"]`) as HTMLElement
+    if (activeBtn) {
+      const parentRect = navRef.current.getBoundingClientRect()
+      const btnRect = activeBtn.getBoundingClientRect()
+      setPillStyle({
+        left: btnRect.left - parentRect.left,
+        width: btnRect.width,
+      })
+    }
+  }, [activeSection])
 
   // Keyboard shortcut for search
   useEffect(() => {
@@ -52,10 +69,14 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? 'bg-background/90 backdrop-blur-xl shadow-lg shadow-primary/5 border-b border-border/50'
+            ? 'bg-background/90 backdrop-blur-xl shadow-lg shadow-primary/5'
             : 'bg-background/60 backdrop-blur-sm'
         }`}
       >
+        {/* Gradient border at bottom when scrolled */}
+        {scrolled && (
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-l from-transparent via-primary/50 to-transparent" />
+        )}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
@@ -72,35 +93,41 @@ export default function Navbar() {
               </div>
             </button>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1">
+            {/* Desktop Navigation with Pill Indicator */}
+            <div className="hidden lg:flex items-center relative" ref={navRef}>
+              {/* Animated pill background */}
+              <div
+                className="absolute top-1/2 -translate-y-1/2 h-9 bg-primary/10 rounded-lg transition-all duration-300 ease-out"
+                style={{
+                  left: pillStyle.left,
+                  width: pillStyle.width,
+                }}
+              />
               {navItems.map((item) => (
                 <button
                   key={item.id}
+                  data-nav-id={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 z-10 ${
                     activeSection === item.id
-                      ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      ? 'text-primary'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {item.icon}
                   <span>{item.label}</span>
-                  {activeSection === item.id && (
-                    <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary-foreground rounded-full" />
-                  )}
                 </button>
               ))}
               
               <div className="mr-2 pr-2 border-r border-border flex items-center gap-1">
-                {/* Search Button */}
+                {/* Search Button with pulse */}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSearchOpen(true)}
-                  className="rounded-full h-9 gap-2 text-muted-foreground"
+                  className="rounded-full h-9 gap-2 text-muted-foreground relative group"
                 >
-                  <Search className="h-4 w-4" />
+                  <Search className="h-4 w-4 animate-search-pulse group-hover:animate-none" />
                   <span className="hidden xl:inline text-xs">بحث</span>
                   <kbd className="hidden xl:inline-flex h-4 select-none items-center gap-0.5 rounded border bg-muted px-1 font-mono text-[9px] font-medium text-muted-foreground">⌘K</kbd>
                 </Button>
@@ -127,9 +154,9 @@ export default function Navbar() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setSearchOpen(true)}
-                className="rounded-full h-9 w-9"
+                className="rounded-full h-9 w-9 relative"
               >
-                <Search className="h-4 w-4" />
+                <Search className="h-4 w-4 animate-search-pulse" />
               </Button>
               <Button
                 variant="ghost"
@@ -253,76 +280,88 @@ function GlobalSearchDialog({ open, onOpenChange }: { open: boolean; onOpenChang
   }
 
   return (
-    <div
-      className={`fixed inset-0 z-[100] transition-all duration-200 ${
-        open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-      }`}
-    >
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => onOpenChange(false)} />
-      <div className="relative max-w-lg mx-auto mt-20 mx-4">
-        <div className="bg-background rounded-xl shadow-2xl border border-border overflow-hidden">
-          <div className="flex items-center border-b border-border px-4">
-            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="ابحث في المحتوى التعليمي..."
-              className="flex-1 bg-transparent border-0 outline-none py-4 px-3 text-sm placeholder:text-muted-foreground"
-              autoFocus={open}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') onOpenChange(false)
-                if (e.key === 'Enter' && filtered.length > 0) {
-                  handleSelect(filtered[0].section)
-                }
-              }}
-            />
-            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-              ESC
-            </kbd>
-          </div>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          className="fixed inset-0 z-[100]"
+        >
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => onOpenChange(false)} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="relative max-w-lg mx-auto mt-20 mx-4"
+          >
+            <div className="bg-background rounded-xl shadow-2xl border border-border overflow-hidden">
+              <div className="flex items-center border-b border-border px-4">
+                <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="ابحث في المحتوى التعليمي..."
+                  className="flex-1 bg-transparent border-0 outline-none py-4 px-3 text-sm placeholder:text-muted-foreground"
+                  autoFocus={open}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') onOpenChange(false)
+                    if (e.key === 'Enter' && filtered.length > 0) {
+                      handleSelect(filtered[0].section)
+                    }
+                  }}
+                />
+                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                  ESC
+                </kbd>
+              </div>
 
-          {query.trim() && (
-            <div className="max-h-72 overflow-y-auto p-2">
-              {filtered.length > 0 ? (
-                <div className="space-y-0.5">
-                  {filtered.map((item, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSelect(item.section)}
-                      className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-accent transition-colors text-right"
-                    >
-                      <Search className="h-3 w-3 text-muted-foreground shrink-0" />
-                      <span className="text-sm font-medium">{item.title}</span>
-                      <span className="text-xs text-muted-foreground mr-auto">{item.category}</span>
-                    </button>
-                  ))}
+              {query.trim() && (
+                <div className="max-h-72 overflow-y-auto p-2">
+                  {filtered.length > 0 ? (
+                    <div className="space-y-0.5">
+                      {filtered.map((item, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleSelect(item.section)}
+                          className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-accent transition-colors text-right"
+                        >
+                          <Search className="h-3 w-3 text-muted-foreground shrink-0" />
+                          <span className="text-sm font-medium">{item.title}</span>
+                          <span className="text-xs text-muted-foreground mr-auto">{item.category}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-sm text-muted-foreground">لا توجد نتائج لـ &quot;{query}&quot;</p>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-sm text-muted-foreground">لا توجد نتائج لـ &quot;{query}&quot;</p>
+              )}
+
+              {!query.trim() && (
+                <div className="p-4">
+                  <p className="text-xs text-muted-foreground mb-3">بحث سريع</p>
+                  <div className="flex flex-wrap gap-2">
+                    {['الخطابة', 'التلخيص', 'لغة الجسد', 'السيرة الذاتية', 'علامات الترقيم'].map(term => (
+                      <button
+                        key={term}
+                        onClick={() => setQuery(term)}
+                        className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-accent transition-colors"
+                      >
+                        {term}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
-          )}
-
-          {!query.trim() && (
-            <div className="p-4">
-              <p className="text-xs text-muted-foreground mb-3">بحث سريع</p>
-              <div className="flex flex-wrap gap-2">
-                {['الخطابة', 'التلخيص', 'لغة الجسد', 'السيرة الذاتية', 'علامات الترقيم'].map(term => (
-                  <button
-                    key={term}
-                    onClick={() => setQuery(term)}
-                    className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-accent transition-colors"
-                  >
-                    {term}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

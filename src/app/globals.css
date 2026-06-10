@@ -169,3 +169,310 @@ html {
 [dir="rtl"] .flip-rtl {
   transform: scaleX(-1);
 }
+
+/* === Enhanced Visual Effects === */
+
+/* Shimmer/shine animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Floating particles animation */
+@keyframes float-up {
+  0% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
+}
+
+.animate-float-up {
+  animation: float-up var(--float-duration, 8s) linear infinite;
+  animation-delay: var(--float-delay, 0s);
+}
+
+/* Pulsing glow animation */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px var(--glow-color, rgba(239, 68, 68, 0.5)), 0 0 10px var(--glow-color, rgba(239, 68, 68, 0.3)); }
+  50% { box-shadow: 0 0 15px var(--glow-color, rgba(239, 68, 68, 0.7)), 0 0 30px var(--glow-color, rgba(239, 68, 68, 0.4)); }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Typing indicator dots */
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+.typing-dot {
+  animation: typing-bounce 1.4s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Draw-in line animation for timeline */
+@keyframes draw-line {
+  from { height: 0; }
+  to { height: 100%; }
+}
+
+.animate-draw-line {
+  animation: draw-line 1.5s ease-out forwards;
+}
+
+/* Slide in from right */
+@keyframes slide-in-right {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out forwards;
+}
+
+/* Card spotlight effect */
+.card-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-spotlight::before {
+  content: '';
+  position: absolute;
+  top: var(--mouse-y, 50%);
+  left: var(--mouse-x, 50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.card-spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Glassmorphism overlay */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* 3D tilt effect for testimonials */
+.tilt-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.3s ease;
+}
+
+.tilt-card:hover {
+  transform: perspective(1000px) rotateY(var(--tilt-y, 0deg)) rotateX(var(--tilt-x, 0deg));
+}
+
+/* Skeleton loading shimmer */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    var(--accent) 50%,
+    var(--muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius);
+}
+
+/* Smooth height animation for expandable text */
+.expandable-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease-out;
+}
+
+.expandable-content.expanded {
+  grid-template-rows: 1fr;
+}
+
+.expandable-content > div {
+  overflow: hidden;
+}
+
+/* Map pin bounce */
+@keyframes pin-bounce {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+  60% { transform: translateY(-6px); }
+}
+
+.animate-pin-bounce {
+  animation: pin-bounce 2s ease-in-out infinite;
+}
+
+/* Navbar gradient border */
+.nav-gradient-border {
+  border-image: linear-gradient(to left, transparent, var(--primary), transparent) 1;
+}
+
+/* LIVE pulse indicator */
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.animate-live-pulse {
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+/* Search button subtle pulse */
+@keyframes search-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-search-pulse {
+  animation: search-pulse 3s ease-in-out infinite;
+}
+
+/* Floating label animation */
+.floating-label-group {
+  position: relative;
+}
+
+.floating-label-group label {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.2s ease;
+  pointer-events: none;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  background: var(--card);
+  padding: 0 4px;
+}
+
+.floating-label-group input:focus + label,
+.floating-label-group input:not(:placeholder-shown) + label,
+.floating-label-group textarea:focus + label,
+.floating-label-group textarea:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
+/* Colored left border for accordion items */
+.accordion-border-right {
+  border-right: 3px solid var(--accent-color, var(--primary));
+  transition: border-color 0.3s ease;
+}
+
+/* === Print Styles === */
+@media print {
+  /* Hide non-essential elements */
+  nav,
+  .fixed,
+  [class*="fixed"],
+  footer,
+  button[aria-label="استمع إلى المحتوى"],
+  button[aria-label="العودة للأعلى"],
+  .reading-progress-bar {
+    display: none !important;
+  }
+
+  /* Reset positioning */
+  .pt-16, .pt-20 {
+    padding-top: 0 !important;
+  }
+
+  /* Ensure backgrounds print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Page setup */
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
+
+  /* Prevent page breaks inside cards */
+  .card, [class*="shadow"] {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Ensure text is black for print */
+  body {
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  /* Make links show URL */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  /* Print header */
+  main::before {
+    content: "التحرير الكتابي والشفهي - منصة تعليمية متكاملة";
+    display: block;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding-bottom: 0.5cm;
+    border-bottom: 2px solid #10b981;
+    margin-bottom: 1cm;
+  }
+}
+
+/* === Custom scrollbar for content areas === */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* === Selection color === */
+::selection {
+  background-color: oklch(0.5 0.12 160 / 0.3);
+  color: inherit;
+}

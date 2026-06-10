@@ -192,3 +192,106 @@ Current Project Status:
 Unresolved Issues/Risks:
 - None critical
 - Future enhancements: TTS for content sections, real video player, user authentication, progress tracking dashboard, print-friendly content views
+
+---
+Task ID: 8
+Agent: Content Reader Agent
+Task: Create ContentReader component for text-to-speech functionality
+
+Work Log:
+- Created `/api/tts` API route using z-ai-web-dev-sdk for text-to-speech generation
+  - Supports Arabic text input with voice selection (default: tongtong)
+  - Handles text chunking for content exceeding 1024 characters (splits by Arabic/general sentence punctuation)
+  - Returns WAV audio format (mp3 not supported by the API)
+  - Validates text input and speed parameters
+  - Proper error handling with Arabic error messages
+- Created ContentReader component at `/src/components/ContentReader.tsx`
+  - Floating circular button (fixed position, bottom-left for RTL) with Volume2 icon when idle
+  - Loading state with spinner and "جاري إنشاء الصوت..." text
+  - Mini audio player with play/pause/stop controls when playing or paused
+  - Animated progress bar during playback
+  - Error toast with dismiss button
+  - Uses HTML5 Audio API for playback
+  - Smooth framer-motion animations for state transitions (AnimatePresence)
+  - Dark mode compatible styling (bg-card, border-border, text-muted-foreground)
+  - RTL-aware positioning (left-6 for RTL, separate from ScrollToTop at right-6)
+  - Proper cleanup on unmount (revokes object URLs, pauses audio)
+- Updated ScrollToTop position from `left-6` to `right-6` to avoid overlap with ContentReader
+  - In RTL layout: ContentReader at bottom-left, ScrollToTop at bottom-right
+- Integrated ContentReader into page.tsx
+  - Added section content summaries in Arabic for each of the 7 sections
+  - Content is passed as prop based on active section
+  - All content strings are under 1024 characters for single TTS API call
+- Fixed TTS API format issue: changed from mp3 to wav (API doesn't support mp3 format)
+- All modified files pass ESLint checks
+- Page renders correctly with ContentReader button visible
+
+Stage Summary:
+- ContentReader floating button for TTS on all section pages
+- /api/tts API route using z-ai-web-dev-sdk
+- ScrollToTop repositioned to bottom-right for RTL layout
+- No overlap between ContentReader and ScrollToTop buttons
+- Smooth animations and dark mode support
+- All lint checks pass, no new errors
+
+Current Project Status:
+- Feature-rich Arabic RTL educational website with TTS content reader
+- ContentReader button appears on all pages with section-specific content
+- ScrollToTop and ContentReader properly positioned (no overlap)
+- All previous features intact and working
+
+---
+Task ID: 5
+Agent: Cron Review Agent (Round 5)
+Task: QA testing, bug fixes, TTS API improvements, ContactSection overhaul, print/reading features
+
+Work Log:
+- Performed comprehensive QA testing of all 7 sections using agent-browser
+- Identified AnimatedCounter bug: stats showed "0" instead of real values (150+, 5000+, etc.)
+- Fixed AnimatedCounter: now uses hasAnimatedRef instead of state, shows correct values on first render
+- Fixed TTS API: changed from unsupported mp3 format to wav, added singleton ZAI instance for performance
+- Fixed TTS API: updated supported voices to match SDK (tongtong, chuichui, xiaochen, jam, kazi, douji, luodo)
+- Fixed TTS API: added proper stream: false parameter, corrected error handling for 429 rate limits
+- Overhauled ContactSection: removed dynamic imports (import()), now uses direct useAppStore import
+- Enhanced ContactSection FAQ: converted from static list to interactive Accordion with color-coded icons
+- Added 2 new FAQ items: "كيف أستخدم ميزة الاستماع؟" and "هل يمكنني طباعة المحتوى؟"
+- Added gradient top bars to Contact form card and Contact info card
+- Added Quick Stats card (150+ lessons, 5000+ students, 25+ professors, 9 topics) to Contact section
+- Added reading time estimate per section in breadcrumb bar (e.g., "15 دقائق قراءة")
+- Added print button in breadcrumb bar with printer icon
+- Added comprehensive print styles in globals.css (@media print)
+  - Hides nav, footer, floating buttons during print
+  - Preserves colors with print-color-adjust
+  - Prevents page breaks inside cards
+  - Adds print header with site name
+  - A4 page size with 1.5cm margins
+- Added custom scrollbar styles for content areas
+- Added selection color (emerald-tinted) for better UX
+- Fixed ESLint errors in AnimatedCounter (setState-in-effect warning)
+- Fixed CSS parsing error: removed invalid .print\:hidden selector from @media print
+- All pages return 200, lint passes cleanly
+- All navigation tested and working (7/7 sections)
+- VLM analysis confirms professional quality and proper RTL layout
+
+Stage Summary:
+- AnimatedCounter now shows correct values on first render
+- TTS API fixed with proper wav format and singleton instance
+- ContactSection completely overhauled with Accordion FAQ and direct imports
+- Print functionality added with optimized styles
+- Reading time estimates per section in breadcrumb
+- 2 new FAQ items added
+- Quick Stats card on Contact page
+- ESLint and CSS errors fixed
+- All features working correctly
+
+Current Project Status:
+- Stable, feature-rich Arabic RTL educational website
+- All 7 sections fully functional with enhanced UX
+- TTS content reader, print support, reading time estimates
+- Interactive FAQ with Accordion, quick stats
+- Dark mode, search, bookmarks, testimonials, animations all intact
+- Lint passes, all pages return 200, no errors
+
+Unresolved Issues/Risks:
+- TTS API may hit rate limits (429) with heavy usage - handled gracefully with error message
+- Future: real video player integration, user authentication, progress tracking dashboard, TTS for individual content sections

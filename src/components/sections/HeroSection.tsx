@@ -6,14 +6,15 @@ import { Card, CardContent } from '@/components/ui/card'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import NewsletterSection from '@/components/NewsletterSection'
 import { 
-  BookOpen, Mic, Pen, Video, User, Mail, ChevronLeft, 
+  BookOpen, Mic, Pen, Video, User, Mail, 
   Sparkles, GraduationCap, Users, School, ArrowRight,
   PlayCircle, Calendar, Download, MessageCircle, Star, Quote,
-  Zap, Trophy, Target
+  Zap, Trophy, Target, Radio
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { useRef, useEffect, useState, useCallback } from 'react'
 
-const sectionCards: { id: SectionId; label: string; description: string; icon: React.ReactNode; color: string; bgPattern: string; stat: string }[] = [
+const sectionCards: { id: SectionId; label: string; description: string; icon: React.ReactNode; color: string; bgPattern: string; stat: string; isLive?: boolean }[] = [
   {
     id: 'about',
     label: 'نبذة عن المؤلف',
@@ -31,6 +32,7 @@ const sectionCards: { id: SectionId; label: string; description: string; icon: R
     color: 'from-red-500 to-red-700',
     bgPattern: 'bg-red-50 dark:bg-red-950/30',
     stat: 'بث أسبوعي',
+    isLive: true,
   },
   {
     id: 'recorded-lessons',
@@ -144,11 +146,100 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+}
+
+// Floating particles component
+function FloatingParticles() {
+  const particles = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    size: Math.random() * 4 + 2,
+    left: Math.random() * 100,
+    delay: Math.random() * 8,
+    duration: Math.random() * 6 + 6,
+  }))
+
+  return (
+    <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="absolute rounded-full bg-white/30 animate-float-up"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: '-10px',
+            '--float-delay': `${p.delay}s`,
+            '--float-duration': `${p.duration}s`,
+          } as React.CSSProperties}
+        />
+      ))}
+    </div>
+  )
+}
+
+// Spotlight card with mouse tracking
+function SpotlightCard({ children, className, onClick }: { children: React.ReactNode; className?: string; onClick?: () => void }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    cardRef.current.style.setProperty('--mouse-x', `${x}px`)
+    cardRef.current.style.setProperty('--mouse-y', `${y}px`)
+  }, [])
+
+  return (
+    <div ref={cardRef} className={`card-spotlight ${className || ''}`} onMouseMove={handleMouseMove} onClick={onClick}>
+      {children}
+    </div>
+  )
+}
+
+// 3D tilt card for testimonials
+function TiltCard({ children, className }: { children: React.ReactNode; className?: string }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width
+    const y = (e.clientY - rect.top) / rect.height
+    const tiltX = (y - 0.5) * -8
+    const tiltY = (x - 0.5) * 8
+    cardRef.current.style.setProperty('--tilt-x', `${tiltX}deg`)
+    cardRef.current.style.setProperty('--tilt-y', `${tiltY}deg`)
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    if (!cardRef.current) return
+    cardRef.current.style.setProperty('--tilt-x', '0deg')
+    cardRef.current.style.setProperty('--tilt-y', '0deg')
+  }, [])
+
+  return (
+    <div
+      ref={cardRef}
+      className={`tilt-card ${className || ''}`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {children}
+    </div>
+  )
 }
 
 export default function HeroSection() {
   const { setActiveSection } = useAppStore()
+  const heroRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  })
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', '30%'])
 
   const handleNavigate = (id: SectionId) => {
     setActiveSection(id)
@@ -157,18 +248,23 @@ export default function HeroSection() {
 
   return (
     <div className="space-y-16">
-      {/* Hero Banner */}
+      {/* Hero Banner with Glassmorphism + Particles + Parallax */}
       <motion.section 
+        ref={heroRef}
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
         className="relative overflow-hidden rounded-3xl"
       >
-        <div className="absolute inset-0 bg-gradient-to-l from-primary/90 via-primary/75 to-emerald-900/95 z-10" />
-        <div
+        {/* Parallax background image */}
+        <motion.div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url(/images/hero-banner.png)' }}
+          style={{ backgroundImage: 'url(/images/hero-banner.png)', y: parallaxY }}
         />
+        {/* Glassmorphism overlay */}
+        <div className="absolute inset-0 bg-gradient-to-l from-primary/80 via-primary/60 to-emerald-900/85 z-10 glassmorphism" />
+        {/* Floating particles */}
+        <FloatingParticles />
         {/* Decorative Elements */}
         <div className="absolute inset-0 z-10 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white rounded-full" />
@@ -249,7 +345,7 @@ export default function HeroSection() {
         </div>
       </motion.section>
 
-      {/* Stats with animated counters */}
+      {/* Stats with animated counters - smoother animation */}
       <motion.section 
         variants={containerVariants}
         initial="hidden"
@@ -259,11 +355,11 @@ export default function HeroSection() {
       >
         {stats.map((stat, idx) => (
           <motion.div key={idx} variants={itemVariants}>
-            <Card className="text-center border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+            <Card className="text-center border-0 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 group relative overflow-hidden">
               {/* Gradient top bar */}
               <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${stat.color}`} />
               <CardContent className="pt-7 pb-5 px-4">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${stat.color} flex items-center justify-center mx-auto mb-3 text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${stat.color} flex items-center justify-center mx-auto mb-3 text-white shadow-lg group-hover:scale-110 transition-transform duration-500`}>
                   {stat.icon}
                 </div>
                 <div className="text-2xl sm:text-3xl font-bold text-primary mb-1">
@@ -292,11 +388,11 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {features.map((feature, idx) => (
             <motion.div key={idx} variants={itemVariants}>
-              <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 group h-full relative overflow-hidden">
+              <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-500 group h-full relative overflow-hidden">
                 {/* Hover gradient background */}
-                <div className={`absolute inset-0 bg-gradient-to-bl ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                <div className={`absolute inset-0 bg-gradient-to-bl ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
                 <CardContent className="p-6 flex items-start gap-4 relative z-10">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-bl ${feature.gradient} flex items-center justify-center text-white shrink-0 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-bl ${feature.gradient} flex items-center justify-center text-white shrink-0 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-500`}>
                     {feature.icon}
                   </div>
                   <div>
@@ -310,7 +406,7 @@ export default function HeroSection() {
         </div>
       </motion.section>
 
-      {/* Section Cards */}
+      {/* Section Cards with Spotlight + LIVE indicator */}
       <motion.section
         variants={containerVariants}
         initial="hidden"
@@ -326,38 +422,52 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {sectionCards.map((card) => (
             <motion.div key={card.id} variants={itemVariants}>
-              <Card
-                className="group cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+              <SpotlightCard
+                className="cursor-pointer"
                 onClick={() => handleNavigate(card.id)}
               >
-                <CardContent className="p-0">
-                  <div className={`h-1.5 bg-gradient-to-l ${card.color}`} />
-                  <div className={`${card.bgPattern} p-6`}>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${card.color} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
-                        {card.icon}
+                <Card className="group border-0 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden border-0">
+                  <CardContent className="p-0 relative z-10">
+                    <div className={`h-1.5 bg-gradient-to-l ${card.color}`} />
+                    <div className={`${card.bgPattern} p-6`}>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${card.color} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-500`}>
+                          {card.icon}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {/* LIVE pulse indicator */}
+                          {card.isLive && (
+                            <span className="flex items-center gap-1.5 text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full">
+                              <span className="relative flex h-2 w-2">
+                                <span className="animate-live-pulse absolute inline-flex h-full w-full rounded-full bg-red-500" />
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                              </span>
+                              مباشر
+                            </span>
+                          )}
+                          <span className="text-xs font-medium text-muted-foreground bg-background/60 px-2.5 py-1 rounded-full backdrop-blur-sm">{card.stat}</span>
+                        </div>
                       </div>
-                      <span className="text-xs font-medium text-muted-foreground bg-background/60 px-2.5 py-1 rounded-full backdrop-blur-sm">{card.stat}</span>
+                      <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors duration-300">
+                        {card.label}
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                        {card.description}
+                      </p>
+                      <div className="flex items-center text-primary text-sm font-medium group-hover:gap-2 transition-all duration-300">
+                        <span>استكشف المزيد</span>
+                        <ArrowRight className="h-4 w-4 mr-1 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                      </div>
                     </div>
-                    <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">
-                      {card.label}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                      {card.description}
-                    </p>
-                    <div className="flex items-center text-primary text-sm font-medium group-hover:gap-2 transition-all duration-300">
-                      <span>استكشف المزيد</span>
-                      <ArrowRight className="h-4 w-4 mr-1 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </SpotlightCard>
             </motion.div>
           ))}
         </div>
       </motion.section>
 
-      {/* Testimonials */}
+      {/* Testimonials with 3D Tilt */}
       <motion.section
         variants={containerVariants}
         initial="hidden"
@@ -373,30 +483,32 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((testimonial, idx) => (
             <motion.div key={idx} variants={itemVariants}>
-              <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 h-full relative overflow-hidden group">
-                {/* Gradient top bar */}
-                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${testimonial.color} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
-                <CardContent className="p-6 pt-7">
-                  <div className="flex items-center gap-1 mb-3">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
-                  <div className="mb-4">
-                    <Quote className="h-5 w-5 text-primary/30 mb-2" />
-                    <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.text}</p>
-                  </div>
-                  <div className="flex items-center gap-3 pt-3 border-t border-border">
-                    <div className={`w-10 h-10 rounded-full bg-gradient-to-bl ${testimonial.color} flex items-center justify-center text-white font-bold text-sm shadow-md`}>
-                      {testimonial.name.charAt(0)}
+              <TiltCard>
+                <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 h-full relative overflow-hidden group">
+                  {/* Gradient top bar */}
+                  <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${testimonial.color} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
+                  <CardContent className="p-6 pt-7">
+                    <div className="flex items-center gap-1 mb-3">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                      ))}
                     </div>
-                    <div>
-                      <h4 className="font-bold text-sm">{testimonial.name}</h4>
-                      <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                    <div className="mb-4">
+                      <Quote className="h-5 w-5 text-primary/30 mb-2" />
+                      <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.text}</p>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="flex items-center gap-3 pt-3 border-t border-border">
+                      <div className={`w-10 h-10 rounded-full bg-gradient-to-bl ${testimonial.color} flex items-center justify-center text-white font-bold text-sm shadow-md`}>
+                        {testimonial.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm">{testimonial.name}</h4>
+                        <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TiltCard>
             </motion.div>
           ))}
         </div>

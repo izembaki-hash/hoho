@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface AnimatedCounterProps {
   value: string
@@ -8,50 +8,62 @@ interface AnimatedCounterProps {
 }
 
 export default function AnimatedCounter({ value, duration = 2000 }: AnimatedCounterProps) {
-  const [displayValue, setDisplayValue] = useState('0')
-  const [hasAnimated, setHasAnimated] = useState(false)
+  const [displayValue, setDisplayValue] = useState(value)
+  const hasAnimatedRef = useRef(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  const animateValue = useCallback(() => {
+  useEffect(() => {
+    if (hasAnimatedRef.current) return
+
     const numericPart = parseInt(value.replace(/[^0-9]/g, ''))
     const suffix = value.replace(/[0-9]/g, '')
-    const startTime = Date.now()
 
-    const step = () => {
-      const elapsed = Date.now() - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - progress, 3)
-      const current = Math.floor(eased * numericPart)
-      setDisplayValue(`${current}${suffix}`)
-      
-      if (progress < 1) {
-        requestAnimationFrame(step)
-      } else {
-        setDisplayValue(value)
+    if (numericPart === 0) return
+
+    const startAnimation = () => {
+      if (hasAnimatedRef.current) return
+      hasAnimatedRef.current = true
+      setDisplayValue('0')
+      const startTime = Date.now()
+
+      const step = () => {
+        const elapsed = Date.now() - startTime
+        const progress = Math.min(elapsed / duration, 1)
+        const eased = 1 - Math.pow(1 - progress, 3)
+        const current = Math.floor(eased * numericPart)
+        setDisplayValue(`${current}${suffix}`)
+        
+        if (progress < 1) {
+          requestAnimationFrame(step)
+        } else {
+          setDisplayValue(value)
+        }
       }
+
+      requestAnimationFrame(step)
     }
 
-    requestAnimationFrame(step)
-  }, [value, duration])
-
-  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !hasAnimated) {
-          setHasAnimated(true)
-          animateValue()
+        if (entries[0].isIntersecting) {
+          startAnimation()
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.1 }
     )
 
     if (ref.current) {
+      const rect = ref.current.getBoundingClientRect()
+      const isInViewport = rect.top < window.innerHeight && rect.bottom > 0
+      if (isInViewport) {
+        startAnimation()
+        return
+      }
       observer.observe(ref.current)
     }
 
     return () => observer.disconnect()
-  }, [hasAnimated, animateValue])
+  }, [value, duration])
 
   return <div ref={ref}>{displayValue}</div>
 }

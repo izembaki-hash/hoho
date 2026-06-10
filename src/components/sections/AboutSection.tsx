@@ -4,7 +4,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { BookOpen, Award, GraduationCap, Briefcase, Quote, Clock, Globe, Users } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
+import { useRef } from 'react'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -16,7 +17,7 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 15 },
-  visible: { opacity: 1, y: 0 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 }
 
 const authorWorks = [
@@ -66,6 +67,66 @@ const timeline = [
   { year: '2024', event: 'إطلاق موقع التحرير الكتابي والشفهي', icon: <Award className="h-4 w-4" /> },
 ]
 
+// Draw-in timeline component
+function DrawInTimeline({ items }: { items: typeof timeline }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(containerRef, { once: true, margin: '-50px' })
+
+  return (
+    <div ref={containerRef} className="relative">
+      {/* Timeline line with draw-in animation */}
+      <div className="absolute right-5 top-0 bottom-0 w-0.5 bg-primary/20">
+        <motion.div
+          className="absolute top-0 left-0 right-0 bg-primary/60 origin-top"
+          initial={{ height: 0 }}
+          animate={isInView ? { height: '100%' } : { height: 0 }}
+          transition={{ duration: 1.5, ease: 'easeOut' }}
+        />
+      </div>
+      <div className="space-y-6">
+        {items.map((item, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, x: -20 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+            transition={{ delay: 0.2 + idx * 0.15, duration: 0.5, ease: 'easeOut' }}
+            className="flex items-start gap-4 relative"
+          >
+            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 z-10 shadow-md">
+              {item.icon}
+            </div>
+            <div className="flex-1 pt-2">
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="outline" className="text-xs font-bold">{item.year}</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">{item.event}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Achievement card with hover expansion
+function AchievementCard({ icon, value, label, color, bgColor }: { icon: React.ReactNode; value: string; label: string; color: string; bgColor: string }) {
+  return (
+    <Card className="border-0 shadow-md text-center group hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden">
+      <CardContent className="pt-6 pb-4 relative">
+        {/* Expanding background on hover */}
+        <div className={`absolute inset-0 ${bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+        <div className="relative z-10">
+          <div className={`w-14 h-14 rounded-2xl ${bgColor} flex items-center justify-center mx-auto mb-3 ${color} group-hover:scale-110 transition-transform duration-500`}>
+            {icon}
+          </div>
+          <div className={`text-3xl font-bold ${color} mb-1`}>{value}</div>
+          <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">{label}</div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export default function AboutSection() {
   return (
     <motion.div 
@@ -103,17 +164,21 @@ export default function AboutSection() {
                 <h3 className="text-2xl font-bold mb-1">أ.د. محمد بن عبد الله</h3>
                 <p className="text-primary font-medium mb-3">أستاذ التحرير الكتابي والشفهي</p>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                  <Badge className="gap-1 bg-primary/10 text-primary hover:bg-primary/20 border-0">
-                    <GraduationCap className="h-3 w-3" />
-                    دكتوراه دولة
+                  {/* Shimmer badge effect */}
+                  <Badge className="gap-1 bg-primary/10 text-primary hover:bg-primary/20 border-0 relative overflow-hidden">
+                    <div className="absolute inset-0 animate-shimmer" />
+                    <GraduationCap className="h-3 w-3 relative z-10" />
+                    <span className="relative z-10">دكتوراه دولة</span>
                   </Badge>
-                  <Badge className="gap-1 bg-amber-100 text-amber-700 hover:bg-amber-200 border-0">
-                    <Briefcase className="h-3 w-3" />
-                    أستاذ محاضر
+                  <Badge className="gap-1 bg-amber-100 text-amber-700 hover:bg-amber-200 border-0 relative overflow-hidden">
+                    <div className="absolute inset-0 animate-shimmer" style={{ animationDelay: '0.5s' }} />
+                    <Briefcase className="h-3 w-3 relative z-10" />
+                    <span className="relative z-10">أستاذ محاضر</span>
                   </Badge>
-                  <Badge className="gap-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-0">
-                    <Award className="h-3 w-3" />
-                    باحث وأديب
+                  <Badge className="gap-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-0 relative overflow-hidden">
+                    <div className="absolute inset-0 animate-shimmer" style={{ animationDelay: '1s' }} />
+                    <Award className="h-3 w-3 relative z-10" />
+                    <span className="relative z-10">باحث وأديب</span>
                   </Badge>
                 </div>
               </div>
@@ -151,40 +216,34 @@ export default function AboutSection() {
         </Card>
       </motion.div>
 
-      {/* Academic Achievements */}
+      {/* Academic Achievements with hover expansion */}
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="border-0 shadow-md text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <CardContent className="pt-6 pb-4">
-              <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mx-auto mb-3 text-amber-600 group-hover:scale-110 transition-transform duration-300">
-                <Award className="h-7 w-7" />
-              </div>
-              <div className="text-3xl font-bold text-amber-600 mb-1">20+</div>
-              <div className="text-sm text-muted-foreground">سنة خبرة أكاديمية</div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <CardContent className="pt-6 pb-4">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-3 text-emerald-600 group-hover:scale-110 transition-transform duration-300">
-                <BookOpen className="h-7 w-7" />
-              </div>
-              <div className="text-3xl font-bold text-emerald-600 mb-1">15+</div>
-              <div className="text-sm text-muted-foreground">مؤلّف منشور</div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <CardContent className="pt-6 pb-4">
-              <div className="w-14 h-14 rounded-2xl bg-teal-100 flex items-center justify-center mx-auto mb-3 text-teal-600 group-hover:scale-110 transition-transform duration-300">
-                <GraduationCap className="h-7 w-7" />
-              </div>
-              <div className="text-3xl font-bold text-teal-600 mb-1">50+</div>
-              <div className="text-sm text-muted-foreground">إشراف على رسائل جامعية</div>
-            </CardContent>
-          </Card>
+          <AchievementCard
+            icon={<Award className="h-7 w-7" />}
+            value="20+"
+            label="سنة خبرة أكاديمية"
+            color="text-amber-600"
+            bgColor="bg-amber-100 dark:bg-amber-900/30"
+          />
+          <AchievementCard
+            icon={<BookOpen className="h-7 w-7" />}
+            value="15+"
+            label="مؤلّف منشور"
+            color="text-emerald-600"
+            bgColor="bg-emerald-100 dark:bg-emerald-900/30"
+          />
+          <AchievementCard
+            icon={<GraduationCap className="h-7 w-7" />}
+            value="50+"
+            label="إشراف على رسائل جامعية"
+            color="text-teal-600"
+            bgColor="bg-teal-100 dark:bg-teal-900/30"
+          />
         </div>
       </motion.div>
 
-      {/* Academic Timeline */}
+      {/* Academic Timeline with Draw-in Animation */}
       <motion.div variants={itemVariants}>
         <Card className="border-0 shadow-md">
           <CardContent className="p-6 sm:p-8">
@@ -194,25 +253,7 @@ export default function AboutSection() {
               </div>
               <h3 className="text-xl font-bold">المسيرة الأكاديمية</h3>
             </div>
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute right-5 top-0 bottom-0 w-0.5 bg-primary/20" />
-              <div className="space-y-6">
-                {timeline.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-4 relative">
-                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 z-10 shadow-md">
-                      {item.icon}
-                    </div>
-                    <div className="flex-1 pt-2">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className="text-xs font-bold">{item.year}</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{item.event}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <DrawInTimeline items={timeline} />
           </CardContent>
         </Card>
       </motion.div>
@@ -229,20 +270,24 @@ export default function AboutSection() {
             </div>
             <div className="space-y-3">
               {authorWorks.map((work, idx) => (
-                <div
+                <motion.div
                   key={idx}
-                  className="flex items-start gap-4 p-4 rounded-xl hover:bg-muted/50 transition-all duration-200 group"
+                  initial={{ opacity: 0, x: -15 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.08, duration: 0.4 }}
+                  className="flex items-start gap-4 p-4 rounded-xl hover:bg-muted/50 transition-all duration-300 group"
                 >
                   <div className={`w-1 h-12 rounded-full ${work.color} shrink-0 mt-1 group-hover:h-14 transition-all`} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <h4 className="font-bold text-foreground group-hover:text-primary transition-colors">{work.title}</h4>
+                      <h4 className="font-bold text-foreground group-hover:text-primary transition-colors duration-300">{work.title}</h4>
                       <Badge variant="outline" className="text-xs">{work.type}</Badge>
                       <Badge variant="secondary" className="text-xs">{work.year}</Badge>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">{work.description}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </CardContent>
@@ -262,11 +307,11 @@ export default function AboutSection() {
               <Badge className="bg-amber-100 text-amber-700 border-0">قريباً</Badge>
             </div>
             <div className="space-y-3">
-              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow">
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow duration-300">
                 <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-1">الإلقاء الإبداعي - نظرية وتطبيق</h4>
                 <p className="text-sm text-amber-700 dark:text-amber-300">كتاب شامل يتناول فنون الإلقاء الإبداعي من المنظورين النظري والتطبيقي</p>
               </div>
-              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow">
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow duration-300">
                 <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-1">لغة الجسد في العرض التقديمي</h4>
                 <p className="text-sm text-amber-700 dark:text-amber-300">دليل عملي لفهم واستخدام لغة الجسد بشكل فعّال في العروض والتواصل</p>
               </div>
