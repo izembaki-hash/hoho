@@ -140,7 +140,7 @@ export default function ContactSection() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-10"
+      className="space-y-6 sm:space-y-10"
     >
       {/* Header */}
       <motion.div variants={itemVariants} className="text-center">
@@ -158,7 +158,7 @@ export default function ContactSection() {
 
       {/* Quick Help */}
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => handleQuickNav('live-lessons')}>
             <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0 group-hover:scale-110 transition-transform">
@@ -195,7 +195,7 @@ export default function ContactSection() {
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Contact Form */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <Card className="border-0 shadow-lg overflow-hidden">
@@ -241,7 +241,7 @@ export default function ContactSection() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="contact-name" className="flex items-center gap-2">
                       <User className="h-4 w-4" />

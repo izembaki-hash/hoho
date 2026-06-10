@@ -139,6 +139,136 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* === Mobile UX Enhancements === */
+
+  /* Prevent text size adjust on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Remove tap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Touch action for interactive elements */
+  button, a, [role="button"], input, select, textarea, summary {
+    touch-action: manipulation;
+  }
+
+  /* Minimum touch target size for interactive elements */
+  @media (max-width: 640px) {
+    button:not([class*="h-0"]):not([class*="p-0"]):not(.sr-only),
+    a:not([class*="inline"]),
+    [role="button"] {
+      min-height: 44px;
+    }
+
+    /* Ensure readable text on mobile - minimum 14px */
+    p, li, span, label {
+      -webkit-text-size-adjust: none;
+    }
+
+    /* Increase line-height for mobile readability */
+    p, li {
+      line-height: 1.7;
+    }
+
+    /* Prevent horizontal overflow */
+    body {
+      overflow-x: hidden;
+    }
+  }
+}
+
+/* === Mobile Safe Area Support === */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+}
+
+/* === Mobile Scrollbar - thin and auto-hide === */
+@media (max-width: 1024px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  :hover::-webkit-scrollbar-thumb {
+    opacity: 1;
+  }
+}
+
+/* Prevent pull-to-refresh on interactive areas */
+.overflow-y-auto,
+.overflow-auto,
+.custom-scrollbar {
+  overscroll-behavior-y: contain;
+}
+
+/* Mobile dialog full-screen enhancement */
+@media (max-width: 640px) {
+  [role="dialog"] {
+    max-width: 100vw !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+  }
+
+  /* Ensure dialogs are full-screen on mobile */
+  [data-radix-popper-content-wrapper] {
+    max-width: 100vw !important;
+  }
+}
+
+/* Horizontally scrollable tabs on mobile */
+@media (max-width: 640px) {
+  .mobile-tabs-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .mobile-tabs-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Mobile typography scale adjustments */
+@media (max-width: 640px) {
+  h1 { font-size: 1.5rem !important; line-height: 1.3; }
+  h2 { font-size: 1.25rem !important; line-height: 1.3; }
+  h3 { font-size: 1.125rem !important; line-height: 1.4; }
 }
 
 /* Custom scrollbar */

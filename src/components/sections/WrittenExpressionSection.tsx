@@ -615,7 +615,7 @@ export default function WrittenExpressionSection() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-10"
+      className="space-y-6 sm:space-y-10"
     >
       {/* Header */}
       <SectionHeader
@@ -663,7 +663,7 @@ export default function WrittenExpressionSection() {
       {/* Audience Tabs */}
       <motion.div variants={itemVariants}>
       <Tabs value={activeAudience} onValueChange={(v) => setActiveAudience(v as TargetAudience)}>
-        <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-muted/50">
+        <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-muted/50 mobile-tabs-scroll">
           {audienceTabs.map((tab) => (
             <TabsTrigger
               key={tab.id}
@@ -671,14 +671,13 @@ export default function WrittenExpressionSection() {
               className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300"
             >
               {tab.icon}
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden text-xs">{tab.label}</span>
+              <span className="text-xs sm:text-sm">{tab.label}</span>
             </TabsTrigger>
           ))}
         </TabsList>
 
         {audienceTabs.map((tab) => (
-          <TabsContent key={tab.id} value={tab.id} className="mt-8">
+          <TabsContent key={tab.id} value={tab.id} className="mt-4 sm:mt-8">
             {/* Audience Description */}
             <Card className="border-0 shadow-sm bg-gradient-to-l from-primary/5 to-transparent mb-8">
               <CardContent className="p-4 text-center">
@@ -687,7 +686,7 @@ export default function WrittenExpressionSection() {
             </Card>
 
             {/* Topics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {topics.map((topic) => {
                 const topicContent = contentByAudience[tab.id][topic.key]
                 if (!topicContent) return null
@@ -734,7 +733,7 @@ export default function WrittenExpressionSection() {
             </div>
 
             {/* Content with TOC */}
-            <div className="flex gap-6">
+            <div className="flex gap-0 sm:gap-6">
               {/* Main Content */}
               <div className="flex-1 min-w-0 space-y-4">
               {topics.map((topic) => {
@@ -751,9 +750,9 @@ export default function WrittenExpressionSection() {
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-l from-transparent via-primary/60 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <Accordion type="single" collapsible>
                       <AccordionItem value={topic.key} className="border-0">
-                        <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                        <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline">
                           <div className="flex items-center gap-3 flex-1">
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${topicColors[topic.key] || 'bg-primary/10 text-primary'}`}>
+                            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center ${topicColors[topic.key] || 'bg-primary/10 text-primary'}`}>
                               {topic.icon}
                             </div>
                             <div className="text-right flex-1">

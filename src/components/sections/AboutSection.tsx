@@ -183,7 +183,7 @@ export default function AboutSection() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-10"
+      className="space-y-6 sm:space-y-10"
     >
       {/* Header */}
       <motion.div variants={itemVariants} className="text-center">
@@ -194,16 +194,16 @@ export default function AboutSection() {
       {/* Author Profile */}
       <motion.div variants={itemVariants}>
         <Card className="border-0 shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-l from-primary via-emerald-800 to-primary/80 h-32 sm:h-44 relative">
+          <div className="bg-gradient-to-l from-primary via-emerald-800 to-primary/80 h-24 sm:h-44 relative">
             {/* Decorative */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-4 right-8 w-20 h-20 border border-white rounded-full" />
               <div className="absolute bottom-4 left-12 w-14 h-14 border border-white rotate-45" />
             </div>
           </div>
-          <CardContent className="relative px-6 pb-8 -mt-16 sm:-mt-20">
+          <CardContent className="relative px-4 sm:px-6 pb-6 sm:pb-8 -mt-12 sm:-mt-20">
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6">
-              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl border-4 border-background overflow-hidden shadow-2xl bg-muted shrink-0">
+              <div className="w-24 h-24 sm:w-40 sm:h-40 rounded-2xl border-4 border-background overflow-hidden shadow-2xl bg-muted shrink-0">
                 <img
                   src="/images/author-portrait.png"
                   alt="صورة المؤلف"
@@ -211,7 +211,7 @@ export default function AboutSection() {
                 />
               </div>
               <div className="text-center sm:text-right flex-1 pb-2">
-                <h3 className="text-2xl font-bold mb-1">أ.د. محمد بن عبد الله</h3>
+                <h3 className="text-lg sm:text-2xl font-bold mb-1">أ.د. محمد بن عبد الله</h3>
                 <p className="text-primary font-medium mb-3">أستاذ التحرير الكتابي والشفهي</p>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                   {/* Shimmer badge effect */}

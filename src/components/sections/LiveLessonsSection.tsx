@@ -287,7 +287,7 @@ export default function LiveLessonsSection() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-10"
+      className="space-y-6 sm:space-y-10"
     >
       {/* Header */}
       <SectionHeader
@@ -300,7 +300,7 @@ export default function LiveLessonsSection() {
 
       {/* Live Now Indicator + Next Lesson Countdown */}
       <motion.div variants={itemVariants}>
-        <div className="flex flex-col sm:flex-row items-stretch gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch gap-3 sm:gap-4">
           {/* Live Now Badge */}
           <Card className="border-0 shadow-md flex-1 overflow-hidden">
             <CardContent className="p-4">
@@ -373,7 +373,7 @@ export default function LiveLessonsSection() {
               </div>
             </div>
             <CardContent className="p-0">
-              <div className="grid grid-cols-1 lg:grid-cols-3">
+              <div className="grid grid-cols-1 lg:grid-cols-3 min-h-0">
                 {/* Video Area */}
                 <div className="lg:col-span-2 bg-gradient-to-bl from-gray-900 to-black aspect-video flex items-center justify-center relative">
                   {/* Decorative grid */}
@@ -403,7 +403,7 @@ export default function LiveLessonsSection() {
                 </div>
                 
                 {/* Chat Area */}
-                <div className="border-r border-border flex flex-col h-full min-h-[300px] lg:min-h-0 bg-muted/20">
+                <div className="border-r border-border flex flex-col h-full min-h-[200px] sm:min-h-[300px] lg:min-h-0 bg-muted/20">
                   <div className="p-3 border-b border-border bg-muted/50 flex items-center justify-between">
                     <h4 className="font-medium text-sm flex items-center gap-2">
                       <MessageSquare className="h-4 w-4 text-primary" />
@@ -510,7 +510,7 @@ export default function LiveLessonsSection() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
@@ -581,7 +581,7 @@ export default function LiveLessonsSection() {
                               انضمام
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="sm:max-w-md">
+                          <DialogContent className="sm:max-w-md w-[95vw]">
                             <DialogHeader>
                               <DialogTitle>التسجيل في الدرس</DialogTitle>
                             </DialogHeader>

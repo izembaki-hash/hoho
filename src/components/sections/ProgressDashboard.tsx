@@ -473,7 +473,7 @@ export default function ProgressDashboard() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="space-y-8"
+        className="space-y-6 sm:space-y-8"
       >
         {/* ─── Header ──────────────────────────────────────────── */}
         <motion.div variants={itemVariants} className="text-center">
@@ -494,7 +494,7 @@ export default function ProgressDashboard() {
         </motion.div>
 
         {/* ─── Top Grid: Progress + Streak + Quick Actions ─────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Overall Progress Card */}
           <motion.div variants={itemVariants} className="lg:col-span-2">
             <Card className="border-0 shadow-lg overflow-hidden relative">
@@ -507,7 +507,7 @@ export default function ProgressDashboard() {
               <CardContent className="p-6 sm:p-8 relative">
                 <div className="flex flex-col sm:flex-row items-center gap-6">
                   {/* Enhanced Circular Progress */}
-                  <div className="relative w-36 h-36 shrink-0">
+                  <div className="relative w-28 h-28 sm:w-36 sm:h-36 shrink-0">
                     {/* Rotating outer ring */}
                     <motion.div
                       className="absolute inset-[-8px] rounded-full border-2 border-dashed border-primary/20"
@@ -520,7 +520,7 @@ export default function ProgressDashboard() {
                       transition={{ repeat: Infinity, duration: 40, ease: 'linear' }}
                     />
 
-                    <svg className="w-36 h-36 -rotate-90" viewBox="0 0 100 100">
+                    <svg className="w-28 h-28 sm:w-36 sm:h-36 -rotate-90" viewBox="0 0 100 100">
                       <defs>
                         <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                           <stop offset="0%" stopColor="#10b981" />
@@ -690,7 +690,7 @@ export default function ProgressDashboard() {
             <Target className="h-5 w-5 text-primary" />
             مسارات التعلّم
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {learningPaths.map((path, idx) => {
               const PathIcon = path.icon
               const pathBookmarks = path.category === 'oral-expression' ? oralBookmarks : writtenBookmarks
@@ -775,14 +775,14 @@ export default function ProgressDashboard() {
         </div>
 
         {/* ─── Middle Grid: Audience + Weekly Activity ──────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Audience Stats */}
           <motion.div variants={itemVariants} className="lg:col-span-2">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
               تقدم حسب الفئة
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               {audienceData.map((audience, idx) => {
                 const AudienceIcon = audience.icon
                 const audienceBookmarks = bookmarks.filter(b => b.includes(audience.bookmarkPrefix)).length

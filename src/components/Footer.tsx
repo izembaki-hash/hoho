@@ -71,7 +71,7 @@ export default function Footer() {
         <div className="h-1 bg-gradient-to-l from-amber-500 via-primary to-emerald-600" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           {/* Main Footer */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 py-8 sm:py-12">
             {/* Brand */}
             <div className="lg:col-span-1 space-y-4">
               <div className="flex items-center gap-3">
@@ -92,7 +92,7 @@ export default function Footer() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`w-9 h-9 rounded-full bg-background/10 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg ${link.hoverColor}`}
+                    className={`w-11 h-11 rounded-full bg-background/10 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg ${link.hoverColor}`}
                     title={link.label}
                   >
                     {link.icon}
@@ -112,7 +112,7 @@ export default function Footer() {
                   <li key={link.id}>
                     <button
                       onClick={() => handleLinkClick(link.id)}
-                      className="quick-link-hover flex items-center gap-2 text-sm text-background/60 hover:text-primary transition-all duration-300 group py-1"
+                      className="quick-link-hover flex items-center gap-2 text-sm text-background/60 hover:text-primary transition-all duration-300 group py-2 min-h-[44px]"
                     >
                       <ChevronLeft className="h-3 w-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
                       <span className="relative group-hover:pr-2 transition-all duration-300">{link.label}</span>
@@ -129,20 +129,20 @@ export default function Footer() {
                 <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-gradient-to-l from-primary to-amber-500" />
               </h3>
               <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-sm text-background/60 hover:text-background/90 transition-colors duration-300">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 text-sm text-background/60 hover:text-background/90 transition-colors duration-300 py-1">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <Mail className="h-4 w-4 text-primary" />
                   </div>
                   <span>contact@alta7reer.com</span>
                 </li>
-                <li className="flex items-center gap-3 text-sm text-background/60 hover:text-background/90 transition-colors duration-300">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 text-sm text-background/60 hover:text-background/90 transition-colors duration-300 py-1">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <Phone className="h-4 w-4 text-primary" />
                   </div>
                   <span dir="ltr">+213 555 123 456</span>
                 </li>
-                <li className="flex items-center gap-3 text-sm text-background/60 hover:text-background/90 transition-colors duration-300">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <li className="flex items-center gap-3 text-sm text-background/60 hover:text-background/90 transition-colors duration-300 py-1">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <MapPin className="h-4 w-4 text-primary" />
                   </div>
                   <span>الجزائر العاصمة، الجزائر</span>

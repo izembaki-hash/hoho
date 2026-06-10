@@ -240,7 +240,7 @@ export default function RecordedLessonsSection() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-10"
+      className="space-y-6 sm:space-y-10"
     >
       {/* Header */}
       <SectionHeader
@@ -282,7 +282,7 @@ export default function RecordedLessonsSection() {
 
       {/* Search and Filter - Enhanced styling */}
       <motion.div variants={itemVariants}>
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -318,7 +318,7 @@ export default function RecordedLessonsSection() {
       </motion.div>
 
       {/* Lessons Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         {filteredLessons.map((lesson) => (
           <motion.div key={lesson.id} variants={itemVariants}>
             <Card
@@ -368,7 +368,7 @@ export default function RecordedLessonsSection() {
                   )}
                 </button>
               </div>
-              <CardContent className="p-4">
+              <CardContent className="p-3 sm:p-4">
                 <h3 className="font-bold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                   {lesson.title}
                 </h3>
@@ -411,7 +411,7 @@ export default function RecordedLessonsSection() {
 
       {/* Lesson Detail Dialog */}
       <Dialog open={!!selectedLesson} onOpenChange={(open) => !open && setSelectedLesson(null)}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw]">
           {selectedLesson && (
             <>
               <DialogHeader>

@@ -378,7 +378,7 @@ export default function OralExpressionSection() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-10"
+      className="space-y-6 sm:space-y-10"
     >
       {/* Header */}
       <SectionHeader
@@ -392,7 +392,7 @@ export default function OralExpressionSection() {
       {/* Audience Tabs with colored underlines */}
       <motion.div variants={itemVariants}>
         <Tabs value={activeAudience} onValueChange={(v) => setActiveAudience(v as TargetAudience)}>
-          <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-muted/50">
+          <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-muted/50 mobile-tabs-scroll">
             {audienceTabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
@@ -400,14 +400,13 @@ export default function OralExpressionSection() {
                 className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 relative"
               >
                 {tab.icon}
-                <span className="hidden sm:inline">{tab.label}</span>
-                <span className="sm:hidden text-xs">{tab.label}</span>
+                <span className="text-xs sm:text-sm">{tab.label}</span>
               </TabsTrigger>
             ))}
           </TabsList>
 
           {audienceTabs.map((tab) => (
-            <TabsContent key={tab.id} value={tab.id} className="mt-8">
+            <TabsContent key={tab.id} value={tab.id} className="mt-4 sm:mt-8">
               {/* Audience Description with progress */}
               <Card className="border-0 shadow-sm bg-gradient-to-l from-teal-50 to-transparent dark:from-teal-950/20 mb-6 overflow-hidden">
                 <CardContent className="p-4">
@@ -430,7 +429,7 @@ export default function OralExpressionSection() {
               </Card>
 
               {/* Content with TOC */}
-              <div className="flex gap-6">
+              <div className="flex gap-0 sm:gap-6">
                 {/* Main Content */}
                 <div className="flex-1 min-w-0 space-y-4">
                 {Object.entries(contentByAudience[tab.id]).map(([key, section]) => {
@@ -445,9 +444,9 @@ export default function OralExpressionSection() {
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-l from-transparent via-teal-400 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <Accordion type="single" collapsible>
                       <AccordionItem value={key} className="border-0">
-                        <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                        <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline">
                           <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${sectionColors[key]}`}>
+                            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center ${sectionColors[key]}`}>
                               {sectionIcons[key]}
                             </div>
                             <div className="text-right flex-1">
@@ -481,7 +480,7 @@ export default function OralExpressionSection() {
                             </button>
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent className="px-6 pb-6">
+                        <AccordionContent className="px-4 sm:px-6 pb-4 sm:pb-6">
                           <div className="space-y-4">
                             <p className="text-muted-foreground leading-relaxed">{section.description}</p>
                             <Separator />

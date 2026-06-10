@@ -10,6 +10,9 @@ import ContentReader from '@/components/ContentReader'
 import MobileBottomNav from '@/components/MobileBottomNav'
 import SectionSkeleton from '@/components/SectionSkeleton'
 import OnboardingModal from '@/components/OnboardingModal'
+import ChatbotWidget from '@/components/ChatbotWidget'
+import GlossaryWidget from '@/components/GlossaryWidget'
+import AchievementToast from '@/components/AchievementToast'
 import HeroSection from '@/components/sections/HeroSection'
 import AboutSection from '@/components/sections/AboutSection'
 import LiveLessonsSection from '@/components/sections/LiveLessonsSection'
@@ -18,6 +21,7 @@ import OralExpressionSection from '@/components/sections/OralExpressionSection'
 import WrittenExpressionSection from '@/components/sections/WrittenExpressionSection'
 import ContactSection from '@/components/sections/ContactSection'
 import ProgressDashboard from '@/components/sections/ProgressDashboard'
+import QuizSection from '@/components/sections/QuizSection'
 import { useAppStore } from '@/lib/store'
 import { HomeIcon, ChevronLeft, Printer, Clock, HelpCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -31,6 +35,7 @@ const sectionComponents: Record<string, React.ComponentType> = {
   'written-expression': WrittenExpressionSection,
   contact: ContactSection,
   progress: ProgressDashboard,
+  quiz: QuizSection,
 }
 
 const sectionTitles: Record<string, string> = {
@@ -42,6 +47,7 @@ const sectionTitles: Record<string, string> = {
   'written-expression': 'التحرير الكتابي',
   contact: 'اتصل بنا',
   progress: 'لوحة التقدم',
+  quiz: 'اختبار المعرفة',
 }
 
 const sectionIcons: Record<string, string> = {
@@ -53,6 +59,7 @@ const sectionIcons: Record<string, string> = {
   'written-expression': '✍️',
   contact: '✉️',
   progress: '📊',
+  quiz: '🧠',
 }
 
 // Skeleton type mapping per section
@@ -65,6 +72,7 @@ const sectionSkeletonType: Record<string, 'hero' | 'content' | 'list' | 'form'> 
   'written-expression': 'content',
   contact: 'form',
   progress: 'content',
+  quiz: 'content',
 }
 
 const sectionContent: Record<string, string> = {
@@ -76,6 +84,7 @@ const sectionContent: Record<string, string> = {
   'written-expression': 'التحرير الكتابي. فنون الكتابة والتأليف من خطابة ومقال ورسائل. يشمل تعلّم فن الخطابة وكتابة المقال والتلخيص وكتابة التقرير والرسالة الإدارية والمقال التحليلي والمقال الجدلي والسيرة الذاتية والبحث العلمي. تسعة موضوعات شاملة لتطوير مهارات الكتابة. محتوى مصمم للطلبة الجامعيين والأساتذة والتلاميذ.',
   contact: 'اتصل بنا. تواصل معنا لطرح انشغالاتكم ومقترحاتكم. نحن هنا لمساعدتكم والإجابة على جميع استفساراتكم. يمكنكم التواصل عبر نموذج الاتصال أو عبر البريد الإلكتروني أو الهاتف. نلتزم بالرد على جميع الرسائل في أقرب وقت ممكن.',
   progress: 'لوحة التقدم التعليمي. تتبع تقدمك في رحلة تعلّم مهارات التحرير الكتابي والشفهي. احفظ المحتويات المهمة واستكشف جميع الأقسام وحقق الإنجازات. مسارات التعلّم تشمل أساسيات التعبير الشفهي والإلقاء الإبداعي المتقدم وأساسيات الكتابة الإبداعية والكتابة الأكاديمية والمهنية.',
+  quiz: 'اختبار المعرفة. اختبر معلوماتك في التحرير الكتابي والشفهي ومهارات التعبير. ثلاثة اختبارات متاحة: التحرير الشفهي والتحرير الكتابي والمهارات العامة. كل اختبار يتضمن عشرة أسئلة متعددة الخيارات مع مؤقت زمني وشرح تفصيلي لكل إجابة.',
 }
 
 // Estimated reading time per section (in minutes)
@@ -88,6 +97,7 @@ const readingTime: Record<string, number> = {
   'written-expression': 20,
   contact: 4,
   progress: 6,
+  quiz: 10,
 }
 
 export default function Home() {
@@ -109,6 +119,17 @@ export default function Home() {
       }
     } catch {}
   }, [])
+
+  // Track visited sections for achievements
+  useEffect(() => {
+    try {
+      const visited: string[] = JSON.parse(localStorage.getItem('alta7reer-visited-sections') || '[]')
+      if (!visited.includes(activeSection)) {
+        visited.push(activeSection)
+        localStorage.setItem('alta7reer-visited-sections', JSON.stringify(visited))
+      }
+    } catch {}
+  }, [activeSection])
 
   const handlePrint = () => {
     window.print()
@@ -175,7 +196,7 @@ export default function Home() {
           
           <div
             key={activeSection}
-            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12"
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-12"
           >
             {/* Skeleton loading */}
             {showSkeleton && (
@@ -198,6 +219,9 @@ export default function Home() {
         <Footer />
         <ContentReader content={readerContent} />
         <ScrollToTop />
+        <ChatbotWidget />
+        <GlossaryWidget />
+        <AchievementToast />
         <MobileBottomNav />
         <OnboardingModal open={onboardingOpen} onOpenChange={setOnboardingOpen} />
       </div>

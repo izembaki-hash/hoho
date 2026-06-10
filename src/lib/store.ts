@@ -9,6 +9,7 @@ export type SectionId =
   | 'written-expression' 
   | 'contact'
   | 'progress'
+  | 'quiz'
 
 interface AppState {
   activeSection: SectionId

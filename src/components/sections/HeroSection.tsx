@@ -315,7 +315,7 @@ export default function HeroSection() {
   }
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-8 sm:space-y-16">
       {/* Hero Banner with Glassmorphism + Particles + Parallax + Arabesque + Noise */}
       <motion.section 
         ref={heroRef}
@@ -349,7 +349,7 @@ export default function HeroSection() {
           <div className="absolute top-[15%] right-[10%] w-20 h-20 border border-white/50 rounded-full animate-slow-rotate" style={{ animationDuration: '22s' }} />
           <div className="absolute bottom-[15%] left-[20%] w-16 h-16 border-2 border-white/30 rotate-45 animate-slow-rotate-reverse" style={{ animationDuration: '28s' }} />
         </div>
-        <div className="relative z-20 px-6 sm:px-12 py-16 sm:py-24 min-h-[420px] flex flex-col justify-center">
+        <div className="relative z-20 px-4 sm:px-12 py-8 sm:py-24 min-h-[280px] sm:min-h-[420px] flex flex-col justify-center">
           <div className="max-w-2xl">
             <motion.div 
               initial={{ opacity: 0, x: 30 }}
@@ -364,7 +364,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight"
+              className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-5 leading-tight"
             >
               التحرير الكتابي
               <br />
@@ -374,7 +374,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-base sm:text-lg text-white/80 mb-6 leading-relaxed"
+              className="text-sm sm:text-lg text-white/80 mb-4 sm:mb-6 leading-relaxed"
             >
               منصة شاملة لتعلّم مهارات التحرير الكتابي والشفهي، مصمّمة خصيصاً للطلبة والأساتذة الجامعيين والتلاميذ. 
               اكتسب مهارات العرض والإلقاء والكتابة الإبداعية من خلال دروس مباشرة ومسجلة.
@@ -384,7 +384,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.5 }}
-              className="flex flex-wrap gap-2 mb-8"
+              className="flex flex-wrap gap-2 mb-5 sm:mb-8"
             >
               {achievements.map((a, idx) => (
                 <span key={idx} className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full ${a.color}`}>
@@ -397,7 +397,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className="flex flex-wrap gap-3"
+              className="flex flex-col xs:flex-row sm:flex-row gap-3"
             >
               <Button
                 size="lg"
@@ -436,7 +436,7 @@ export default function HeroSection() {
       >
         {/* Animated gradient background for stats section */}
         <div className="absolute inset-0 bg-gradient-to-l from-emerald-100 via-teal-50 to-amber-50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-amber-950/20 animate-gradient-shift rounded-2xl opacity-60" />
-        <div className="relative grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="relative grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {stats.map((stat, idx) => (
             <motion.div key={idx} variants={itemVariants}>
               <Card className="text-center border-0 glassmorphism-stat shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 group relative overflow-hidden">
@@ -470,8 +470,8 @@ export default function HeroSection() {
         whileInView="visible"
         viewport={{ once: true, margin: '-50px' }}
       >
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">لماذا تختار منصتنا؟</h2>
+        <div className="text-center mb-6 sm:mb-10">
+          <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">لماذا تختار منصتنا؟</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             نقدم تجربة تعليمية فريدة تجمع بين المحتوى الأكاديمي الرصين والتفاعل المباشر
           </p>
@@ -480,7 +480,7 @@ export default function HeroSection() {
         <div className="relative">
           {/* Timeline connecting line (visible on sm+ screens) */}
           <div className="hidden sm:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-l from-transparent via-emerald-300/30 dark:via-emerald-700/20 to-transparent -translate-y-1/2 z-0" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 relative z-10">
             {features.map((feature, idx) => (
               <motion.div key={idx} variants={itemVariants}>
                 <div className="feature-gradient-border feature-icon-hover h-full rounded-lg">
@@ -520,13 +520,13 @@ export default function HeroSection() {
         whileInView="visible"
         viewport={{ once: true, margin: '-50px' }}
       >
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">استكشف أقسام الموقع</h2>
+        <div className="text-center mb-6 sm:mb-10">
+          <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">استكشف أقسام الموقع</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             اختر القسم الذي يناسب اهتماماتك وابدأ رحلتك التعليمية في عالم التحرير الكتابي والشفهي
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {sectionCards.map((card) => (
             <motion.div key={card.id} variants={itemVariants}>
               <SpotlightCard
@@ -536,7 +536,7 @@ export default function HeroSection() {
                 <Card className="group border-0 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden card-glow-hover card-dots-pattern">
                   <CardContent className="p-0 relative z-10">
                     <div className={`h-1.5 bg-gradient-to-l ${card.color}`} />
-                    <div className={`${card.bgPattern} p-6`}>
+                    <div className={`${card.bgPattern} p-4 sm:p-6`}>
                       <div className="flex items-start justify-between mb-4">
                         <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${card.color} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-500`}>
                           {card.icon}
@@ -584,13 +584,13 @@ export default function HeroSection() {
       >
         {/* Subtle background gradient for testimonials section */}
         <div className="absolute inset-0 -m-4 bg-gradient-to-b from-emerald-50/50 via-transparent to-amber-50/50 dark:from-emerald-950/20 dark:via-transparent dark:to-amber-950/20 rounded-3xl" />
-        <div className="relative text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">ماذا يقول طلابنا؟</h2>
+        <div className="relative text-center mb-6 sm:mb-10">
+          <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">ماذا يقول طلابنا؟</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             آراء حقيقية من مستخدمي المنصة الذين استفادوا من المحتوى التعليمي
           </p>
         </div>
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {testimonials.map((testimonial, idx) => (
             <motion.div key={idx} variants={itemVariants}>
               <TiltCard>

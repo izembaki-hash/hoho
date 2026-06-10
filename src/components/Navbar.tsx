@@ -5,7 +5,7 @@ import { useAppStore, type SectionId } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { Menu, BookOpen, Mic, Pen, Video, User, Mail, Home, Sun, Moon, Search, BarChart3, ChevronLeft } from 'lucide-react'
+import { Menu, BookOpen, Mic, Pen, Video, User, Mail, Home, Sun, Moon, Search, BarChart3, ChevronLeft, Brain } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navItems: { id: SectionId; label: string; icon: React.ReactNode; description: string }[] = [
@@ -15,6 +15,7 @@ const navItems: { id: SectionId; label: string; icon: React.ReactNode; descripti
   { id: 'recorded-lessons', label: 'دروس مسجلة', icon: <BookOpen className="h-4 w-4" />, description: 'مكتبة دروس مسجلة مع مرفقات تعليمية' },
   { id: 'oral-expression', label: 'التحرير الشفهي', icon: <Mic className="h-4 w-4" />, description: 'مهارات العرض والتعبير الشفهي والإلقاء' },
   { id: 'written-expression', label: 'التحرير الكتابي', icon: <Pen className="h-4 w-4" />, description: 'فنون الكتابة والتأليف والتعبير الكتابي' },
+  { id: 'quiz', label: 'اختبار المعرفة', icon: <Brain className="h-4 w-4" />, description: 'اختبر معلوماتك في التحرير الكتابي والشفهي' },
   { id: 'contact', label: 'اتصل بنا', icon: <Mail className="h-4 w-4" />, description: 'تواصل معنا لطرح استفساراتكم' },
   { id: 'progress', label: 'لوحة التقدم', icon: <BarChart3 className="h-4 w-4" />, description: 'تتبع تقدمك التعليمي وإنجازاتك' },
 ]
@@ -173,7 +174,7 @@ export default function Navbar() {
             </div>
 
             {/* Mobile: Search + Theme Toggle + Menu */}
-            <div className="flex items-center gap-1 lg:hidden">
+            <div className="flex items-center gap-2 lg:hidden">
               <Button
                 variant="ghost"
                 size="icon"
@@ -203,7 +204,7 @@ export default function Navbar() {
                     <span className="sr-only">فتح القائمة</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-80 p-0 overflow-hidden">
+                <SheetContent side="right" className="w-[85vw] max-w-sm p-0 overflow-hidden">
                   <SheetTitle className="sr-only">قائمة التنقل</SheetTitle>
                   <div className="flex flex-col h-full">
                     {/* Gradient header with decorative elements */}
@@ -224,7 +225,7 @@ export default function Navbar() {
                         <button
                           key={item.id}
                           onClick={() => handleNavClick(item.id)}
-                          className={`mobile-menu-stagger-item relative flex items-center gap-3 w-full px-6 py-3.5 text-right transition-all duration-300 overflow-hidden group ${
+                          className={`mobile-menu-stagger-item relative flex items-center gap-3 w-full px-5 py-4 text-right transition-all duration-300 overflow-hidden group min-h-[52px] ${
                             activeSection === item.id
                               ? 'bg-primary text-primary-foreground'
                               : 'text-foreground hover:bg-accent'

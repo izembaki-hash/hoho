@@ -114,6 +114,12 @@ export default function ContentReader({ content }: ContentReaderProps) {
       await audio.play()
       setPlayerState('playing')
       startProgressTracking()
+
+      // Track TTS usage for achievements
+      try {
+        localStorage.setItem('tts-used', 'true')
+        window.dispatchEvent(new Event('tts-used'))
+      } catch {}
     } catch (err) {
       setError(err instanceof Error ? err.message : 'حدث خطأ غير متوقع')
       setPlayerState('idle')
