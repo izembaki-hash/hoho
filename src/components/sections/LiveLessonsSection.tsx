@@ -14,7 +14,7 @@ import ShareButton from '@/components/ShareButton'
 import { 
   Video, Calendar, Clock, Users, Radio, Plus, CheckCircle, 
   MessageSquare, Phone, Mail, User, Bookmark, BookmarkCheck,
-  Send, AlertCircle, Eye 
+  Send, AlertCircle, Eye, Timer, UsersRound, Zap, CircleDot
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -27,6 +27,7 @@ interface LiveLesson {
   isLive: boolean
   category: string
   instructor: string
+  participants?: number
 }
 
 const sampleLessons: LiveLesson[] = [
@@ -39,6 +40,7 @@ const sampleLessons: LiveLesson[] = [
     isLive: false,
     category: 'شفهي',
     instructor: 'أ.د. محمد بن عبد الله',
+    participants: 45,
   },
   {
     id: '2',
@@ -49,6 +51,7 @@ const sampleLessons: LiveLesson[] = [
     isLive: false,
     category: 'شفهي',
     instructor: 'أ.د. محمد بن عبد الله',
+    participants: 32,
   },
   {
     id: '3',
@@ -59,6 +62,7 @@ const sampleLessons: LiveLesson[] = [
     isLive: false,
     category: 'كتابي',
     instructor: 'أ.د. محمد بن عبد الله',
+    participants: 58,
   },
   {
     id: '4',
@@ -69,6 +73,7 @@ const sampleLessons: LiveLesson[] = [
     isLive: false,
     category: 'كتابي',
     instructor: 'أ.د. محمد بن عبد الله',
+    participants: 27,
   },
   {
     id: '5',
@@ -79,6 +84,7 @@ const sampleLessons: LiveLesson[] = [
     isLive: false,
     category: 'كتابي',
     instructor: 'أ.د. محمد بن عبد الله',
+    participants: 41,
   },
 ]
 
@@ -87,6 +93,7 @@ const liveLesson = {
   description: 'بث مباشر حول تقنيات الإلقاء الإبداعي وكيفية تطوير مهارات العرض التقديمي',
   instructor: 'أ.د. محمد بن عبد الله',
   viewers: 127,
+  participants: 89,
 }
 
 function formatDate(dateStr: string) {
@@ -114,6 +121,53 @@ function getDaysUntil(dateStr: string) {
   if (diff <= 0) return 'اليوم'
   if (diff === 1) return 'غداً'
   return `بعد ${diff} أيام`
+}
+
+// Countdown timer component for next lesson
+function CountdownTimer({ targetDate }: { targetDate: string }) {
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 })
+
+  useEffect(() => {
+    const calculateTime = () => {
+      const now = new Date().getTime()
+      const target = new Date(targetDate).getTime()
+      const diff = target - now
+      
+      if (diff <= 0) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 })
+        return
+      }
+      
+      setTimeLeft({
+        hours: Math.floor(diff / (1000 * 60 * 60)),
+        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((diff % (1000 * 60)) / 1000),
+      })
+    }
+    
+    calculateTime()
+    const interval = setInterval(calculateTime, 1000)
+    return () => clearInterval(interval)
+  }, [targetDate])
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <Timer className="h-4 w-4 text-amber-500" />
+      <div className="flex items-center gap-1 font-mono text-sm">
+        <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded text-xs font-bold min-w-[28px] text-center">
+          {String(timeLeft.hours).padStart(2, '0')}
+        </span>
+        <span className="text-amber-500 font-bold">:</span>
+        <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded text-xs font-bold min-w-[28px] text-center">
+          {String(timeLeft.minutes).padStart(2, '0')}
+        </span>
+        <span className="text-amber-500 font-bold">:</span>
+        <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded text-xs font-bold min-w-[28px] text-center">
+          {String(timeLeft.seconds).padStart(2, '0')}
+        </span>
+      </div>
+    </div>
+  )
 }
 
 const containerVariants = {
@@ -150,21 +204,42 @@ export default function LiveLessonsSection() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const { bookmarks, toggleBookmark, isBookmarked } = useAppStore()
-  const [chatMessages, setChatMessages] = useState<{ user: string; message: string }[]>([
-    { user: 'أحمد', message: 'السلام عليكم، درس مفيد جداً' },
-    { user: 'فاطمة', message: 'هل يمكن شرح نقطة لغة الجسد بالتفصيل؟' },
-    { user: 'الأستاذ', message: 'أهلاً وسهلاً، سنخصص وقتاً لذلك إن شاء الله' },
+  const [chatMessages, setChatMessages] = useState<{ user: string; message: string; time?: string }[]>([
+    { user: 'أحمد', message: 'السلام عليكم، درس مفيد جداً', time: '14:32' },
+    { user: 'فاطمة', message: 'هل يمكن شرح نقطة لغة الجسد بالتفصيل؟', time: '14:33' },
+    { user: 'الأستاذ', message: 'أهلاً وسهلاً، سنخصص وقتاً لذلك إن شاء الله', time: '14:34' },
+    { user: 'يوسف', message: 'شكراً أستاذ، هل هناك تمارين تطبيقية؟', time: '14:35' },
+    { user: 'سارة', message: 'أنا مهتمة أيضاً بالتمارين العملية 📝', time: '14:36' },
   ])
   const [newMessage, setNewMessage] = useState('')
   const [showTyping, setShowTyping] = useState(false)
+  const [onlineCount, setOnlineCount] = useState(127)
+
+  // Simulate online count fluctuation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOnlineCount(prev => prev + Math.floor(Math.random() * 5) - 2)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   // Show typing indicator briefly after sending a message
   useEffect(() => {
-    if (chatMessages.length > 3 && chatMessages[chatMessages.length - 1].user === 'أنت') {
+    if (chatMessages.length > 5 && chatMessages[chatMessages.length - 1].user === 'أنت') {
       setShowTyping(true)
       const timer = setTimeout(() => {
         setShowTyping(false)
-        setChatMessages(prev => [...prev, { user: 'الأستاذ', message: 'شكراً لمشاركتك! سأكون سعيداً بالإجابة على أسئلتك.' }])
+        const responses = [
+          'شكراً لمشاركتك! سأكون سعيداً بالإجابة على أسئلتك.',
+          'سؤال مهم! دعني أوضح لك هذه النقطة.',
+          'ممتاز! هذا يدل على فهمك العميق للموضوع.',
+          'أشكرك على تفاعلك، سنناقش هذا بالتفصيل.',
+        ]
+        setChatMessages(prev => [...prev, { 
+          user: 'الأستاذ', 
+          message: responses[Math.floor(Math.random() * responses.length)],
+          time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+        }])
       }, 2000)
       return () => clearTimeout(timer)
     }
@@ -199,7 +274,11 @@ export default function LiveLessonsSection() {
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return
-    setChatMessages(prev => [...prev, { user: 'أنت', message: newMessage }])
+    setChatMessages(prev => [...prev, { 
+      user: 'أنت', 
+      message: newMessage,
+      time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+    }])
     setNewMessage('')
   }
 
@@ -219,14 +298,78 @@ export default function LiveLessonsSection() {
         shareTitle="دروس مباشرة - التحرير الكتابي والشفهي"
       />
 
+      {/* Live Now Indicator + Next Lesson Countdown */}
+      <motion.div variants={itemVariants}>
+        <div className="flex flex-col sm:flex-row items-stretch gap-4">
+          {/* Live Now Badge */}
+          <Card className="border-0 shadow-md flex-1 overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                  <div className="w-3 h-3 rounded-full bg-red-500 absolute top-0 left-0 animate-ping" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-red-600 dark:text-red-400">بث مباشر الآن</span>
+                    <Badge variant="destructive" className="text-[10px] px-1.5 py-0 animate-pulse">
+                      <Radio className="h-2.5 w-2.5 ml-0.5" />
+                      LIVE
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">{liveLesson.title}</p>
+                </div>
+                <div className="mr-auto flex items-center gap-2">
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <UsersRound className="h-3.5 w-3.5 text-red-500" />
+                    <span className="font-bold text-red-600 dark:text-red-400">{onlineCount}</span>
+                    <span>مشاهد</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Countdown to Next Lesson */}
+          <Card className="border-0 shadow-md flex-1 overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Zap className="h-4 w-4 text-amber-500" />
+                    <span className="font-medium text-sm">الدرس القادم</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{sampleLessons[0].title}</p>
+                </div>
+                <CountdownTimer targetDate={sampleLessons[0].scheduledAt} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </motion.div>
+
       {/* Live Stream with Glowing Border */}
       <motion.div variants={itemVariants}>
         <div className="animate-glow-pulse rounded-2xl" style={{ '--glow-color': 'rgba(239, 68, 68, 0.4)' } as React.CSSProperties}>
           <Card className="border-0 shadow-xl overflow-hidden">
             <div className="bg-gradient-to-l from-red-600 to-red-800 p-1.5">
-              <div className="flex items-center justify-center gap-2 text-white text-sm font-medium">
-                <Radio className="h-4 w-4 animate-pulse" />
-                <span>بث مباشر الآن</span>
+              <div className="flex items-center justify-between text-white text-sm font-medium px-2">
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <CircleDot className="h-4 w-4 animate-pulse" />
+                  </div>
+                  <span>بث مباشر الآن</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1 text-xs">
+                    <Users className="h-3 w-3" />
+                    {liveLesson.participants} مشارك
+                  </div>
+                  <div className="flex items-center gap-1 text-xs">
+                    <Eye className="h-3 w-3" />
+                    {onlineCount} مشاهد
+                  </div>
+                </div>
               </div>
             </div>
             <CardContent className="p-0">
@@ -235,6 +378,8 @@ export default function LiveLessonsSection() {
                 <div className="lg:col-span-2 bg-gradient-to-bl from-gray-900 to-black aspect-video flex items-center justify-center relative">
                   {/* Decorative grid */}
                   <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                  {/* Animated gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   <div className="text-center text-white relative z-10">
                     <div className="w-20 h-20 rounded-full bg-red-600/30 flex items-center justify-center mx-auto mb-4 animate-pulse">
                       <Video className="h-10 w-10" />
@@ -252,19 +397,25 @@ export default function LiveLessonsSection() {
                   <div className="absolute top-4 left-4 flex items-center gap-2">
                     <Badge variant="destructive" className="gap-1 bg-red-600">
                       <Eye className="h-3 w-3" />
-                      {liveLesson.viewers} مشاهد
+                      {onlineCount} مشاهد
                     </Badge>
                   </div>
                 </div>
                 
-                {/* Chat Area with slide-in animation */}
+                {/* Chat Area */}
                 <div className="border-r border-border flex flex-col h-full min-h-[300px] lg:min-h-0 bg-muted/20">
                   <div className="p-3 border-b border-border bg-muted/50 flex items-center justify-between">
                     <h4 className="font-medium text-sm flex items-center gap-2">
                       <MessageSquare className="h-4 w-4 text-primary" />
                       المحادثة المباشرة
                     </h4>
-                    <Badge variant="secondary" className="text-xs">{chatMessages.length} رسالة</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs">{chatMessages.length} رسالة</Badge>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] text-muted-foreground">{liveLesson.participants} متصل</span>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex-1 overflow-y-auto p-3 space-y-3 max-h-[300px] custom-scrollbar">
                     <AnimatePresence initial={false}>
@@ -280,12 +431,21 @@ export default function LiveLessonsSection() {
                             msg.user === 'أنت' 
                               ? 'bg-primary text-primary-foreground rounded-br-none' 
                               : msg.user === 'الأستاذ'
-                              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-foreground rounded-bl-none'
+                              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-foreground rounded-bl-none border border-emerald-200 dark:border-emerald-800'
                               : 'bg-muted rounded-bl-none'
                           }`}>
-                            <span className={`font-medium text-xs block mb-0.5 ${
-                              msg.user === 'أنت' ? 'text-primary-foreground/70' : 'text-primary'
-                            }`}>{msg.user}</span>
+                            <div className="flex items-center gap-1.5 mb-0.5">
+                              <span className={`font-medium text-xs ${
+                                msg.user === 'أنت' ? 'text-primary-foreground/70' 
+                                : msg.user === 'الأستاذ' ? 'text-emerald-600 dark:text-emerald-400' 
+                                : 'text-primary'
+                              }`}>{msg.user}</span>
+                              {msg.time && (
+                                <span className={`text-[9px] ${
+                                  msg.user === 'أنت' ? 'text-primary-foreground/50' : 'text-muted-foreground/50'
+                                }`}>{msg.time}</span>
+                              )}
+                            </div>
                             <span>{msg.message}</span>
                           </div>
                         </motion.div>
@@ -325,14 +485,18 @@ export default function LiveLessonsSection() {
 
       {/* Upcoming Lessons Schedule */}
       <motion.div variants={itemVariants}>
-        <Card className="border-0 shadow-md">
+        <Card className="border-0 shadow-md overflow-hidden">
+          <div className="h-1 bg-gradient-to-l from-primary via-amber-500 to-primary" />
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                   <Calendar className="h-5 w-5" />
                 </div>
-                <CardTitle className="text-xl">جدول الدروس القادمة</CardTitle>
+                <div>
+                  <CardTitle className="text-xl">جدول الدروس القادمة</CardTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5">{sampleLessons.length} درس قادم</p>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 {bookmarks.length > 0 && (
@@ -349,19 +513,20 @@ export default function LiveLessonsSection() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-right">الدرس</TableHead>
-                    <TableHead className="text-right hidden sm:table-cell">التاريخ</TableHead>
-                    <TableHead className="text-right hidden md:table-cell">الوقت</TableHead>
-                    <TableHead className="text-right hidden md:table-cell">المدة</TableHead>
-                    <TableHead className="text-right hidden lg:table-cell">التصنيف</TableHead>
-                    <TableHead className="text-right hidden lg:table-cell">موعد</TableHead>
-                    <TableHead className="text-right">التسجيل</TableHead>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="text-right font-bold">الدرس</TableHead>
+                    <TableHead className="text-right hidden sm:table-cell font-bold">التاريخ</TableHead>
+                    <TableHead className="text-right hidden md:table-cell font-bold">الوقت</TableHead>
+                    <TableHead className="text-right hidden md:table-cell font-bold">المدة</TableHead>
+                    <TableHead className="text-right hidden lg:table-cell font-bold">التصنيف</TableHead>
+                    <TableHead className="text-right hidden lg:table-cell font-bold">موعد</TableHead>
+                    <TableHead className="text-right hidden lg:table-cell font-bold">المشاركون</TableHead>
+                    <TableHead className="text-right font-bold">التسجيل</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sampleLessons.map((lesson) => (
-                    <TableRow key={lesson.id} className="group">
+                  {sampleLessons.map((lesson, idx) => (
+                    <TableRow key={lesson.id} className={`group ${idx % 2 === 0 ? 'bg-background' : 'bg-muted/20'} hover:bg-primary/5 transition-colors`}>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <button
@@ -395,6 +560,12 @@ export default function LiveLessonsSection() {
                           {getDaysUntil(lesson.scheduledAt)}
                         </Badge>
                       </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Users className="h-3 w-3" />
+                          {lesson.participants || 0} مسجل
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <Dialog open={registerDialogOpen && selectedLesson?.id === lesson.id} onOpenChange={(open) => {
                           if (!open) { setRegisterDialogOpen(false); setSelectedLesson(null); setSubmitSuccess(false); }
@@ -415,27 +586,71 @@ export default function LiveLessonsSection() {
                               <DialogTitle>التسجيل في الدرس</DialogTitle>
                             </DialogHeader>
                             {submitSuccess ? (
-                              <div className="flex flex-col items-center py-8 gap-3">
+                              <motion.div 
+                                className="flex flex-col items-center py-8 gap-3"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                              >
                                 <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+                                  initial={{ scale: 0, rotate: -180 }}
+                                  animate={{ scale: 1, rotate: 0 }}
+                                  transition={{ type: 'spring', stiffness: 200, damping: 10, delay: 0.1 }}
+                                  className="w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center"
                                 >
-                                  <CheckCircle className="h-16 w-16 text-emerald-500" />
+                                  <CheckCircle className="h-10 w-10 text-emerald-500" />
                                 </motion.div>
-                                <h3 className="text-lg font-bold">تم التسجيل بنجاح!</h3>
-                                <p className="text-sm text-muted-foreground text-center">
+                                <motion.h3 
+                                  className="text-xl font-bold text-emerald-700 dark:text-emerald-400"
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: 0.3 }}
+                                >
+                                  تم التسجيل بنجاح!
+                                </motion.h3>
+                                <motion.p 
+                                  className="text-sm text-muted-foreground text-center"
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: 0.5 }}
+                                >
                                   سيتم إرسال رابط الدرس إلى بريدك الإلكتروني قبل الموعد المحدد
-                                </p>
-                              </div>
+                                </motion.p>
+                                {/* Confetti-like dots */}
+                                <motion.div 
+                                  className="flex gap-2 mt-2"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: 0.7 }}
+                                >
+                                  {['bg-emerald-400', 'bg-amber-400', 'bg-primary', 'bg-teal-400', 'bg-red-400'].map((color, i) => (
+                                    <motion.div
+                                      key={i}
+                                      className={`w-2 h-2 rounded-full ${color}`}
+                                      initial={{ y: 0 }}
+                                      animate={{ y: [-5, 5, -3, 0] }}
+                                      transition={{ delay: 0.8 + i * 0.1, duration: 0.6 }}
+                                    />
+                                  ))}
+                                </motion.div>
+                              </motion.div>
                             ) : (
                               <>
-                                <div className="p-3 rounded-lg bg-muted/50 mb-4">
+                                <div className="p-4 rounded-xl bg-gradient-to-l from-primary/5 to-emerald-50 dark:from-primary/10 dark:to-emerald-950/30 border border-primary/10 mb-4">
                                   <div className="flex items-center gap-2 mb-1">
                                     <AlertCircle className="h-4 w-4 text-primary" />
-                                    <p className="text-sm font-medium">{selectedLesson?.title}</p>
+                                    <p className="text-sm font-bold">{selectedLesson?.title}</p>
                                   </div>
-                                  <p className="text-xs text-muted-foreground mr-6">{selectedLesson && formatDate(selectedLesson.scheduledAt)}</p>
+                                  <div className="flex items-center gap-3 mr-6 mt-2 text-xs text-muted-foreground">
+                                    <span className="flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      {selectedLesson && formatDate(selectedLesson.scheduledAt)}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                      <Clock className="h-3 w-3" />
+                                      {selectedLesson?.duration} دقيقة
+                                    </span>
+                                  </div>
                                 </div>
                                 <div className="space-y-4">
                                   <div className="space-y-2">
@@ -448,6 +663,7 @@ export default function LiveLessonsSection() {
                                       value={formData.name}
                                       onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                                       placeholder="أدخل اسمك الكامل"
+                                      className="focus:ring-2 focus:ring-primary/20 transition-all"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -462,6 +678,7 @@ export default function LiveLessonsSection() {
                                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                                       placeholder="example@email.com"
                                       dir="ltr"
+                                      className="focus:ring-2 focus:ring-primary/20 transition-all"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -475,6 +692,7 @@ export default function LiveLessonsSection() {
                                       onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                                       placeholder="+213 XXX XXX XXX"
                                       dir="ltr"
+                                      className="focus:ring-2 focus:ring-primary/20 transition-all"
                                     />
                                   </div>
                                 </div>
@@ -485,7 +703,7 @@ export default function LiveLessonsSection() {
                                   <Button 
                                     onClick={handleRegister} 
                                     disabled={isSubmitting || !formData.name || !formData.email}
-                                    className="gap-2"
+                                    className="gap-2 bg-gradient-to-l from-primary to-emerald-700 hover:from-primary/90 hover:to-emerald-700/90"
                                   >
                                     {isSubmitting ? (
                                       <span className="animate-spin">⏳</span>

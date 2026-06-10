@@ -2,8 +2,9 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { BookOpen, Award, GraduationCap, Briefcase, Quote, Clock, Globe, Users } from 'lucide-react'
+import { BookOpen, Award, GraduationCap, Briefcase, Quote, Clock, Globe, Users, Download, FileText, ChevronLeft } from 'lucide-react'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 
@@ -27,6 +28,7 @@ const authorWorks = [
     year: '2023',
     description: 'مؤلف شامل يتناول أسس وقواعد التحرير الكتابي مع تطبيقات عملية ونماذج محللة',
     color: 'bg-emerald-500',
+    hoverBg: 'hover:bg-emerald-50 dark:hover:bg-emerald-950/20',
   },
   {
     title: 'مهارات العرض الشفهي والإلقاء',
@@ -34,6 +36,7 @@ const authorWorks = [
     year: '2022',
     description: 'دليل متكامل لتطوير مهارات التحدث أمام الجمهور والإقناع الصوتي',
     color: 'bg-teal-500',
+    hoverBg: 'hover:bg-teal-50 dark:hover:bg-teal-950/20',
   },
   {
     title: 'دليل التعبير الإداري والمهني',
@@ -41,6 +44,7 @@ const authorWorks = [
     year: '2021',
     description: 'مرجع عملي لكتابة الرسائل الإدارية والتقارير والمحاضر بأسلوب احترافي',
     color: 'bg-amber-500',
+    hoverBg: 'hover:bg-amber-50 dark:hover:bg-amber-950/20',
   },
   {
     title: 'علامات الترقيم في اللغة العربية',
@@ -48,6 +52,7 @@ const authorWorks = [
     year: '2020',
     description: 'بحث أكاديمي معمّق حول قواعد واستخدامات علامات الترقيم في الكتابة العربية',
     color: 'bg-primary',
+    hoverBg: 'hover:bg-primary/5 dark:hover:bg-primary/10',
   },
   {
     title: 'الخطابة فنّاً وأداءً',
@@ -55,6 +60,7 @@ const authorWorks = [
     year: '2019',
     description: 'دراسة في فن الخطابة العربية من الجذور التاريخية إلى الممارسة المعاصرة',
     color: 'bg-red-500',
+    hoverBg: 'hover:bg-red-50 dark:hover:bg-red-950/20',
   },
 ]
 
@@ -67,17 +73,25 @@ const timeline = [
   { year: '2024', event: 'إطلاق موقع التحرير الكتابي والشفهي', icon: <Award className="h-4 w-4" /> },
 ]
 
-// Draw-in timeline component
+const skills = [
+  { name: 'التحرير الكتابي', level: 95, color: 'from-emerald-500 to-emerald-600' },
+  { name: 'التعبير الشفهي', level: 90, color: 'from-teal-500 to-teal-600' },
+  { name: 'الخطابة والإقناع', level: 92, color: 'from-amber-500 to-amber-600' },
+  { name: 'البحث العلمي', level: 88, color: 'from-primary to-emerald-700' },
+  { name: 'تقنيات التعليم', level: 80, color: 'from-purple-500 to-purple-600' },
+]
+
+// Draw-in timeline component with enhanced animation
 function DrawInTimeline({ items }: { items: typeof timeline }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(containerRef, { once: true, margin: '-50px' })
 
   return (
     <div ref={containerRef} className="relative">
-      {/* Timeline line with draw-in animation */}
-      <div className="absolute right-5 top-0 bottom-0 w-0.5 bg-primary/20">
+      {/* Timeline line with draw-in animation and gradient */}
+      <div className="absolute right-5 top-0 bottom-0 w-0.5 bg-primary/10 rounded-full">
         <motion.div
-          className="absolute top-0 left-0 right-0 bg-primary/60 origin-top"
+          className="absolute top-0 left-0 right-0 rounded-full bg-gradient-to-b from-primary via-primary/60 to-primary/20 origin-top"
           initial={{ height: 0 }}
           animate={isInView ? { height: '100%' } : { height: 0 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
@@ -90,19 +104,51 @@ function DrawInTimeline({ items }: { items: typeof timeline }) {
             initial={{ opacity: 0, x: -20 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
             transition={{ delay: 0.2 + idx * 0.15, duration: 0.5, ease: 'easeOut' }}
-            className="flex items-start gap-4 relative"
+            className="flex items-start gap-4 relative group"
           >
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 z-10 shadow-md">
+            <motion.div 
+              className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 z-10 shadow-md group-hover:scale-110 group-hover:shadow-lg transition-all duration-300"
+              whileHover={{ scale: 1.1 }}
+            >
               {item.icon}
-            </div>
-            <div className="flex-1 pt-2">
+            </motion.div>
+            {/* Animated dot pulse */}
+            <motion.div
+              className="absolute right-[18px] top-[18px] w-4 h-4 rounded-full bg-primary/20 z-0"
+              animate={isInView ? { scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] } : {}}
+              transition={{ delay: 0.5 + idx * 0.15, duration: 2, repeat: Infinity }}
+            />
+            <div className="flex-1 pt-2 group-hover:translate-x-1 transition-transform duration-300">
               <div className="flex items-center gap-2 mb-1">
-                <Badge variant="outline" className="text-xs font-bold">{item.year}</Badge>
+                <Badge variant="outline" className="text-xs font-bold border-primary/30">{item.year}</Badge>
               </div>
-              <p className="text-sm text-muted-foreground">{item.event}</p>
+              <p className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">{item.event}</p>
             </div>
           </motion.div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Skill bar component
+function SkillBar({ name, level, color, delay }: { name: string; level: number; color: string; delay: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, margin: '-20px' })
+
+  return (
+    <div ref={ref} className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">{name}</span>
+        <span className="text-xs text-muted-foreground font-mono">{level}%</span>
+      </div>
+      <div className="h-2 rounded-full bg-muted overflow-hidden">
+        <motion.div
+          className={`h-full rounded-full bg-gradient-to-l ${color}`}
+          initial={{ width: 0 }}
+          animate={isInView ? { width: `${level}%` } : { width: 0 }}
+          transition={{ duration: 1, delay, ease: 'easeOut' }}
+        />
       </div>
     </div>
   )
@@ -116,9 +162,13 @@ function AchievementCard({ icon, value, label, color, bgColor }: { icon: React.R
         {/* Expanding background on hover */}
         <div className={`absolute inset-0 ${bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
         <div className="relative z-10">
-          <div className={`w-14 h-14 rounded-2xl ${bgColor} flex items-center justify-center mx-auto mb-3 ${color} group-hover:scale-110 transition-transform duration-500`}>
+          <motion.div 
+            className={`w-14 h-14 rounded-2xl ${bgColor} flex items-center justify-center mx-auto mb-3 ${color} group-hover:scale-110 transition-transform duration-500`}
+            whileHover={{ rotate: [0, -5, 5, 0] }}
+            transition={{ duration: 0.4 }}
+          >
             {icon}
-          </div>
+          </motion.div>
           <div className={`text-3xl font-bold ${color} mb-1`}>{value}</div>
           <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">{label}</div>
         </div>
@@ -181,15 +231,22 @@ export default function AboutSection() {
                     <span className="relative z-10">باحث وأديب</span>
                   </Badge>
                 </div>
+                {/* Download CV Button */}
+                <div className="mt-4 flex justify-center sm:justify-start">
+                  <Button variant="outline" size="sm" className="gap-2 hover:bg-primary hover:text-primary-foreground transition-all duration-300">
+                    <Download className="h-4 w-4" />
+                    تحميل السيرة الذاتية
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* Biography */}
+      {/* Biography with Decorative Quote */}
       <motion.div variants={itemVariants}>
-        <Card className="border-0 shadow-md">
+        <Card className="border-0 shadow-md overflow-hidden">
           <CardContent className="p-6 sm:p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -207,6 +264,22 @@ export default function AboutSection() {
                 شارك في العديد من المؤتمرات العلمية الدولية والوطنية، وأشرف على عشرات المذكرات والرسائل الجامعية. 
                 نشر أبحاثاً في مجلات محكّمة متخصصة، وألّف كتباً في مجالات التحرير والبلاغة والتواصل الفعّال.
               </p>
+              
+              {/* Decorative Quote / Philosophy */}
+              <div className="relative my-6 p-6 rounded-xl bg-gradient-to-l from-primary/5 via-emerald-50/50 to-amber-50/50 dark:from-primary/10 dark:via-emerald-950/20 dark:to-amber-950/20 border border-primary/10">
+                {/* Decorative quote marks */}
+                <div className="absolute top-2 right-4 text-6xl text-primary/10 font-serif leading-none">❝</div>
+                <div className="absolute bottom-2 left-4 text-6xl text-primary/10 font-serif leading-none rotate-180">❝</div>
+                <blockquote className="relative z-10 text-center">
+                  <p className="text-lg font-medium text-foreground leading-relaxed italic">
+                    إتقان مهارات التعبير الكتابي والشفهي هو مفتاح النجاح في الحياة الأكاديمية والمهنية
+                  </p>
+                  <footer className="mt-3 text-sm text-muted-foreground">
+                    — أ.د. محمد بن عبد الله
+                  </footer>
+                </blockquote>
+              </div>
+              
               <p>
                 يؤمن بأن إتقان مهارات التعبير الكتابي والشفهي هو مفتاح النجاح في الحياة الأكاديمية والمهنية، 
                 وسعى من خلال هذا الموقع إلى إتاحة محتوى تعليمي نوعي لكل فئات المتعلمين.
@@ -243,6 +316,32 @@ export default function AboutSection() {
         </div>
       </motion.div>
 
+      {/* Skills / Expertise Level */}
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-md overflow-hidden">
+          <div className="h-1 bg-gradient-to-l from-primary via-emerald-500 to-amber-500" />
+          <CardContent className="p-6 sm:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <FileText className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-bold">مجالات الخبرة</h3>
+            </div>
+            <div className="space-y-4 max-w-lg">
+              {skills.map((skill, idx) => (
+                <SkillBar
+                  key={skill.name}
+                  name={skill.name}
+                  level={skill.level}
+                  color={skill.color}
+                  delay={0.2 + idx * 0.15}
+                />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
       {/* Academic Timeline with Draw-in Animation */}
       <motion.div variants={itemVariants}>
         <Card className="border-0 shadow-md">
@@ -276,10 +375,12 @@ export default function AboutSection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.08, duration: 0.4 }}
-                  className="flex items-start gap-4 p-4 rounded-xl hover:bg-muted/50 transition-all duration-300 group"
+                  className={`flex items-start gap-4 p-4 rounded-xl ${work.hoverBg} transition-all duration-300 group relative overflow-hidden`}
                 >
-                  <div className={`w-1 h-12 rounded-full ${work.color} shrink-0 mt-1 group-hover:h-14 transition-all`} />
-                  <div className="flex-1 min-w-0">
+                  {/* Hover background glow */}
+                  <div className={`absolute inset-0 ${work.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                  <div className={`w-1.5 h-14 rounded-full ${work.color} shrink-0 mt-1 group-hover:h-16 group-hover:w-2 transition-all duration-300`} />
+                  <div className="flex-1 min-w-0 relative z-10">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <h4 className="font-bold text-foreground group-hover:text-primary transition-colors duration-300">{work.title}</h4>
                       <Badge variant="outline" className="text-xs">{work.type}</Badge>
@@ -287,6 +388,7 @@ export default function AboutSection() {
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">{work.description}</p>
                   </div>
+                  <ChevronLeft className="h-4 w-4 text-muted-foreground/0 group-hover:text-primary shrink-0 mt-2 transition-all duration-300 group-hover:-translate-x-1" />
                 </motion.div>
               ))}
             </div>
@@ -304,15 +406,15 @@ export default function AboutSection() {
                 <Award className="h-5 w-5" />
               </div>
               <h3 className="text-xl font-bold">كتب قيد النشر</h3>
-              <Badge className="bg-amber-100 text-amber-700 border-0">قريباً</Badge>
+              <Badge className="bg-amber-100 text-amber-700 border-0 animate-pulse">قريباً</Badge>
             </div>
             <div className="space-y-3">
-              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow duration-300">
-                <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-1">الإلقاء الإبداعي - نظرية وتطبيق</h4>
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow duration-300 group">
+                <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-1 group-hover:translate-x-1 transition-transform duration-300">الإلقاء الإبداعي - نظرية وتطبيق</h4>
                 <p className="text-sm text-amber-700 dark:text-amber-300">كتاب شامل يتناول فنون الإلقاء الإبداعي من المنظورين النظري والتطبيقي</p>
               </div>
-              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow duration-300">
-                <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-1">لغة الجسد في العرض التقديمي</h4>
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow duration-300 group">
+                <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-1 group-hover:translate-x-1 transition-transform duration-300">لغة الجسد في العرض التقديمي</h4>
                 <p className="text-sm text-amber-700 dark:text-amber-300">دليل عملي لفهم واستخدام لغة الجسد بشكل فعّال في العروض والتواصل</p>
               </div>
             </div>

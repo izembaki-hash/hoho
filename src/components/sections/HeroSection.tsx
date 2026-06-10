@@ -16,7 +16,7 @@ import {
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef, useEffect, useState, useCallback } from 'react'
 
-const sectionCards: { id: SectionId; label: string; description: string; icon: React.ReactNode; color: string; bgPattern: string; stat: string; isLive?: boolean }[] = [
+const sectionCards: { id: SectionId; label: string; description: string; icon: React.ReactNode; color: string; bgPattern: string; stat: string; isLive?: boolean; isNew?: boolean }[] = [
   {
     id: 'about',
     label: 'نبذة عن المؤلف',
@@ -62,6 +62,7 @@ const sectionCards: { id: SectionId; label: string; description: string; icon: R
     color: 'from-primary to-emerald-800',
     bgPattern: 'bg-primary/5 dark:bg-primary/10',
     stat: '9 موضوعات',
+    isNew: true,
   },
   {
     id: 'contact',
@@ -96,24 +97,28 @@ const features = [
     title: 'دروس مباشرة وتفاعلية',
     description: 'بث حي مع إمكانية التواصل المباشر مع الأساتذة وطرح الأسئلة',
     gradient: 'from-red-500 to-red-700',
+    step: '01',
   },
   {
     icon: <Download className="h-6 w-6" />,
     title: 'مرفقات وملحقات تعليمية',
     description: 'ملفات PDF وملخصات وكتب مرجعية مع كل درس مسجل',
     gradient: 'from-amber-500 to-amber-700',
+    step: '02',
   },
   {
     icon: <Calendar className="h-6 w-6" />,
     title: 'جدولة مرنة',
     description: 'دروس مباشرة في أوقات محددة ومسجلة متاحة على مدار الساعة',
     gradient: 'from-teal-500 to-teal-700',
+    step: '03',
   },
   {
     icon: <MessageCircle className="h-6 w-6" />,
     title: 'محتوى مخصص',
     description: 'محتوى مصمم خصيصاً للطلبة والأساتذة والتلاميذ',
     gradient: 'from-primary to-emerald-800',
+    step: '04',
   },
 ]
 
@@ -151,13 +156,45 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.08 },
   },
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+}
+
+// Arabic-inspired geometric SVG pattern for hero overlay
+function ArabesquePattern() {
+  return (
+    <svg className="absolute inset-0 w-full h-full z-[6] opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="arabesque" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+          {/* Eight-pointed star base */}
+          <path d="M40 0 L44 16 L60 16 L48 26 L52 42 L40 32 L28 42 L32 26 L20 16 L36 16 Z" fill="none" stroke="currentColor" strokeWidth="0.8" className="text-white" />
+          {/* Inner star */}
+          <path d="M40 12 L42 20 L50 20 L44 24 L46 32 L40 28 L34 32 L36 24 L30 20 L38 20 Z" fill="currentColor" fillOpacity="0.3" stroke="none" className="text-white" />
+          {/* Connecting lines - horizontal */}
+          <line x1="0" y1="40" x2="20" y2="40" stroke="currentColor" strokeWidth="0.4" className="text-white" />
+          <line x1="60" y1="40" x2="80" y2="40" stroke="currentColor" strokeWidth="0.4" className="text-white" />
+          {/* Connecting lines - vertical */}
+          <line x1="40" y1="0" x2="40" y2="16" stroke="currentColor" strokeWidth="0.4" className="text-white" />
+          <line x1="40" y1="42" x2="40" y2="80" stroke="currentColor" strokeWidth="0.4" className="text-white" />
+          {/* Corner diamonds */}
+          <path d="M0 0 L4 4 L0 8 L-4 4 Z" fill="currentColor" fillOpacity="0.2" className="text-white" transform="translate(0,36)" />
+          <path d="M0 0 L4 4 L0 8 L-4 4 Z" fill="currentColor" fillOpacity="0.2" className="text-white" transform="translate(80,36)" />
+          {/* Side circles */}
+          <circle cx="10" cy="10" r="2" fill="currentColor" fillOpacity="0.15" className="text-white" />
+          <circle cx="70" cy="70" r="2" fill="currentColor" fillOpacity="0.15" className="text-white" />
+          {/* Interlocking arcs */}
+          <path d="M20 40 Q30 30 40 40 Q30 50 20 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-white" />
+          <path d="M40 40 Q50 30 60 40 Q50 50 40 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-white" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#arabesque)" />
+    </svg>
+  )
 }
 
 // Floating particles component
@@ -243,6 +280,26 @@ function TiltCard({ children, className }: { children: React.ReactNode; classNam
   )
 }
 
+// Wave SVG separator component
+function WaveSeparator({ color = '#10b981', flip = false }: { color?: string; flip?: boolean }) {
+  return (
+    <div className="wave-separator" style={flip ? { transform: 'scaleY(-1)' } : undefined}>
+      <svg viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M0 60 L0 35 Q150 0 300 30 Q450 60 600 30 Q750 0 900 30 Q1050 60 1200 35 L1200 60 Z"
+          fill={color}
+          fillOpacity="0.08"
+        />
+        <path
+          d="M0 60 L0 40 Q150 10 300 35 Q450 55 600 35 Q750 10 900 35 Q1050 55 1200 40 L1200 60 Z"
+          fill={color}
+          fillOpacity="0.05"
+        />
+      </svg>
+    </div>
+  )
+}
+
 export default function HeroSection() {
   const { setActiveSection } = useAppStore()
   const heroRef = useRef<HTMLDivElement>(null)
@@ -259,30 +316,38 @@ export default function HeroSection() {
 
   return (
     <div className="space-y-16">
-      {/* Hero Banner with Glassmorphism + Particles + Parallax */}
+      {/* Hero Banner with Glassmorphism + Particles + Parallax + Arabesque + Noise */}
       <motion.section 
         ref={heroRef}
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
-        className="relative overflow-hidden rounded-3xl"
+        className="relative overflow-hidden rounded-3xl noise-texture"
       >
         {/* Parallax background image */}
         <motion.div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: 'url(/images/hero-banner.png)', y: parallaxY }}
         />
+        {/* Multi-stop dynamic gradient overlay - emerald/teal tones */}
+        <div className="absolute inset-0 bg-gradient-to-l from-primary/85 via-emerald-900/75 to-teal-900/85 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-emerald-950/40 z-10" />
         {/* Glassmorphism overlay */}
-        <div className="absolute inset-0 bg-gradient-to-l from-primary/80 via-primary/60 to-emerald-900/85 z-10 glassmorphism" />
+        <div className="absolute inset-0 z-10 glassmorphism" />
+        {/* Arabesque geometric pattern overlay */}
+        <ArabesquePattern />
         {/* Floating particles */}
         <FloatingParticles />
-        {/* Decorative Elements */}
+        {/* Decorative Elements - refined with slow rotation */}
         <div className="absolute inset-0 z-10 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white rounded-full" />
-          <div className="absolute bottom-20 right-20 w-24 h-24 border-2 border-white rounded-full" />
-          <div className="absolute top-1/2 left-1/3 w-16 h-16 border border-white rotate-45" />
-          <div className="absolute top-1/4 right-1/4 w-8 h-8 bg-white rounded-full" />
-          <div className="absolute bottom-1/3 left-1/5 w-6 h-6 bg-white rotate-45" />
+          <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white rounded-full animate-slow-rotate" />
+          <div className="absolute bottom-20 right-20 w-24 h-24 border-2 border-white rounded-full animate-slow-rotate-reverse" />
+          <div className="absolute top-1/2 left-1/3 w-16 h-16 border border-white rotate-45 animate-slow-rotate" style={{ animationDuration: '20s' }} />
+          <div className="absolute top-1/4 right-1/4 w-8 h-8 bg-white rounded-full opacity-60" />
+          <div className="absolute bottom-1/3 left-[15%] w-6 h-6 bg-white rotate-45 opacity-50" />
+          {/* Additional refined decorative rings */}
+          <div className="absolute top-[15%] right-[10%] w-20 h-20 border border-white/50 rounded-full animate-slow-rotate" style={{ animationDuration: '22s' }} />
+          <div className="absolute bottom-[15%] left-[20%] w-16 h-16 border-2 border-white/30 rotate-45 animate-slow-rotate-reverse" style={{ animationDuration: '28s' }} />
         </div>
         <div className="relative z-20 px-6 sm:px-12 py-16 sm:py-24 min-h-[420px] flex flex-col justify-center">
           <div className="max-w-2xl">
@@ -356,34 +421,49 @@ export default function HeroSection() {
         </div>
       </motion.section>
 
-      {/* Stats with animated counters - smoother animation */}
+      {/* Decorative separator above stats */}
+      <div className="decorative-separator">
+        <span className="relative z-10 bg-background px-4 text-muted-foreground/40 text-xs">✦</span>
+      </div>
+
+      {/* Stats with animated counters + glassmorphism + animated gradient bg */}
       <motion.section 
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-50px' }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        className="relative rounded-2xl p-1"
       >
-        {stats.map((stat, idx) => (
-          <motion.div key={idx} variants={itemVariants}>
-            <Card className="text-center border-0 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 group relative overflow-hidden">
-              {/* Gradient top bar */}
-              <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${stat.color}`} />
-              <CardContent className="pt-7 pb-5 px-4">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${stat.color} flex items-center justify-center mx-auto mb-3 text-white shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-                  {stat.icon}
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-primary mb-1">
-                  <AnimatedCounter value={stat.value} />
-                </div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+        {/* Animated gradient background for stats section */}
+        <div className="absolute inset-0 bg-gradient-to-l from-emerald-100 via-teal-50 to-amber-50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-amber-950/20 animate-gradient-shift rounded-2xl opacity-60" />
+        <div className="relative grid grid-cols-2 md:grid-cols-4 gap-4">
+          {stats.map((stat, idx) => (
+            <motion.div key={idx} variants={itemVariants}>
+              <Card className="text-center border-0 glassmorphism-stat shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 group relative overflow-hidden">
+                {/* Gradient top bar */}
+                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${stat.color}`} />
+                <CardContent className="pt-8 pb-6 px-4">
+                  {/* Icon with decorative ring */}
+                  <div className="stat-icon-ring w-14 h-14 flex items-center justify-center mx-auto mb-4">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${stat.color} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                      {stat.icon}
+                    </div>
+                  </div>
+                  <div className="text-2xl sm:text-3xl font-bold text-primary mb-1">
+                    <AnimatedCounter value={stat.value} />
+                  </div>
+                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
       </motion.section>
 
-      {/* Features Section */}
+      {/* Wave separator between stats and features */}
+      <WaveSeparator color="#10b981" />
+
+      {/* Features Section with numbered steps + timeline + gradient borders */}
       <motion.section
         variants={containerVariants}
         initial="hidden"
@@ -396,28 +476,44 @@ export default function HeroSection() {
             نقدم تجربة تعليمية فريدة تجمع بين المحتوى الأكاديمي الرصين والتفاعل المباشر
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {features.map((feature, idx) => (
-            <motion.div key={idx} variants={itemVariants}>
-              <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-500 group h-full relative overflow-hidden">
-                {/* Hover gradient background */}
-                <div className={`absolute inset-0 bg-gradient-to-bl ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
-                <CardContent className="p-6 flex items-start gap-4 relative z-10">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-bl ${feature.gradient} flex items-center justify-center text-white shrink-0 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-500`}>
-                    {feature.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-base mb-1">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+        {/* Feature grid with timeline line */}
+        <div className="relative">
+          {/* Timeline connecting line (visible on sm+ screens) */}
+          <div className="hidden sm:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-l from-transparent via-emerald-300/30 dark:via-emerald-700/20 to-transparent -translate-y-1/2 z-0" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+            {features.map((feature, idx) => (
+              <motion.div key={idx} variants={itemVariants}>
+                <div className="feature-gradient-border feature-icon-hover h-full rounded-lg">
+                  <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-500 group h-full relative overflow-hidden rounded-lg">
+                    {/* Hover gradient background */}
+                    <div className={`absolute inset-0 bg-gradient-to-bl ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                    <CardContent className="p-6 flex items-start gap-4 relative z-10">
+                      {/* Step number indicator */}
+                      <div className="flex flex-col items-center gap-2 shrink-0">
+                        <div className="relative">
+                          <div className={`w-12 h-12 rounded-xl bg-gradient-to-bl ${feature.gradient} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-500 feature-icon-inner`}>
+                            {feature.icon}
+                          </div>
+                        </div>
+                        <span className="text-[0.65rem] font-bold text-muted-foreground/50 tabular-nums">{feature.step}</span>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base mb-1">{feature.title}</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </motion.section>
 
-      {/* Section Cards with Spotlight + LIVE indicator */}
+      {/* Wave separator between features and cards */}
+      <WaveSeparator color="#f59e0b" />
+
+      {/* Section Cards with Spotlight + LIVE indicator + glow + dots pattern + new badge */}
       <motion.section
         variants={containerVariants}
         initial="hidden"
@@ -434,10 +530,10 @@ export default function HeroSection() {
           {sectionCards.map((card) => (
             <motion.div key={card.id} variants={itemVariants}>
               <SpotlightCard
-                className="cursor-pointer"
+                className={`cursor-pointer ${card.isNew ? 'new-badge' : ''}`}
                 onClick={() => handleNavigate(card.id)}
               >
-                <Card className="group border-0 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden border-0">
+                <Card className="group border-0 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden card-glow-hover card-dots-pattern">
                   <CardContent className="p-0 relative z-10">
                     <div className={`h-1.5 bg-gradient-to-l ${card.color}`} />
                     <div className={`${card.bgPattern} p-6`}>
@@ -478,28 +574,32 @@ export default function HeroSection() {
         </div>
       </motion.section>
 
-      {/* Testimonials with 3D Tilt */}
+      {/* Testimonials with 3D Tilt + quote watermark + star glow + gradient bg */}
       <motion.section
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-50px' }}
+        className="relative"
       >
-        <div className="text-center mb-10">
+        {/* Subtle background gradient for testimonials section */}
+        <div className="absolute inset-0 -m-4 bg-gradient-to-b from-emerald-50/50 via-transparent to-amber-50/50 dark:from-emerald-950/20 dark:via-transparent dark:to-amber-950/20 rounded-3xl" />
+        <div className="relative text-center mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">ماذا يقول طلابنا؟</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             آراء حقيقية من مستخدمي المنصة الذين استفادوا من المحتوى التعليمي
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((testimonial, idx) => (
             <motion.div key={idx} variants={itemVariants}>
               <TiltCard>
-                <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 h-full relative overflow-hidden group">
+                <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 h-full relative overflow-hidden group quote-watermark">
                   {/* Gradient top bar */}
                   <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${testimonial.color} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
-                  <CardContent className="p-6 pt-7">
-                    <div className="flex items-center gap-1 mb-3">
+                  <CardContent className="p-6 pt-7 relative z-10">
+                    {/* Star rating with glow */}
+                    <div className="flex items-center gap-1 mb-3 star-glow">
                       {[...Array(testimonial.rating)].map((_, i) => (
                         <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
                       ))}

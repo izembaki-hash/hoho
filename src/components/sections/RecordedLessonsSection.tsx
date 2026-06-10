@@ -10,7 +10,8 @@ import { Progress } from '@/components/ui/progress'
 import { 
   Play, Clock, Download, FileText, BookOpen, Search, 
   Filter, Eye, Calendar, Tag, Paperclip, Bookmark, 
-  BookmarkCheck, CheckCircle2, Star, ChevronDown 
+  BookmarkCheck, CheckCircle2, Star, ChevronDown, Sparkles,
+  ArrowLeft
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import SectionHeader from '@/components/SectionHeader'
@@ -184,6 +185,11 @@ function formatDate(dateStr: string) {
   })
 }
 
+function isNewLesson(createdAt: string) {
+  const daysDiff = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24)
+  return daysDiff <= 7
+}
+
 function getLevelColor(level: string) {
   switch (level) {
     case 'مبتدئ': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
@@ -221,6 +227,13 @@ export default function RecordedLessonsSection() {
   })
 
   const bookmarkedCount = sampleRecordedLessons.filter(l => isBookmarked(l.id)).length
+  
+  // Find similar lessons for detail dialog
+  const getSimilarLessons = (lesson: RecordedLesson) => {
+    return sampleRecordedLessons
+      .filter(l => l.id !== lesson.id && (l.category === lesson.category || l.level === lesson.level))
+      .slice(0, 3)
+  }
 
   return (
     <motion.div
@@ -258,10 +271,16 @@ export default function RecordedLessonsSection() {
             <span className="text-muted-foreground">إجمالي المشاهدات:</span>
             <span className="font-bold">{sampleRecordedLessons.reduce((s, l) => s + l.views, 0).toLocaleString('ar-SA')}</span>
           </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-2 text-sm">
+            <Sparkles className="h-4 w-4 text-amber-500" />
+            <span className="text-muted-foreground">دروس جديدة:</span>
+            <span className="font-bold text-amber-600 dark:text-amber-400">{sampleRecordedLessons.filter(l => isNewLesson(l.createdAt)).length}</span>
+          </div>
         </div>
       </motion.div>
 
-      {/* Search and Filter */}
+      {/* Search and Filter - Enhanced styling */}
       <motion.div variants={itemVariants}>
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
@@ -270,8 +289,16 @@ export default function RecordedLessonsSection() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="ابحث في الدروس..."
-              className="pr-10"
+              className="pr-10 pl-4 h-11 bg-background border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
             />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                ✕
+              </button>
+            )}
           </div>
           <div className="flex gap-2">
             {categories.map(cat => (
@@ -280,7 +307,7 @@ export default function RecordedLessonsSection() {
                 variant={activeCategory === cat ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setActiveCategory(cat)}
-                className="gap-1"
+                className={`gap-1 transition-all ${activeCategory === cat ? 'shadow-md' : ''}`}
               >
                 <Filter className="h-3 w-3" />
                 {cat}
@@ -298,24 +325,32 @@ export default function RecordedLessonsSection() {
               className="group cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
               onClick={() => setSelectedLesson(lesson)}
             >
-              <div className="relative aspect-video bg-gradient-to-bl from-primary/20 to-primary/5 flex items-center justify-center">
+              <div className="relative aspect-video bg-gradient-to-bl from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
                 {/* Colored gradient based on category */}
                 <div className={`absolute inset-0 ${lesson.category === 'شفهي' ? 'bg-gradient-to-bl from-teal-500/20 to-teal-600/5' : 'bg-gradient-to-bl from-amber-500/20 to-amber-600/5'}`} />
+                {/* Overlay gradient for better badge readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 <div className="w-14 h-14 rounded-full bg-primary/80 flex items-center justify-center text-white group-hover:scale-110 transition-transform shadow-lg relative z-10">
                   <Play className="h-6 w-6 mr-[-2px]" />
                 </div>
-                <div className="absolute bottom-2 left-2 flex items-center gap-1">
-                  <Badge variant="secondary" className="text-xs bg-black/60 text-white border-0">
+                <div className="absolute bottom-2 left-2 flex items-center gap-1 z-10">
+                  <Badge variant="secondary" className="text-xs bg-black/60 text-white border-0 backdrop-blur-sm">
                     <Clock className="h-3 w-3 ml-1" />
                     {formatDuration(lesson.duration)}
                   </Badge>
                 </div>
-                <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
                   <Badge className={`text-xs ${getLevelColor(lesson.level)}`}>
                     {lesson.level}
                   </Badge>
+                  {isNewLesson(lesson.createdAt) && (
+                    <Badge className="text-xs bg-amber-500 text-white border-0 animate-pulse">
+                      <Sparkles className="h-2.5 w-2.5 ml-0.5" />
+                      جديد
+                    </Badge>
+                  )}
                 </div>
-                <div className="absolute top-2 left-2">
+                <div className="absolute top-2 left-2 z-10">
                   <Badge variant={lesson.category === 'شفهي' ? 'default' : 'secondary'} className="text-xs">
                     {lesson.category}
                   </Badge>
@@ -323,7 +358,7 @@ export default function RecordedLessonsSection() {
                 {/* Bookmark button */}
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleBookmark(lesson.id); }}
-                  className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors"
+                  className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors z-10 backdrop-blur-sm"
                   title={isBookmarked(lesson.id) ? 'إزالة من المحفوظات' : 'حفظ الدرس'}
                 >
                   {isBookmarked(lesson.id) ? (
@@ -342,8 +377,13 @@ export default function RecordedLessonsSection() {
                 </p>
                 {/* Rating */}
                 <div className="flex items-center gap-1 mb-3">
-                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                  <span className="text-xs font-medium">{lesson.rating}</span>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star 
+                      key={i} 
+                      className={`h-3 w-3 ${i < Math.floor(lesson.rating) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`} 
+                    />
+                  ))}
+                  <span className="text-xs font-medium mr-1">{lesson.rating}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
@@ -375,17 +415,33 @@ export default function RecordedLessonsSection() {
           {selectedLesson && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-xl">{selectedLesson.title}</DialogTitle>
+                <DialogTitle className="text-xl flex items-center gap-2">
+                  {selectedLesson.title}
+                  {isNewLesson(selectedLesson.createdAt) && (
+                    <Badge className="text-[10px] bg-amber-500 text-white border-0">
+                      <Sparkles className="h-2.5 w-2.5 ml-0.5" />
+                      جديد
+                    </Badge>
+                  )}
+                </DialogTitle>
               </DialogHeader>
               
-              {/* Video Player Placeholder */}
+              {/* Video Player Placeholder with overlay gradient */}
               <div className="aspect-video bg-black/90 rounded-xl flex items-center justify-center mb-4 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="text-center text-white relative z-10">
                   <div className="w-16 h-16 rounded-full bg-primary/30 flex items-center justify-center mx-auto mb-3 animate-pulse">
                     <Play className="h-8 w-8" />
                   </div>
                   <p className="text-sm text-white/70">مشغل الفيديو</p>
+                </div>
+                {/* Duration overlay */}
+                <div className="absolute bottom-3 left-3 z-10">
+                  <Badge variant="secondary" className="text-xs bg-black/70 text-white border-0 backdrop-blur-sm">
+                    <Clock className="h-3 w-3 ml-1" />
+                    {formatDuration(selectedLesson.duration)}
+                  </Badge>
                 </div>
               </div>
 
@@ -451,6 +507,38 @@ export default function RecordedLessonsSection() {
                             تحميل
                           </Button>
                         </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Similar Lessons */}
+                {getSimilarLessons(selectedLesson).length > 0 && (
+                  <div>
+                    <h4 className="font-bold text-sm mb-3 flex items-center gap-2">
+                      <ArrowLeft className="h-4 w-4 text-primary" />
+                      دروس مشابهة
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {getSimilarLessons(selectedLesson).map(similar => (
+                        <Card 
+                          key={similar.id} 
+                          className="border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group/sim overflow-hidden"
+                          onClick={() => setSelectedLesson(similar)}
+                        >
+                          <div className="relative aspect-video bg-gradient-to-bl from-primary/10 to-primary/5 flex items-center justify-center">
+                            <div className={`absolute inset-0 ${similar.category === 'شفهي' ? 'bg-gradient-to-bl from-teal-500/10 to-teal-600/5' : 'bg-gradient-to-bl from-amber-500/10 to-amber-600/5'}`} />
+                            <Play className="h-6 w-6 text-primary/50 group-hover/sim:text-primary transition-colors" />
+                            <Badge className="text-[9px] absolute top-1.5 right-1.5 px-1 py-0 border-0 bg-black/50 text-white">{formatDuration(similar.duration)}</Badge>
+                          </div>
+                          <CardContent className="p-2.5">
+                            <h5 className="font-medium text-xs line-clamp-1 group-hover/sim:text-primary transition-colors">{similar.title}</h5>
+                            <div className="flex items-center gap-1 mt-1">
+                              <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                              <span className="text-[10px] text-muted-foreground">{similar.rating}</span>
+                            </div>
+                          </CardContent>
+                        </Card>
                       ))}
                     </div>
                   </div>

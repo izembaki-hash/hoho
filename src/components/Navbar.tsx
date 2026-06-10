@@ -4,18 +4,19 @@ import { useState, useEffect, useRef } from 'react'
 import { useAppStore, type SectionId } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
-import { Menu, BookOpen, Mic, Pen, Video, User, Mail, Home, Sun, Moon, Search, BarChart3 } from 'lucide-react'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { Menu, BookOpen, Mic, Pen, Video, User, Mail, Home, Sun, Moon, Search, BarChart3, ChevronLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const navItems: { id: SectionId; label: string; icon: React.ReactNode }[] = [
-  { id: 'home', label: 'الرئيسية', icon: <Home className="h-4 w-4" /> },
-  { id: 'about', label: 'نبذة عن المؤلف', icon: <User className="h-4 w-4" /> },
-  { id: 'live-lessons', label: 'دروس مباشرة', icon: <Video className="h-4 w-4" /> },
-  { id: 'recorded-lessons', label: 'دروس مسجلة', icon: <BookOpen className="h-4 w-4" /> },
-  { id: 'oral-expression', label: 'التحرير الشفهي', icon: <Mic className="h-4 w-4" /> },
-  { id: 'written-expression', label: 'التحرير الكتابي', icon: <Pen className="h-4 w-4" /> },
-  { id: 'contact', label: 'اتصل بنا', icon: <Mail className="h-4 w-4" /> },
-  { id: 'progress', label: 'لوحة التقدم', icon: <BarChart3 className="h-4 w-4" /> },
+const navItems: { id: SectionId; label: string; icon: React.ReactNode; description: string }[] = [
+  { id: 'home', label: 'الرئيسية', icon: <Home className="h-4 w-4" />, description: 'الصفحة الرئيسية والتعريف بالمنصة' },
+  { id: 'about', label: 'نبذة عن المؤلف', icon: <User className="h-4 w-4" />, description: 'السيرة الذاتية والإنجازات الأكاديمية' },
+  { id: 'live-lessons', label: 'دروس مباشرة', icon: <Video className="h-4 w-4" />, description: 'بث حي وتفاعل مباشر مع الأساتذة' },
+  { id: 'recorded-lessons', label: 'دروس مسجلة', icon: <BookOpen className="h-4 w-4" />, description: 'مكتبة دروس مسجلة مع مرفقات تعليمية' },
+  { id: 'oral-expression', label: 'التحرير الشفهي', icon: <Mic className="h-4 w-4" />, description: 'مهارات العرض والتعبير الشفهي والإلقاء' },
+  { id: 'written-expression', label: 'التحرير الكتابي', icon: <Pen className="h-4 w-4" />, description: 'فنون الكتابة والتأليف والتعبير الكتابي' },
+  { id: 'contact', label: 'اتصل بنا', icon: <Mail className="h-4 w-4" />, description: 'تواصل معنا لطرح استفساراتكم' },
+  { id: 'progress', label: 'لوحة التقدم', icon: <BarChart3 className="h-4 w-4" />, description: 'تتبع تقدمك التعليمي وإنجازاتك' },
 ]
 
 export default function Navbar() {
@@ -24,6 +25,7 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false)
   const navRef = useRef<HTMLDivElement>(null)
   const [pillStyle, setPillStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 })
+  const [themeAnimating, setThemeAnimating] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,10 +61,17 @@ export default function Navbar() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [])
 
+
   const handleNavClick = (id: SectionId) => {
     setActiveSection(id)
     setMobileMenuOpen(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleThemeToggle = () => {
+    setThemeAnimating(true)
+    toggleTheme()
+    setTimeout(() => setThemeAnimating(false), 500)
   }
 
   return (
@@ -85,65 +94,79 @@ export default function Navbar() {
               onClick={() => handleNavClick('home')}
               className="flex items-center gap-3 hover:opacity-80 transition-all duration-300 group"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-bl from-primary to-emerald-700 flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:shadow-primary/25 transition-all duration-300">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-bl from-primary to-emerald-700 flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:shadow-primary/40 group-hover:scale-105 transition-all duration-300">
                 <Pen className="h-5 w-5 text-primary-foreground" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-lg font-bold text-foreground leading-tight">التحرير الكتابي والشفهي</h1>
+                <h1 className="text-lg font-bold leading-tight bg-gradient-to-l from-primary via-emerald-600 to-amber-600 bg-clip-text text-transparent">
+                  التحرير الكتابي والشفهي
+                </h1>
                 <p className="text-xs text-muted-foreground">منصة تعليمية متكاملة</p>
               </div>
             </button>
 
             {/* Desktop Navigation with Pill Indicator */}
             <div className="hidden lg:flex items-center relative" ref={navRef}>
-              {/* Animated pill background */}
+              {/* Animated pill background with scale effect */}
               <div
-                className="absolute top-1/2 -translate-y-1/2 h-9 bg-primary/10 rounded-lg transition-all duration-300 ease-out"
+                className="absolute top-1/2 -translate-y-1/2 h-9 bg-primary/10 rounded-lg transition-all duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)]"
                 style={{
                   left: pillStyle.left,
                   width: pillStyle.width,
                 }}
               />
               {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  data-nav-id={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 z-10 ${
-                    activeSection === item.id
-                      ? 'text-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </button>
+                <Tooltip key={item.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      data-nav-id={item.id}
+                      onClick={() => handleNavClick(item.id)}
+                      className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 z-10 nav-item-underline ${
+                        activeSection === item.id
+                          ? 'bg-gradient-to-l from-primary via-emerald-600 to-primary bg-clip-text text-transparent scale-[1.02]'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <span className={activeSection === item.id ? 'text-primary' : ''}>{item.icon}</span>
+                      <span className="bg-gradient-to-l from-primary via-emerald-600 to-primary bg-clip-text"
+                        style={{ WebkitTextFillColor: activeSection === item.id ? 'transparent' : undefined, color: activeSection === item.id ? 'transparent' : undefined }}
+                      >
+                        {item.label}
+                      </span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={8}>
+                    <p>{item.description}</p>
+                  </TooltipContent>
+                </Tooltip>
               ))}
               
               <div className="mr-2 pr-2 border-r border-border flex items-center gap-1">
-                {/* Search Button with pulse */}
+                {/* Search Button with shimmer on hover */}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSearchOpen(true)}
-                  className="rounded-full h-9 gap-2 text-muted-foreground relative group"
+                  className="rounded-full h-9 gap-2 text-muted-foreground relative search-shimmer-hover group"
                 >
-                  <Search className="h-4 w-4 animate-search-pulse group-hover:animate-none" />
+                  <Search className="h-4 w-4 search-shimmer-target transition-all duration-300" />
                   <span className="hidden xl:inline text-xs">بحث</span>
                   <kbd className="hidden xl:inline-flex h-4 select-none items-center gap-0.5 rounded border bg-muted px-1 font-mono text-[9px] font-medium text-muted-foreground">⌘K</kbd>
                 </Button>
-                {/* Theme Toggle */}
+                {/* Theme Toggle with rotation */}
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={toggleTheme}
-                  className="rounded-full h-9 w-9"
+                  onClick={handleThemeToggle}
+                  className="rounded-full h-9 w-9 overflow-hidden"
                 >
-                  {theme === 'light' ? (
-                    <Moon className="h-4 w-4" />
-                  ) : (
-                    <Sun className="h-4 w-4" />
-                  )}
+                  <span className={themeAnimating ? 'animate-theme-rotate' : ''}>
+                    {theme === 'light' ? (
+                      <Moon className="h-4 w-4 text-amber-500" />
+                    ) : (
+                      <Sun className="h-4 w-4 text-amber-400" />
+                    )}
+                  </span>
                   <span className="sr-only">تبديل المظهر</span>
                 </Button>
               </div>
@@ -155,21 +178,23 @@ export default function Navbar() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setSearchOpen(true)}
-                className="rounded-full h-9 w-9 relative"
+                className="rounded-full h-9 w-9 relative search-shimmer-hover"
               >
-                <Search className="h-4 w-4 animate-search-pulse" />
+                <Search className="h-4 w-4 search-shimmer-target" />
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleTheme}
-                className="rounded-full h-9 w-9"
+                onClick={handleThemeToggle}
+                className="rounded-full h-9 w-9 overflow-hidden"
               >
-                {theme === 'light' ? (
-                  <Moon className="h-4 w-4" />
-                ) : (
-                  <Sun className="h-4 w-4" />
-                )}
+                <span className={themeAnimating ? 'animate-theme-rotate' : ''}>
+                  {theme === 'light' ? (
+                    <Moon className="h-4 w-4 text-amber-500" />
+                  ) : (
+                    <Sun className="h-4 w-4 text-amber-400" />
+                  )}
+                </span>
               </Button>
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
@@ -178,15 +203,19 @@ export default function Navbar() {
                     <span className="sr-only">فتح القائمة</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-80 p-0">
+                <SheetContent side="right" className="w-80 p-0 overflow-hidden">
                   <SheetTitle className="sr-only">قائمة التنقل</SheetTitle>
                   <div className="flex flex-col h-full">
-                    <div className="flex items-center gap-3 p-6 border-b border-border bg-gradient-to-l from-primary/5 to-transparent">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-bl from-primary to-emerald-700 flex items-center justify-center shadow-md">
+                    {/* Gradient header with decorative elements */}
+                    <div className="relative flex items-center gap-3 p-6 border-b border-border bg-gradient-to-l from-primary/10 via-emerald-600/5 to-amber-500/5 overflow-hidden">
+                      {/* Decorative circles */}
+                      <div className="absolute -top-6 -left-6 w-24 h-24 bg-primary/10 rounded-full blur-xl" />
+                      <div className="absolute -bottom-4 left-12 w-16 h-16 bg-amber-500/10 rounded-full blur-lg" />
+                      <div className="relative w-10 h-10 rounded-xl bg-gradient-to-bl from-primary to-emerald-700 flex items-center justify-center shadow-md">
                         <Pen className="h-5 w-5 text-primary-foreground" />
                       </div>
-                      <div>
-                        <h2 className="text-lg font-bold">التحرير الكتابي والشفهي</h2>
+                      <div className="relative">
+                        <h2 className="text-lg font-bold bg-gradient-to-l from-primary via-emerald-600 to-amber-600 bg-clip-text text-transparent">التحرير الكتابي والشفهي</h2>
                         <p className="text-xs text-muted-foreground">منصة تعليمية متكاملة</p>
                       </div>
                     </div>
@@ -195,21 +224,28 @@ export default function Navbar() {
                         <button
                           key={item.id}
                           onClick={() => handleNavClick(item.id)}
-                          className={`flex items-center gap-3 w-full px-6 py-3.5 text-right transition-all duration-300 ${
+                          className={`mobile-menu-stagger-item relative flex items-center gap-3 w-full px-6 py-3.5 text-right transition-all duration-300 overflow-hidden group ${
                             activeSection === item.id
                               ? 'bg-primary text-primary-foreground'
                               : 'text-foreground hover:bg-accent'
                           }`}
-                          style={{ animationDelay: `${idx * 50}ms` }}
+                          style={{ animationDelay: mobileMenuOpen ? `${idx * 60}ms` : '0ms' }}
                         >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          {/* Slide-in background from right on hover */}
+                          <span className={`absolute inset-0 transition-transform duration-300 origin-right scale-x-0 group-hover:scale-x-100 ${
+                            activeSection === item.id ? 'bg-primary-foreground/10' : 'bg-accent/50'
+                          }`} />
+                          <div className={`relative w-8 h-8 rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:scale-110 ${
                             activeSection === item.id
                               ? 'bg-primary-foreground/20'
                               : 'bg-muted'
                           }`}>
                             {item.icon}
                           </div>
-                          <span className="font-medium">{item.label}</span>
+                          <span className="relative font-medium">{item.label}</span>
+                          {activeSection === item.id && (
+                            <ChevronLeft className="relative h-4 w-4 mr-auto" />
+                          )}
                         </button>
                       ))}
                     </div>
@@ -298,7 +334,7 @@ function GlobalSearchDialog({ open, onOpenChange }: { open: boolean; onOpenChang
             transition={{ duration: 0.2 }}
             className="relative max-w-lg mx-auto mt-20 mx-4"
           >
-            <div className="bg-background rounded-xl shadow-2xl border border-border overflow-hidden">
+            <div className="bg-background rounded-xl search-dialog-glow border border-border overflow-hidden">
               <div className="flex items-center border-b border-border px-4">
                 <Search className="h-4 w-4 text-muted-foreground shrink-0" />
                 <input

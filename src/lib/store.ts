@@ -21,6 +21,7 @@ interface AppState {
   bookmarks: string[]
   toggleBookmark: (id: string) => void
   isBookmarked: (id: string) => boolean
+  skeletonSection: string | null
 }
 
 function getStoredTheme(): 'light' | 'dark' {
@@ -41,9 +42,40 @@ function getStoredBookmarks(): string[] {
   return []
 }
 
+// Module-level tracking for skeleton loading (no re-render needed for this)
+let skeletonTimeoutId: ReturnType<typeof setTimeout> | null = null
+const loadedSections = new Set<string>(['home'])
+
 export const useAppStore = create<AppState>()((set, get) => ({
   activeSection: 'home',
-  setActiveSection: (section) => set({ activeSection: section, mobileMenuOpen: false }),
+  setActiveSection: (section) => {
+    // Clear any pending skeleton timeout
+    if (skeletonTimeoutId) {
+      clearTimeout(skeletonTimeoutId)
+      skeletonTimeoutId = null
+    }
+
+    // Check if this section needs a skeleton loading state
+    const needsSkeleton = !loadedSections.has(section)
+
+    set({
+      activeSection: section,
+      mobileMenuOpen: false,
+      skeletonSection: needsSkeleton ? section : null,
+    })
+
+    // Auto-clear skeleton after 400ms and mark section as loaded
+    if (needsSkeleton) {
+      skeletonTimeoutId = setTimeout(() => {
+        loadedSections.add(section)
+        // Only clear if still showing this section's skeleton
+        if (get().skeletonSection === section) {
+          set({ skeletonSection: null })
+        }
+        skeletonTimeoutId = null
+      }, 400)
+    }
+  },
   mobileMenuOpen: false,
   setMobileMenuOpen: (open) => set({ mobileMenuOpen: open }),
   theme: getStoredTheme(),
@@ -74,4 +106,5 @@ export const useAppStore = create<AppState>()((set, get) => ({
     }
   },
   isBookmarked: (id) => get().bookmarks.includes(id),
+  skeletonSection: null,
 }))

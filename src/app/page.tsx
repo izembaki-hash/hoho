@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
@@ -7,6 +8,8 @@ import ThemeProvider from '@/components/ThemeProvider'
 import ReadingProgressBar from '@/components/ReadingProgressBar'
 import ContentReader from '@/components/ContentReader'
 import MobileBottomNav from '@/components/MobileBottomNav'
+import SectionSkeleton from '@/components/SectionSkeleton'
+import OnboardingModal from '@/components/OnboardingModal'
 import HeroSection from '@/components/sections/HeroSection'
 import AboutSection from '@/components/sections/AboutSection'
 import LiveLessonsSection from '@/components/sections/LiveLessonsSection'
@@ -16,7 +19,7 @@ import WrittenExpressionSection from '@/components/sections/WrittenExpressionSec
 import ContactSection from '@/components/sections/ContactSection'
 import ProgressDashboard from '@/components/sections/ProgressDashboard'
 import { useAppStore } from '@/lib/store'
-import { HomeIcon, ChevronLeft, Printer, Clock } from 'lucide-react'
+import { HomeIcon, ChevronLeft, Printer, Clock, HelpCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const sectionComponents: Record<string, React.ComponentType> = {
@@ -52,6 +55,18 @@ const sectionIcons: Record<string, string> = {
   progress: '📊',
 }
 
+// Skeleton type mapping per section
+const sectionSkeletonType: Record<string, 'hero' | 'content' | 'list' | 'form'> = {
+  home: 'hero',
+  about: 'content',
+  'live-lessons': 'content',
+  'recorded-lessons': 'list',
+  'oral-expression': 'content',
+  'written-expression': 'content',
+  contact: 'form',
+  progress: 'content',
+}
+
 const sectionContent: Record<string, string> = {
   home: 'منصة التحرير الكتابي والشفهي. منصة شاملة لتعلّم مهارات التحرير الكتابي والشفهي، مصمّمة خصيصاً للطلبة والأساتذة الجامعيين والتلاميذ. اكتسب مهارات العرض والإلقاء والكتابة الإبداعية من خلال دروس مباشرة ومسجلة. نوفر دروساً مباشرة وتفاعلية مع بث حي وإمكانية التواصل المباشر مع الأساتذة. مرفقات وملحقات تعليمية تشمل ملفات وملخصات وكتب مرجعية مع كل درس مسجل. جدولة مرنة مع دروس مباشرة في أوقات محددة ومسجلة متاحة على مدار الساعة. محتوى مخصص مصمم خصيصاً للطلبة والأساتذة والتلاميذ.',
   about: 'نبذة عن المؤلف. أستاذ التعليم العالي في تخصص اللغة العربية وآدابها، ومختص في فنون التحرير الكتابي والشفهي. حاصل على دكتوراه دولة في اللسانيات العربية وتحليل الخطاب، مع خبرة تزيد عن عشرين عاماً في ميدان التعليم الجامعي والبحث العلمي. شارك في العديد من المؤتمرات العلمية الدولية والوطنية، وأشرف على عشرات المذكرات والرسائل الجامعية. نشر أبحاثاً في مجلات محكّمة متخصصة، وألّف كتباً في مجالات التحرير والبلاغة والتواصل الفعّال. يؤمن بأن إتقان مهارات التعبير الكتابي والشفهي هو مفتاح النجاح في الحياة الأكاديمية والمهنية.',
@@ -76,14 +91,30 @@ const readingTime: Record<string, number> = {
 }
 
 export default function Home() {
-  const { activeSection } = useAppStore()
+  const { activeSection, skeletonSection } = useAppStore()
   const ActiveSectionComponent = sectionComponents[activeSection] || HeroSection
   const readerContent = sectionContent[activeSection] || ''
   const estimatedTime = readingTime[activeSection] || 5
 
+  // Onboarding modal state
+  const [onboardingOpen, setOnboardingOpen] = useState(false)
+
+  // Check onboarding on mount
+  useEffect(() => {
+    try {
+      const isComplete = localStorage.getItem('onboarding-complete')
+      if (!isComplete) {
+        const timer = setTimeout(() => setOnboardingOpen(true), 800)
+        return () => clearTimeout(timer)
+      }
+    } catch {}
+  }, [])
+
   const handlePrint = () => {
     window.print()
   }
+
+  const showSkeleton = skeletonSection === activeSection
 
   return (
     <ThemeProvider>
@@ -126,6 +157,16 @@ export default function Home() {
                       <Printer className="h-3.5 w-3.5" />
                       <span className="hidden sm:inline">طباعة</span>
                     </Button>
+                    {/* Help Button - reopens onboarding */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setOnboardingOpen(true)}
+                      className="h-7 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      <HelpCircle className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">مساعدة</span>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -134,15 +175,31 @@ export default function Home() {
           
           <div
             key={activeSection}
-            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12"
           >
-            <ActiveSectionComponent />
+            {/* Skeleton loading */}
+            {showSkeleton && (
+              <div className="animate-in fade-in-0 duration-200">
+                <SectionSkeleton type={sectionSkeletonType[activeSection] || 'content'} />
+              </div>
+            )}
+            {/* Actual content - fades in when skeleton disappears */}
+            <div
+              className={`transition-opacity duration-300 ${
+                showSkeleton
+                  ? 'opacity-0 h-0 overflow-hidden pointer-events-none'
+                  : 'opacity-100 animate-in fade-in-0 slide-in-from-bottom-4 duration-500'
+              }`}
+            >
+              {!showSkeleton && <ActiveSectionComponent />}
+            </div>
           </div>
         </main>
         <Footer />
         <ContentReader content={readerContent} />
         <ScrollToTop />
         <MobileBottomNav />
+        <OnboardingModal open={onboardingOpen} onOpenChange={setOnboardingOpen} />
       </div>
     </ThemeProvider>
   )

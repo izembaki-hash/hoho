@@ -10,11 +10,13 @@ import {
   Pen, Users, GraduationCap, School, BookOpen, 
   Lightbulb, Mic, FileText, ScrollText, 
   ClipboardList, MessageSquare, Briefcase, UserCheck, Newspaper, MessagesSquare,
-  CheckCircle2, ArrowLeft, Bookmark, BookmarkCheck
+  CheckCircle2, ArrowLeft, Bookmark, BookmarkCheck, Clock, Gauge,
+  BookMarked, Link2
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import SectionHeader from '@/components/SectionHeader'
 import ShareButton from '@/components/ShareButton'
+import TableOfContents from '@/components/TableOfContents'
 import { motion } from 'framer-motion'
 
 type TargetAudience = 'students' | 'professors' | 'pupils'
@@ -24,6 +26,9 @@ interface TopicContent {
   description: string
   details: string[]
   tips?: string[]
+  difficulty?: string
+  readingTime?: number
+  relatedTopics?: string[]
 }
 
 interface AudienceContent {
@@ -60,6 +65,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'تدرّب على كتابة خطبة كاملة قبل إلقائها',
         'اختر موضوعات تهم جمهورك وتتفاعل معها',
       ],
+      difficulty: 'متوسط',
+      readingTime: 6,
+      relatedTopics: ['intervention', 'textBuilding', 'essay'],
     },
     summary: {
       title: 'فن التلخيص',
@@ -76,6 +84,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'لا تبدأ بالتلخيص قبل فهم النص بالكامل',
         'راجع ملخصك وقارنه بالنص الأصلي',
       ],
+      difficulty: 'مبتدئ',
+      readingTime: 5,
+      relatedTopics: ['report', 'textBuilding'],
     },
     report: {
       title: 'كتابة التقرير',
@@ -92,6 +103,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'استخدم العناوين الفرعية لتسهيل القراءة',
         'راجع التقرير عدة مرات قبل تسليمه',
       ],
+      difficulty: 'متوسط',
+      readingTime: 5,
+      relatedTopics: ['adminLetters', 'summary', 'textBuilding'],
     },
     textBuilding: {
       title: 'بناء النص',
@@ -108,6 +122,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'تأكد من تسلسل الأفكار منطقياً',
         'استخدم أدوات ربط مناسبة بين الفقرات',
       ],
+      difficulty: 'متوسط',
+      readingTime: 5,
+      relatedTopics: ['punctuation', 'essay', 'oratory'],
     },
     punctuation: {
       title: 'علامات الترقيم',
@@ -128,6 +145,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'اقرأ نصوصاً أدبية ولاحظ كيف يستخدم الكتاب علامات الترقيم',
         'انتبه إلى أن الخطأ في الترقيم قد يغير المعنى',
       ],
+      difficulty: 'مبتدئ',
+      readingTime: 7,
+      relatedTopics: ['textBuilding', 'essay'],
     },
     adminLetters: {
       title: 'الرسائل الإدارية',
@@ -144,6 +164,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'راجع الرسالة قبل إرسالها للتحقق من الأخطاء',
         'كن مهذباً ومباشراً في آن واحد',
       ],
+      difficulty: 'متوسط',
+      readingTime: 5,
+      relatedTopics: ['report', 'cv'],
     },
     cv: {
       title: 'كتابة السيرة الذاتية',
@@ -161,6 +184,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'ركز على الإنجازات وليس فقط المهام',
         'راجع السيرة الذاتية عدة مرات',
       ],
+      difficulty: 'متوسط',
+      readingTime: 6,
+      relatedTopics: ['adminLetters', 'report'],
     },
     essay: {
       title: 'فن كتابة المقال',
@@ -177,6 +203,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'ابدأ بمخطط واضح للمقال',
         'دعم آراءك بأمثلة وحجج قوية',
       ],
+      difficulty: 'متقدم',
+      readingTime: 6,
+      relatedTopics: ['textBuilding', 'oratory', 'intervention'],
     },
     intervention: {
       title: 'فن المداخلة',
@@ -193,6 +222,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'كن مختصراً ومباشراً',
         'اربط مداخلتك بما قيل قبلك',
       ],
+      difficulty: 'متقدم',
+      readingTime: 5,
+      relatedTopics: ['oratory', 'essay'],
     },
   },
   professors: {
@@ -206,6 +238,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'الفرق بين الخطابة والمحاضرة الأكاديمية',
         'توظيف البلاغة العربية في الخطابة الجامعية المعاصرة',
       ],
+      difficulty: 'متقدم',
+      readingTime: 5,
+      relatedTopics: ['intervention', 'textBuilding'],
     },
     summary: {
       title: 'التلخيص في البحث العلمي',
@@ -217,6 +252,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'شروط التلخيص الأكاديمي: الأمانة العلمية، الدقة، الموضوعية',
         'أدوات التلخيص الحديثة وتوظيفها في البحث',
       ],
+      difficulty: 'متوسط',
+      readingTime: 4,
+      relatedTopics: ['report', 'textBuilding'],
     },
     report: {
       title: 'التقارير الأكاديمية والعلمية',
@@ -228,6 +266,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'المعايير الدولية لكتابة التقارير العلمية (APA, MLA)',
         'تقنيات عرض البيانات في التقارير العلمية',
       ],
+      difficulty: 'متقدم',
+      readingTime: 5,
+      relatedTopics: ['summary', 'adminLetters'],
     },
     textBuilding: {
       title: 'بناء النص الأكاديمي',
@@ -239,6 +280,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'معايير الكتابة الأكاديمية: الموضوعية، الدقة، التوثيق',
         'أساليب الاقتباس والتوثيق في بناء النص الأكاديمي',
       ],
+      difficulty: 'متقدم',
+      readingTime: 6,
+      relatedTopics: ['punctuation', 'essay'],
     },
     punctuation: {
       title: 'علامات الترقيم في الكتابة الأكاديمية',
@@ -250,6 +294,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'الأقواس واستخداماتها في الشروح والتعليقات',
         'الترقيم في المراجع والهوامش',
       ],
+      difficulty: 'متوسط',
+      readingTime: 4,
+      relatedTopics: ['textBuilding', 'essay'],
     },
     adminLetters: {
       title: 'المراسلات الإدارية الجامعية',
@@ -261,6 +308,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'طلبات الترقية والتقييم الأكاديمي',
         'صياغة القرارات والتعاميم الجامعية',
       ],
+      difficulty: 'متوسط',
+      readingTime: 4,
+      relatedTopics: ['report', 'cv'],
     },
     cv: {
       title: 'السيرة الذاتية الأكاديمية',
@@ -272,6 +322,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'التوصيات ورسائل التزكية الأكاديمية',
         'تحديث السيرة الذاتية باستمرار مع كل إنجاز جديد',
       ],
+      difficulty: 'متوسط',
+      readingTime: 5,
+      relatedTopics: ['adminLetters', 'report'],
     },
     essay: {
       title: 'المقال الأكاديمي والعلمي',
@@ -283,6 +336,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'معايير النشر في المجلات العلمية',
         'مراجعة الأقران (Peer Review) وتقنيات الكتابة لها',
       ],
+      difficulty: 'متقدم',
+      readingTime: 5,
+      relatedTopics: ['textBuilding', 'oratory'],
     },
     intervention: {
       title: 'المداخلة في المؤتمرات والندوات',
@@ -294,6 +350,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'نشر المداخلات في أعمال المؤتمرات',
         'المداخلة الافتتاحية والختامية',
       ],
+      difficulty: 'متقدم',
+      readingTime: 5,
+      relatedTopics: ['oratory', 'essay'],
     },
   },
   pupils: {
@@ -312,6 +371,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'اختر موضوعاً تحبه وتعرف عنه الكثير',
         'لا تتعجل في الكلام، تحدث بهدوء',
       ],
+      difficulty: 'مبتدئ',
+      readingTime: 3,
+      relatedTopics: ['intervention', 'essay'],
     },
     summary: {
       title: 'التلخيص',
@@ -327,6 +389,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'استخدم أقلاماً ملونة لتحديد الأفكار المهمة',
         'تدرّب على تلخيص مقالات من الصحف',
       ],
+      difficulty: 'مبتدئ',
+      readingTime: 3,
+      relatedTopics: ['report', 'textBuilding'],
     },
     report: {
       title: 'كتابة التقرير',
@@ -342,6 +407,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'اكتب التقرير فوراً بعد الحدث أو التجربة',
         'اطلب من معلمك مراجعة تقريرك',
       ],
+      difficulty: 'مبتدئ',
+      readingTime: 3,
+      relatedTopics: ['summary', 'adminLetters'],
     },
     textBuilding: {
       title: 'بناء النص',
@@ -353,6 +421,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'اختم بخاتمة تلخص أهم ما قلته',
         'راجع ما كتبته وتأكد أنه واضح ومفهوم',
       ],
+      difficulty: 'متوسط',
+      readingTime: 3,
+      relatedTopics: ['punctuation', 'essay'],
     },
     punctuation: {
       title: 'علامات الترقيم',
@@ -368,6 +439,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'تدرّب على وضع علامات الترقيم في نصوص مختلفة',
         'انتبه: النقطة في غير مكانها قد تغير المعنى!',
       ],
+      difficulty: 'مبتدئ',
+      readingTime: 4,
+      relatedTopics: ['textBuilding'],
     },
     adminLetters: {
       title: 'كتابة الرسائل',
@@ -383,6 +457,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'استخدم لغة رسمية ومهذبة',
         'اجعل رسالتك قصيرة ومباشرة',
       ],
+      difficulty: 'مبتدئ',
+      readingTime: 3,
+      relatedTopics: ['report', 'cv'],
     },
     cv: {
       title: 'السيرة الذاتية',
@@ -398,6 +475,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'اجعل سيرتك الذاتية مرتبة ونظيفة',
         'اطلب من أهلك أو معلمك مراجعتها',
       ],
+      difficulty: 'مبتدئ',
+      readingTime: 3,
+      relatedTopics: ['adminLetters'],
     },
     essay: {
       title: 'كتابة المقال',
@@ -413,6 +493,9 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'اقرأ مقالات كثيرة لتتعلم الأسلوب',
         'تدرّب على كتابة مقال قصير كل أسبوع',
       ],
+      difficulty: 'متوسط',
+      readingTime: 4,
+      relatedTopics: ['textBuilding', 'oratory'],
     },
     intervention: {
       title: 'المداخلة',
@@ -428,15 +511,25 @@ const contentByAudience: Record<TargetAudience, AudienceContent> = {
         'لا تخف من المشاركة، رأيك مهم!',
         'فكّر قليلاً قبل أن تتكلم',
       ],
+      difficulty: 'مبتدئ',
+      readingTime: 3,
+      relatedTopics: ['oratory', 'essay'],
     },
   },
 }
 
-const audienceTabs: { id: TargetAudience; label: string; icon: React.ReactNode; description: string }[] = [
-  { id: 'students', label: 'الطلبة', icon: <GraduationCap className="h-5 w-5" />, description: 'محتوى أكاديمي مخصص للطلبة الجامعيين' },
-  { id: 'professors', label: 'الأساتذة الجامعيين', icon: <Users className="h-5 w-5" />, description: 'محتوى متقدم مخصص للأساتذة والأكاديميين' },
-  { id: 'pupils', label: 'التلاميذ', icon: <School className="h-5 w-5" />, description: 'محتوى مبسط وتطبيقي للتلاميذ' },
+const audienceTabs: { id: TargetAudience; label: string; icon: React.ReactNode; description: string; underlineColor: string }[] = [
+  { id: 'students', label: 'الطلبة', icon: <GraduationCap className="h-5 w-5" />, description: 'محتوى أكاديمي مخصص للطلبة الجامعيين', underlineColor: 'bg-emerald-500' },
+  { id: 'professors', label: 'الأساتذة الجامعيين', icon: <Users className="h-5 w-5" />, description: 'محتوى متقدم مخصص للأساتذة والأكاديميين', underlineColor: 'bg-amber-500' },
+  { id: 'pupils', label: 'التلاميذ', icon: <School className="h-5 w-5" />, description: 'محتوى مبسط وتطبيقي للتلاميذ', underlineColor: 'bg-teal-500' },
 ]
+
+function getWrittenTocItems(audience: TargetAudience) {
+  return topics.map(topic => ({
+    id: `written-${audience}-${topic.key}`,
+    label: contentByAudience[audience][topic.key]?.title || topic.label,
+  }))
+}
 
 const topicColors: Record<string, string> = {
   oratory: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
@@ -448,6 +541,51 @@ const topicColors: Record<string, string> = {
   cv: 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',
   essay: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
   intervention: 'bg-lime-100 text-lime-600 dark:bg-lime-900/30 dark:text-lime-400',
+}
+
+const topicBorderColors: Record<string, string> = {
+  oratory: 'border-r-red-500 dark:border-r-red-400',
+  summary: 'border-r-teal-500 dark:border-r-teal-400',
+  report: 'border-r-amber-500 dark:border-r-amber-400',
+  textBuilding: 'border-r-emerald-500 dark:border-r-emerald-400',
+  punctuation: 'border-r-purple-500 dark:border-r-purple-400',
+  adminLetters: 'border-r-sky-500 dark:border-r-sky-400',
+  cv: 'border-r-rose-500 dark:border-r-rose-400',
+  essay: 'border-r-orange-500 dark:border-r-orange-400',
+  intervention: 'border-r-lime-500 dark:border-r-lime-400',
+}
+
+const topicGlowColors: Record<string, string> = {
+  oratory: 'hover:shadow-red-200/50 dark:hover:shadow-red-900/30',
+  summary: 'hover:shadow-teal-200/50 dark:hover:shadow-teal-900/30',
+  report: 'hover:shadow-amber-200/50 dark:hover:shadow-amber-900/30',
+  textBuilding: 'hover:shadow-emerald-200/50 dark:hover:shadow-emerald-900/30',
+  punctuation: 'hover:shadow-purple-200/50 dark:hover:shadow-purple-900/30',
+  adminLetters: 'hover:shadow-sky-200/50 dark:hover:shadow-sky-900/30',
+  cv: 'hover:shadow-rose-200/50 dark:hover:shadow-rose-900/30',
+  essay: 'hover:shadow-orange-200/50 dark:hover:shadow-orange-900/30',
+  intervention: 'hover:shadow-lime-200/50 dark:hover:shadow-lime-900/30',
+}
+
+const topicTipColors: Record<string, { bg: string; border: string; text: string; icon: string }> = {
+  oratory: { bg: 'bg-red-50 dark:bg-red-950/30', border: 'border-red-200 dark:border-red-800', text: 'text-red-900 dark:text-red-200', icon: 'text-red-500' },
+  summary: { bg: 'bg-teal-50 dark:bg-teal-950/30', border: 'border-teal-200 dark:border-teal-800', text: 'text-teal-900 dark:text-teal-200', icon: 'text-teal-500' },
+  report: { bg: 'bg-amber-50 dark:bg-amber-950/30', border: 'border-amber-200 dark:border-amber-800', text: 'text-amber-900 dark:text-amber-200', icon: 'text-amber-500' },
+  textBuilding: { bg: 'bg-emerald-50 dark:bg-emerald-950/30', border: 'border-emerald-200 dark:border-emerald-800', text: 'text-emerald-900 dark:text-emerald-200', icon: 'text-emerald-500' },
+  punctuation: { bg: 'bg-purple-50 dark:bg-purple-950/30', border: 'border-purple-200 dark:border-purple-800', text: 'text-purple-900 dark:text-purple-200', icon: 'text-purple-500' },
+  adminLetters: { bg: 'bg-sky-50 dark:bg-sky-950/30', border: 'border-sky-200 dark:border-sky-800', text: 'text-sky-900 dark:text-sky-200', icon: 'text-sky-500' },
+  cv: { bg: 'bg-rose-50 dark:bg-rose-950/30', border: 'border-rose-200 dark:border-rose-800', text: 'text-rose-900 dark:text-rose-200', icon: 'text-rose-500' },
+  essay: { bg: 'bg-orange-50 dark:bg-orange-950/30', border: 'border-orange-200 dark:border-orange-800', text: 'text-orange-900 dark:text-orange-200', icon: 'text-orange-500' },
+  intervention: { bg: 'bg-lime-50 dark:bg-lime-950/30', border: 'border-lime-200 dark:border-lime-800', text: 'text-lime-900 dark:text-lime-200', icon: 'text-lime-500' },
+}
+
+function getDifficultyColor(difficulty: string) {
+  switch (difficulty) {
+    case 'مبتدئ': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+    case 'متوسط': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+    case 'متقدم': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800'
+    default: return 'bg-muted text-muted-foreground border-border'
+  }
 }
 
 const containerVariants = {
@@ -466,6 +604,11 @@ const itemVariants = {
 export default function WrittenExpressionSection() {
   const [activeAudience, setActiveAudience] = useState<TargetAudience>('students')
   const { bookmarks, toggleBookmark, isBookmarked } = useAppStore()
+
+  // Calculate progress for current audience
+  const totalTopics = topics.length
+  const bookmarkedTopics = topics.filter(t => isBookmarked(`written-${activeAudience}-${t.key}`)).length
+  const progressPercent = Math.round((bookmarkedTopics / totalTopics) * 100)
 
   return (
     <motion.div
@@ -502,18 +645,30 @@ export default function WrittenExpressionSection() {
             <Users className="h-4 w-4 text-primary" />
             <span className="text-muted-foreground">3 فئات مستهدفة</span>
           </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-2 text-sm">
+            <BookMarked className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">التقدم:</span>
+            <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+              <div 
+                className="h-full rounded-full bg-gradient-to-l from-primary to-emerald-500 transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <span className="font-bold text-xs">{progressPercent}%</span>
+          </div>
         </div>
       </motion.div>
 
       {/* Audience Tabs */}
       <motion.div variants={itemVariants}>
       <Tabs value={activeAudience} onValueChange={(v) => setActiveAudience(v as TargetAudience)}>
-        <TabsList className="grid w-full grid-cols-3 h-auto p-1">
+        <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-muted/50">
           {audienceTabs.map((tab) => (
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300"
             >
               {tab.icon}
               <span className="hidden sm:inline">{tab.label}</span>
@@ -538,7 +693,7 @@ export default function WrittenExpressionSection() {
                 if (!topicContent) return null
                 const isSaved = isBookmarked(`written-${tab.id}-${topic.key}`)
                 return (
-                  <Card key={topic.key} className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer relative overflow-hidden">
+                  <Card key={topic.key} className={`border-0 shadow-sm hover:shadow-md ${topicGlowColors[topic.key] || ''} transition-all duration-300 group cursor-pointer relative overflow-hidden border-r-4 ${topicBorderColors[topic.key] || ''}`}>
                     <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-l from-primary to-emerald-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
                     <CardContent className="p-4 flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${topicColors[topic.key] || 'bg-primary/10 text-primary'}`}>
@@ -546,7 +701,20 @@ export default function WrittenExpressionSection() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-sm">{topic.label}</h4>
-                        <p className="text-xs text-muted-foreground line-clamp-1">{topicContent.title}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {topicContent.difficulty && (
+                            <Badge variant="outline" className={`text-[9px] px-1 py-0 ${getDifficultyColor(topicContent.difficulty)} gap-0.5`}>
+                              <Gauge className="h-2 w-2" />
+                              {topicContent.difficulty}
+                            </Badge>
+                          )}
+                          {topicContent.readingTime && (
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                              <Clock className="h-2.5 w-2.5" />
+                              {topicContent.readingTime}د
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleBookmark(`written-${tab.id}-${topic.key}`); }}
@@ -565,15 +733,22 @@ export default function WrittenExpressionSection() {
               })}
             </div>
 
-            {/* Detailed Content */}
-            <div className="space-y-4">
+            {/* Content with TOC */}
+            <div className="flex gap-6">
+              {/* Main Content */}
+              <div className="flex-1 min-w-0 space-y-4">
               {topics.map((topic) => {
                 const topicContent = contentByAudience[tab.id][topic.key]
                 if (!topicContent) return null
                 const isSaved = isBookmarked(`written-${tab.id}-${topic.key}`)
+                const tipColors = topicTipColors[topic.key] || topicTipColors.report
                 return (
-                  <Card key={topic.key} className="border-0 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden relative group">
-                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-l from-primary to-emerald-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                  <Card 
+                    key={topic.key} 
+                    id={`written-${tab.id}-${topic.key}`} 
+                    className={`border-0 shadow-md hover:shadow-xl ${topicGlowColors[topic.key] || ''} transition-all duration-300 overflow-hidden relative group scroll-mt-24 border-r-4 ${topicBorderColors[topic.key] || ''}`}
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-l from-transparent via-primary/60 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <Accordion type="single" collapsible>
                       <AccordionItem value={topic.key} className="border-0">
                         <AccordionTrigger className="px-6 py-4 hover:no-underline">
@@ -584,6 +759,20 @@ export default function WrittenExpressionSection() {
                             <div className="text-right flex-1">
                               <h3 className="font-bold text-base">{topicContent.title}</h3>
                             </div>
+                            {/* Difficulty Badge */}
+                            {topicContent.difficulty && (
+                              <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${getDifficultyColor(topicContent.difficulty)} gap-0.5`}>
+                                <Gauge className="h-2.5 w-2.5" />
+                                {topicContent.difficulty}
+                              </Badge>
+                            )}
+                            {/* Reading Time Badge */}
+                            {topicContent.readingTime && (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground gap-0.5">
+                                <Clock className="h-2.5 w-2.5" />
+                                {topicContent.readingTime} دقائق
+                              </Badge>
+                            )}
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleBookmark(`written-${tab.id}-${topic.key}`); }}
                               className="p-1 rounded hover:bg-muted transition-colors shrink-0"
@@ -612,19 +801,53 @@ export default function WrittenExpressionSection() {
                             {topicContent.tips && topicContent.tips.length > 0 && (
                               <>
                                 <Separator />
-                                <div>
+                                <div className={`rounded-xl p-4 ${tipColors.bg} border ${tipColors.border}`}>
                                   <h4 className="font-medium text-sm mb-3 flex items-center gap-2">
-                                    <Lightbulb className="h-4 w-4 text-amber-500" />
+                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${topicColors[topic.key] || 'bg-primary/10 text-primary'}`}>
+                                      <Lightbulb className="h-3.5 w-3.5" />
+                                    </div>
                                     نصائح عملية
                                   </h4>
                                   <ul className="space-y-2">
                                     {topicContent.tips.map((tip, idx) => (
-                                      <li key={idx} className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
-                                        <ArrowLeft className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                                        <span className="text-sm text-amber-900 dark:text-amber-200">{tip}</span>
+                                      <li key={idx} className="flex items-start gap-2 p-3 rounded-lg bg-white/50 dark:bg-black/10 border border-white/20 dark:border-white/5">
+                                        <ArrowLeft className={`h-4 w-4 ${tipColors.icon} shrink-0 mt-0.5`} />
+                                        <span className={`text-sm ${tipColors.text}`}>{tip}</span>
                                       </li>
                                     ))}
                                   </ul>
+                                </div>
+                              </>
+                            )}
+                            {/* Related Topics */}
+                            {topicContent.relatedTopics && topicContent.relatedTopics.length > 0 && (
+                              <>
+                                <Separator />
+                                <div>
+                                  <h4 className="font-medium text-sm mb-2 flex items-center gap-2 text-muted-foreground">
+                                    <Link2 className="h-4 w-4" />
+                                    مواضيع ذات صلة
+                                  </h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {topicContent.relatedTopics.map((relatedKey) => {
+                                      const relatedTopic = topics.find(t => t.key === relatedKey)
+                                      const relatedContent = contentByAudience[tab.id][relatedKey]
+                                      if (!relatedTopic || !relatedContent) return null
+                                      return (
+                                        <Badge 
+                                          key={relatedKey}
+                                          variant="outline" 
+                                          className="cursor-pointer hover:bg-primary/10 transition-colors gap-1"
+                                          onClick={() => {
+                                            const el = document.getElementById(`written-${tab.id}-${relatedKey}`)
+                                            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                                          }}
+                                        >
+                                          <span className="text-xs">{relatedContent.title}</span>
+                                        </Badge>
+                                      )
+                                    })}
+                                  </div>
                                 </div>
                               </>
                             )}
@@ -635,6 +858,9 @@ export default function WrittenExpressionSection() {
                   </Card>
                 )
               })}
+              </div>
+              {/* Table of Contents */}
+              <TableOfContents items={getWrittenTocItems(tab.id)} />
             </div>
           </TabsContent>
         ))}

@@ -12,10 +12,11 @@ import {
   Mail, Phone, MapPin, Send, CheckCircle, 
   Clock, MessageSquare, User, AtSign, 
   HelpCircle, BookOpen, Video, Mic,
-  Printer, Clock as ClockIcon
+  Printer, Clock as ClockIcon, Zap, Globe,
+  ChevronDown, Map
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -69,6 +70,25 @@ const faqs = [
   },
 ]
 
+// Animated contact icon component
+function AnimatedContactIcon({ icon, className }: { icon: React.ReactNode; className: string }) {
+  return (
+    <motion.div 
+      className={className}
+      animate={{ 
+        scale: [1, 1.05, 1],
+      }}
+      transition={{ 
+        duration: 2,
+        repeat: Infinity,
+        ease: 'easeInOut'
+      }}
+    >
+      {icon}
+    </motion.div>
+  )
+}
+
 export default function ContactSection() {
   const { setActiveSection } = useAppStore()
   const [formData, setFormData] = useState({
@@ -80,6 +100,7 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [focusedField, setFocusedField] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -125,6 +146,14 @@ export default function ContactSection() {
       <motion.div variants={itemVariants} className="text-center">
         <h2 className="text-2xl sm:text-3xl font-bold mb-3">اتصل بنا</h2>
         <p className="text-muted-foreground">تواصل معنا لطرح انشغالاتكم ومقترحاتكم</p>
+        {/* Response time indicator */}
+        <div className="flex items-center justify-center gap-2 mt-3">
+          <div className="relative">
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 absolute top-0 left-0 animate-ping opacity-75" />
+          </div>
+          <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">متوسط وقت الرد: أقل من 24 ساعة</span>
+        </div>
       </motion.div>
 
       {/* Quick Help */}
@@ -173,9 +202,10 @@ export default function ContactSection() {
             <div className="h-1 bg-gradient-to-l from-primary to-emerald-600" />
             <CardHeader>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                  <MessageSquare className="h-5 w-5" />
-                </div>
+                <AnimatedContactIcon 
+                  icon={<MessageSquare className="h-5 w-5" />}
+                  className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary"
+                />
                 <CardTitle className="text-xl">نموذج المراسلة</CardTitle>
               </div>
             </CardHeader>
@@ -186,7 +216,13 @@ export default function ContactSection() {
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-center gap-3 p-4 mb-6 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800"
                 >
-                  <CheckCircle className="h-6 w-6 text-emerald-500 shrink-0" />
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200 }}
+                  >
+                    <CheckCircle className="h-6 w-6 text-emerald-500 shrink-0" />
+                  </motion.div>
                   <div>
                     <h4 className="font-bold text-emerald-900 dark:text-emerald-200">تم إرسال رسالتك بنجاح!</h4>
                     <p className="text-sm text-emerald-700 dark:text-emerald-300">سنقوم بالرد عليك في أقرب وقت ممكن</p>
@@ -215,7 +251,10 @@ export default function ContactSection() {
                       id="contact-name"
                       value={formData.name}
                       onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      onFocus={() => setFocusedField('name')}
+                      onBlur={() => setFocusedField(null)}
                       placeholder="أدخل اسمك الكامل"
+                      className={`transition-all duration-300 ${focusedField === 'name' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''}`}
                       required
                     />
                   </div>
@@ -229,8 +268,11 @@ export default function ContactSection() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      onFocus={() => setFocusedField('email')}
+                      onBlur={() => setFocusedField(null)}
                       placeholder="example@email.com"
                       dir="ltr"
+                      className={`transition-all duration-300 ${focusedField === 'email' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''}`}
                       required
                     />
                   </div>
@@ -245,7 +287,10 @@ export default function ContactSection() {
                     id="contact-subject"
                     value={formData.subject}
                     onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                    onFocus={() => setFocusedField('subject')}
+                    onBlur={() => setFocusedField(null)}
                     placeholder="موضوع رسالتك"
+                    className={`transition-all duration-300 ${focusedField === 'subject' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''}`}
                     required
                   />
                 </div>
@@ -256,15 +301,17 @@ export default function ContactSection() {
                       <Mail className="h-4 w-4" />
                       الرسالة *
                     </Label>
-                    <span className="text-xs text-muted-foreground">{formData.message.length} حرف</span>
+                    <span className={`text-xs transition-colors duration-300 ${formData.message.length > 500 ? 'text-amber-500' : 'text-muted-foreground'}`}>{formData.message.length} حرف</span>
                   </div>
                   <Textarea
                     id="contact-message"
                     value={formData.message}
                     onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                    onFocus={() => setFocusedField('message')}
+                    onBlur={() => setFocusedField(null)}
                     placeholder="اكتب رسالتك هنا..."
                     rows={6}
-                    className="resize-none"
+                    className={`resize-none transition-all duration-300 ${focusedField === 'message' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''}`}
                     required
                   />
                 </div>
@@ -273,7 +320,7 @@ export default function ContactSection() {
                   type="submit"
                   size="lg"
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto gap-2 hover:scale-105 transition-transform"
+                  className="w-full sm:w-auto gap-2 hover:scale-105 transition-transform bg-gradient-to-l from-primary to-emerald-700 hover:from-primary/90 hover:to-emerald-700/90"
                 >
                   {isSubmitting ? (
                     <>
@@ -301,21 +348,52 @@ export default function ContactSection() {
                 <h3 className="font-bold text-lg mb-4">معلومات التواصل</h3>
                 <div className="space-y-4">
                   {[
-                    { icon: <Mail className="h-5 w-5" />, title: 'البريد الإلكتروني', value: 'contact@alta7reer.com', dir: 'ltr' },
-                    { icon: <Phone className="h-5 w-5" />, title: 'رقم الهاتف', value: '+213 555 123 456', dir: 'ltr' },
-                    { icon: <MapPin className="h-5 w-5" />, title: 'العنوان', value: 'الجزائر العاصمة، الجزائر', dir: 'rtl' },
-                    { icon: <ClockIcon className="h-5 w-5" />, title: 'ساعات العمل', value: 'الأحد - الخميس: 8:00 - 17:00', dir: 'rtl' },
+                    { icon: <Mail className="h-5 w-5" />, title: 'البريد الإلكتروني', value: 'contact@alta7reer.com', dir: 'ltr', animClass: 'animate-none' },
+                    { icon: <Phone className="h-5 w-5" />, title: 'رقم الهاتف', value: '+213 555 123 456', dir: 'ltr', animClass: 'animate-none' },
+                    { icon: <MapPin className="h-5 w-5" />, title: 'العنوان', value: 'الجزائر العاصمة، الجزائر', dir: 'rtl', animClass: 'animate-none' },
+                    { icon: <ClockIcon className="h-5 w-5" />, title: 'ساعات العمل', value: 'الأحد - الخميس: 8:00 - 17:00', dir: 'rtl', animClass: 'animate-none' },
                   ].map((info, idx) => (
                     <div key={idx} className="flex items-start gap-3 group">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                      <motion.div 
+                        className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300"
+                        whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+                        transition={{ duration: 0.4 }}
+                      >
                         {info.icon}
-                      </div>
+                      </motion.div>
                       <div>
                         <h4 className="font-medium text-sm">{info.title}</h4>
                         <p className="text-sm text-muted-foreground" dir={info.dir}>{info.value}</p>
                       </div>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Map Placeholder / Decorative Element */}
+          <motion.div variants={itemVariants}>
+            <Card className="border-0 shadow-md overflow-hidden">
+              <CardContent className="p-0">
+                <div className="relative h-40 bg-gradient-to-bl from-primary/5 via-emerald-50 to-teal-50 dark:from-primary/10 dark:via-emerald-950/20 dark:to-teal-950/20 flex items-center justify-center overflow-hidden">
+                  {/* Decorative map grid */}
+                  <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                  {/* Decorative circles mimicking map pins */}
+                  <div className="absolute top-6 right-8 w-3 h-3 rounded-full bg-primary/30 animate-pulse" />
+                  <div className="absolute top-12 left-16 w-2 h-2 rounded-full bg-emerald-500/30 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  <div className="absolute bottom-8 right-20 w-2.5 h-2.5 rounded-full bg-amber-500/30 animate-pulse" style={{ animationDelay: '1s' }} />
+                  <div className="absolute bottom-12 left-8 w-2 h-2 rounded-full bg-teal-500/30 animate-pulse" style={{ animationDelay: '1.5s' }} />
+                  <div className="text-center relative z-10">
+                    <motion.div
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />
+                    </motion.div>
+                    <p className="text-sm font-medium text-muted-foreground">الجزائر العاصمة</p>
+                    <p className="text-xs text-muted-foreground/60">جامعة الجزائر</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -328,7 +406,10 @@ export default function ContactSection() {
                 <div className="absolute bottom-4 left-4 w-12 h-12 border border-white rotate-45" />
               </div>
               <CardContent className="p-6 relative z-10">
-                <h3 className="font-bold text-lg mb-2">تواصل مباشر</h3>
+                <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-amber-300" />
+                  تواصل مباشر
+                </h3>
                 <p className="text-white/80 text-sm leading-relaxed mb-4">
                   يمكنك التواصل مباشرة مع المشرف على الموقع للاستفسار أو طرح أي انشغال. نحن هنا لمساعدتك!
                 </p>
@@ -393,13 +474,14 @@ export default function ContactSection() {
                   value={`faq-${idx}`}
                   className="border border-border/50 rounded-xl px-4 data-[state=open]:bg-muted/30 data-[state=open]:border-primary/20 transition-all duration-300"
                 >
-                  <AccordionTrigger className="hover:no-underline py-4">
+                  <AccordionTrigger className="hover:no-underline py-4 group/trigger">
                     <div className="flex items-center gap-3 text-right flex-1">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${faq.color}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${faq.color} group-hover/trigger:scale-110 transition-transform`}>
                         {faq.icon}
                       </div>
                       <span className="font-medium text-sm">{faq.q}</span>
                     </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-300 group-hover/trigger:text-primary" />
                   </AccordionTrigger>
                   <AccordionContent className="pb-4 pr-11">
                     <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
