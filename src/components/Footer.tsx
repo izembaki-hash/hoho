@@ -1,7 +1,10 @@
 'use client'
 
-import { Pen, Mail, Phone, MapPin, Heart, ExternalLink } from 'lucide-react'
+import { useState } from 'react'
+import { Pen, Mail, Phone, MapPin, Heart, ExternalLink, Send, CheckCircle, ArrowUp } from 'lucide-react'
 import { type SectionId, useAppStore } from '@/lib/store'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 const quickLinks: { id: SectionId; label: string }[] = [
   { id: 'home', label: 'الرئيسية' },
@@ -20,27 +23,37 @@ const socialLinks = [
 
 export default function Footer() {
   const { setActiveSection } = useAppStore()
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
 
   const handleLinkClick = (id: SectionId) => {
     setActiveSection(id)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email) return
+    setSubscribed(true)
+    setEmail('')
+    setTimeout(() => setSubscribed(false), 4000)
+  }
+
   return (
     <footer className="bg-gradient-to-b from-foreground to-foreground/95 text-background mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-12">
           {/* Brand */}
-          <div className="md:col-span-2 space-y-4">
+          <div className="lg:col-span-1 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-bl from-primary to-emerald-700 flex items-center justify-center shadow-md">
                 <Pen className="h-5 w-5 text-primary-foreground" />
               </div>
               <h3 className="text-lg font-bold">التحرير الكتابي والشفهي</h3>
             </div>
-            <p className="text-sm text-background/70 leading-relaxed max-w-md">
-              منصة تعليمية متكاملة تهدف إلى تطوير مهارات التحرير الكتابي والشفهي لدى الطلبة والأساتذة الجامعيين والتلاميذ من خلال دروس مباشرة ومسجلة ومحتوى تعليمي متنوع.
+            <p className="text-sm text-background/70 leading-relaxed">
+              منصة تعليمية متكاملة تهدف إلى تطوير مهارات التحرير الكتابي والشفهي لدى الطلبة والأساتذة الجامعيين والتلاميذ.
             </p>
             <div className="flex items-center gap-3 pt-2">
               {socialLinks.map((link) => (
@@ -92,6 +105,35 @@ export default function Footer() {
                 <span>الجزائر العاصمة، الجزائر</span>
               </li>
             </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div className="space-y-4">
+            <h3 className="text-base font-bold border-b border-background/10 pb-2">النشرة البريدية</h3>
+            <p className="text-sm text-background/60 leading-relaxed">
+              اشترك لتصلك أحدث الدروس والمحتوى التعليمي
+            </p>
+            {subscribed ? (
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/20 text-emerald-300 text-sm">
+                <CheckCircle className="h-4 w-4 shrink-0" />
+                <span>تم الاشتراك بنجاح!</span>
+              </div>
+            ) : (
+              <form onSubmit={handleSubscribe} className="flex gap-2">
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="بريدك الإلكتروني"
+                  className="bg-background/10 border-background/20 text-background placeholder:text-background/40 text-sm"
+                  dir="ltr"
+                  required
+                />
+                <Button type="submit" size="icon" className="shrink-0 bg-primary hover:bg-primary/90">
+                  <Send className="h-4 w-4" />
+                </Button>
+              </form>
+            )}
           </div>
         </div>
 

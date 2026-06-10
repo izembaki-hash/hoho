@@ -9,10 +9,12 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useAppStore } from '@/lib/store'
+import SectionHeader from '@/components/SectionHeader'
+import ShareButton from '@/components/ShareButton'
 import { 
   Video, Calendar, Clock, Users, Radio, Plus, CheckCircle, 
   MessageSquare, Phone, Mail, User, Bookmark, BookmarkCheck,
-  Send, AlertCircle 
+  Send, AlertCircle, Eye 
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -182,10 +184,13 @@ export default function LiveLessonsSection() {
       className="space-y-10"
     >
       {/* Header */}
-      <motion.div variants={itemVariants} className="text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-3">دروس مباشرة</h2>
-        <p className="text-muted-foreground">انضم إلى الدروس الحية وتفاعل مع الأساتذة مباشرة</p>
-      </motion.div>
+      <SectionHeader
+        title="دروس مباشرة"
+        description="انضم إلى الدروس الحية وتفاعل مع الأساتذة مباشرة"
+        icon={<Video className="h-9 w-9" />}
+        gradient="from-red-500 to-red-700"
+        shareTitle="دروس مباشرة - التحرير الكتابي والشفهي"
+      />
 
       {/* Live Stream */}
       <motion.div variants={itemVariants}>
@@ -218,7 +223,7 @@ export default function LiveLessonsSection() {
                 </div>
                 <div className="absolute top-4 left-4 flex items-center gap-2">
                   <Badge variant="destructive" className="gap-1 bg-red-600">
-                    <Users className="h-3 w-3" />
+                    <Eye className="h-3 w-3" />
                     {liveLesson.viewers} مشاهد
                   </Badge>
                 </div>
@@ -282,12 +287,15 @@ export default function LiveLessonsSection() {
                 </div>
                 <CardTitle className="text-xl">جدول الدروس القادمة</CardTitle>
               </div>
-              {bookmarks.length > 0 && (
-                <Badge variant="secondary" className="gap-1">
-                  <BookmarkCheck className="h-3 w-3" />
-                  {bookmarks.length} محفوظ
-                </Badge>
-              )}
+              <div className="flex items-center gap-2">
+                {bookmarks.length > 0 && (
+                  <Badge variant="secondary" className="gap-1">
+                    <BookmarkCheck className="h-3 w-3" />
+                    {bookmarks.length} محفوظ
+                  </Badge>
+                )}
+                <ShareButton title="جدول الدروس المباشرة" />
+              </div>
             </div>
           </CardHeader>
           <CardContent>

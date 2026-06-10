@@ -3,14 +3,17 @@
 import { useAppStore, type SectionId } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import AnimatedCounter from '@/components/AnimatedCounter'
+import NewsletterSection from '@/components/NewsletterSection'
 import { 
   BookOpen, Mic, Pen, Video, User, Mail, ChevronLeft, 
   Sparkles, GraduationCap, Users, School, ArrowRight,
-  PlayCircle, Calendar, Download, MessageCircle, Star, Quote
+  PlayCircle, Calendar, Download, MessageCircle, Star, Quote,
+  Zap, Trophy, Target
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-const sectionCards: { id: SectionId; label: string; description: string; icon: React.ReactNode; color: string; bgPattern: string }[] = [
+const sectionCards: { id: SectionId; label: string; description: string; icon: React.ReactNode; color: string; bgPattern: string; stat: string }[] = [
   {
     id: 'about',
     label: 'نبذة عن المؤلف',
@@ -18,6 +21,7 @@ const sectionCards: { id: SectionId; label: string; description: string; icon: R
     icon: <User className="h-7 w-7" />,
     color: 'from-emerald-500 to-emerald-700',
     bgPattern: 'bg-emerald-50 dark:bg-emerald-950/30',
+    stat: '20+ سنة خبرة',
   },
   {
     id: 'live-lessons',
@@ -26,6 +30,7 @@ const sectionCards: { id: SectionId; label: string; description: string; icon: R
     icon: <Video className="h-7 w-7" />,
     color: 'from-red-500 to-red-700',
     bgPattern: 'bg-red-50 dark:bg-red-950/30',
+    stat: 'بث أسبوعي',
   },
   {
     id: 'recorded-lessons',
@@ -34,6 +39,7 @@ const sectionCards: { id: SectionId; label: string; description: string; icon: R
     icon: <BookOpen className="h-7 w-7" />,
     color: 'from-amber-500 to-amber-700',
     bgPattern: 'bg-amber-50 dark:bg-amber-950/30',
+    stat: '150+ درس',
   },
   {
     id: 'oral-expression',
@@ -42,6 +48,7 @@ const sectionCards: { id: SectionId; label: string; description: string; icon: R
     icon: <Mic className="h-7 w-7" />,
     color: 'from-teal-500 to-teal-700',
     bgPattern: 'bg-teal-50 dark:bg-teal-950/30',
+    stat: '5 مهارات أساسية',
   },
   {
     id: 'written-expression',
@@ -50,6 +57,7 @@ const sectionCards: { id: SectionId; label: string; description: string; icon: R
     icon: <Pen className="h-7 w-7" />,
     color: 'from-primary to-emerald-800',
     bgPattern: 'bg-primary/5 dark:bg-primary/10',
+    stat: '9 موضوعات',
   },
   {
     id: 'contact',
@@ -58,14 +66,15 @@ const sectionCards: { id: SectionId; label: string; description: string; icon: R
     icon: <Mail className="h-7 w-7" />,
     color: 'from-slate-500 to-slate-700',
     bgPattern: 'bg-slate-50 dark:bg-slate-950/30',
+    stat: 'رد سريع',
   },
 ]
 
 const stats = [
-  { label: 'درس مسجل', value: '150+', icon: <BookOpen className="h-5 w-5" /> },
-  { label: 'طالب نشط', value: '5000+', icon: <GraduationCap className="h-5 w-5" /> },
-  { label: 'أستاذ', value: '25+', icon: <Users className="h-5 w-5" /> },
-  { label: 'مؤسسة تعليمية', value: '10+', icon: <School className="h-5 w-5" /> },
+  { label: 'درس مسجل', value: '150+', icon: <BookOpen className="h-5 w-5" />, color: 'from-emerald-500 to-teal-600' },
+  { label: 'طالب نشط', value: '5000+', icon: <GraduationCap className="h-5 w-5" />, color: 'from-primary to-emerald-700' },
+  { label: 'أستاذ', value: '25+', icon: <Users className="h-5 w-5" />, color: 'from-amber-500 to-amber-700' },
+  { label: 'مؤسسة تعليمية', value: '10+', icon: <School className="h-5 w-5" />, color: 'from-teal-500 to-teal-700' },
 ]
 
 const features = [
@@ -73,21 +82,25 @@ const features = [
     icon: <PlayCircle className="h-6 w-6" />,
     title: 'دروس مباشرة وتفاعلية',
     description: 'بث حي مع إمكانية التواصل المباشر مع الأساتذة وطرح الأسئلة',
+    gradient: 'from-red-500 to-red-700',
   },
   {
     icon: <Download className="h-6 w-6" />,
     title: 'مرفقات وملحقات تعليمية',
     description: 'ملفات PDF وملخصات وكتب مرجعية مع كل درس مسجل',
+    gradient: 'from-amber-500 to-amber-700',
   },
   {
     icon: <Calendar className="h-6 w-6" />,
     title: 'جدولة مرنة',
     description: 'دروس مباشرة في أوقات محددة ومسجلة متاحة على مدار الساعة',
+    gradient: 'from-teal-500 to-teal-700',
   },
   {
     icon: <MessageCircle className="h-6 w-6" />,
     title: 'محتوى مخصص',
     description: 'محتوى مصمم خصيصاً للطلبة والأساتذة والتلاميذ',
+    gradient: 'from-primary to-emerald-800',
   },
 ]
 
@@ -97,19 +110,28 @@ const testimonials = [
     role: 'طالب ماجستير',
     text: 'ساعدتني الدروس المباشرة على تطوير مهارات العرض التقديمي بشكل كبير. أنصح بها كل طالب جامعي.',
     rating: 5,
+    color: 'from-emerald-500 to-teal-600',
   },
   {
     name: 'فاطمة الزهراء',
     role: 'أستاذة جامعية',
     text: 'محتوى متقن ومنهجي يوفر للأساتذة أدوات تعليمية قيمة في مجال التحرير الكتابي.',
     rating: 5,
+    color: 'from-amber-500 to-amber-700',
   },
   {
     name: 'يوسف مرابط',
     role: 'تلميذ في الثانوية',
     text: 'الشروحات مبسطة وواضحة، تعلمت كيف أكتب مقالاً منظماً بفضل الدروس المسجلة.',
     rating: 5,
+    color: 'from-primary to-emerald-800',
   },
+]
+
+const achievements = [
+  { icon: <Zap className="h-5 w-5" />, text: 'تعلم تفاعلي', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
+  { icon: <Trophy className="h-5 w-5" />, text: 'شهادات معتمدة', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
+  { icon: <Target className="h-5 w-5" />, text: 'أهداف واضحة', color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' },
 ]
 
 const containerVariants = {
@@ -152,6 +174,8 @@ export default function HeroSection() {
           <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white rounded-full" />
           <div className="absolute bottom-20 right-20 w-24 h-24 border-2 border-white rounded-full" />
           <div className="absolute top-1/2 left-1/3 w-16 h-16 border border-white rotate-45" />
+          <div className="absolute top-1/4 right-1/4 w-8 h-8 bg-white rounded-full" />
+          <div className="absolute bottom-1/3 left-1/5 w-6 h-6 bg-white rotate-45" />
         </div>
         <div className="relative z-20 px-6 sm:px-12 py-16 sm:py-24 min-h-[420px] flex flex-col justify-center">
           <div className="max-w-2xl">
@@ -178,11 +202,25 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-base sm:text-lg text-white/80 mb-8 leading-relaxed"
+              className="text-base sm:text-lg text-white/80 mb-6 leading-relaxed"
             >
               منصة شاملة لتعلّم مهارات التحرير الكتابي والشفهي، مصمّمة خصيصاً للطلبة والأساتذة الجامعيين والتلاميذ. 
               اكتسب مهارات العرض والإلقاء والكتابة الإبداعية من خلال دروس مباشرة ومسجلة.
             </motion.p>
+            {/* Achievement badges */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45, duration: 0.5 }}
+              className="flex flex-wrap gap-2 mb-8"
+            >
+              {achievements.map((a, idx) => (
+                <span key={idx} className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full ${a.color}`}>
+                  {a.icon}
+                  {a.text}
+                </span>
+              ))}
+            </motion.div>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -211,7 +249,7 @@ export default function HeroSection() {
         </div>
       </motion.section>
 
-      {/* Stats */}
+      {/* Stats with animated counters */}
       <motion.section 
         variants={containerVariants}
         initial="hidden"
@@ -221,12 +259,16 @@ export default function HeroSection() {
       >
         {stats.map((stat, idx) => (
           <motion.div key={idx} variants={itemVariants}>
-            <Card className="text-center border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
-              <CardContent className="pt-6 pb-4 px-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+            <Card className="text-center border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+              {/* Gradient top bar */}
+              <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${stat.color}`} />
+              <CardContent className="pt-7 pb-5 px-4">
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${stat.color} flex items-center justify-center mx-auto mb-3 text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                   {stat.icon}
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold text-primary mb-1">{stat.value}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary mb-1">
+                  <AnimatedCounter value={stat.value} />
+                </div>
                 <div className="text-sm text-muted-foreground">{stat.label}</div>
               </CardContent>
             </Card>
@@ -250,9 +292,11 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {features.map((feature, idx) => (
             <motion.div key={idx} variants={itemVariants}>
-              <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group h-full">
-                <CardContent className="p-6 flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+              <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 group h-full relative overflow-hidden">
+                {/* Hover gradient background */}
+                <div className={`absolute inset-0 bg-gradient-to-bl ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                <CardContent className="p-6 flex items-start gap-4 relative z-10">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-bl ${feature.gradient} flex items-center justify-center text-white shrink-0 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
                     {feature.icon}
                   </div>
                   <div>
@@ -289,8 +333,11 @@ export default function HeroSection() {
                 <CardContent className="p-0">
                   <div className={`h-1.5 bg-gradient-to-l ${card.color}`} />
                   <div className={`${card.bgPattern} p-6`}>
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${card.color} flex items-center justify-center text-white mb-4 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
-                      {card.icon}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-bl ${card.color} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
+                        {card.icon}
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground bg-background/60 px-2.5 py-1 rounded-full backdrop-blur-sm">{card.stat}</span>
                     </div>
                     <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">
                       {card.label}
@@ -326,8 +373,10 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((testimonial, idx) => (
             <motion.div key={idx} variants={itemVariants}>
-              <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 h-full">
-                <CardContent className="p-6">
+              <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 h-full relative overflow-hidden group">
+                {/* Gradient top bar */}
+                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${testimonial.color} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
+                <CardContent className="p-6 pt-7">
                   <div className="flex items-center gap-1 mb-3">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
@@ -338,7 +387,7 @@ export default function HeroSection() {
                     <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.text}</p>
                   </div>
                   <div className="flex items-center gap-3 pt-3 border-t border-border">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                    <div className={`w-10 h-10 rounded-full bg-gradient-to-bl ${testimonial.color} flex items-center justify-center text-white font-bold text-sm shadow-md`}>
                       {testimonial.name.charAt(0)}
                     </div>
                     <div>
@@ -352,6 +401,9 @@ export default function HeroSection() {
           ))}
         </div>
       </motion.section>
+
+      {/* Newsletter */}
+      <NewsletterSection />
     </div>
   )
 }

@@ -6,11 +6,16 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Progress } from '@/components/ui/progress'
 import { 
   Play, Clock, Download, FileText, BookOpen, Search, 
-  Filter, Eye, Calendar, Tag, Paperclip 
+  Filter, Eye, Calendar, Tag, Paperclip, Bookmark, 
+  BookmarkCheck, CheckCircle2, Star, ChevronDown 
 } from 'lucide-react'
+import { useAppStore } from '@/lib/store'
+import SectionHeader from '@/components/SectionHeader'
+import ShareButton from '@/components/ShareButton'
+import { motion } from 'framer-motion'
 
 interface RecordedLesson {
   id: string
@@ -22,6 +27,8 @@ interface RecordedLesson {
   duration: number
   views: number
   createdAt: string
+  rating: number
+  level: string
   attachments: { name: string; type: string; size: string }[]
 }
 
@@ -35,6 +42,8 @@ const sampleRecordedLessons: RecordedLesson[] = [
     category: 'كتابي',
     duration: 3600,
     views: 1250,
+    rating: 4.8,
+    level: 'مبتدئ',
     createdAt: new Date(Date.now() - 86400000 * 30).toISOString(),
     attachments: [
       { name: 'ملخص الدرس.pdf', type: 'PDF', size: '2.5 MB' },
@@ -50,6 +59,8 @@ const sampleRecordedLessons: RecordedLesson[] = [
     category: 'شفهي',
     duration: 5400,
     views: 980,
+    rating: 4.9,
+    level: 'متوسط',
     createdAt: new Date(Date.now() - 86400000 * 25).toISOString(),
     attachments: [
       { name: 'كتاب الخطابة.pdf', type: 'PDF', size: '5.1 MB' },
@@ -66,6 +77,8 @@ const sampleRecordedLessons: RecordedLesson[] = [
     category: 'كتابي',
     duration: 4200,
     views: 760,
+    rating: 4.7,
+    level: 'متقدم',
     createdAt: new Date(Date.now() - 86400000 * 20).toISOString(),
     attachments: [
       { name: 'نماذج تقارير.pdf', type: 'PDF', size: '1.8 MB' },
@@ -81,6 +94,8 @@ const sampleRecordedLessons: RecordedLesson[] = [
     category: 'شفهي',
     duration: 4800,
     views: 1120,
+    rating: 4.6,
+    level: 'متوسط',
     createdAt: new Date(Date.now() - 86400000 * 15).toISOString(),
     attachments: [
       { name: 'ملخص المهارات.pdf', type: 'PDF', size: '1.5 MB' },
@@ -96,6 +111,8 @@ const sampleRecordedLessons: RecordedLesson[] = [
     category: 'كتابي',
     duration: 6000,
     views: 1540,
+    rating: 5.0,
+    level: 'مبتدئ',
     createdAt: new Date(Date.now() - 86400000 * 10).toISOString(),
     attachments: [
       { name: 'جدول علامات الترقيم.pdf', type: 'PDF', size: '500 KB' },
@@ -112,6 +129,8 @@ const sampleRecordedLessons: RecordedLesson[] = [
     category: 'شفهي',
     duration: 4500,
     views: 890,
+    rating: 4.8,
+    level: 'متقدم',
     createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
     attachments: [
       { name: 'دليل لغة الجسد.pdf', type: 'PDF', size: '3.2 MB' },
@@ -126,6 +145,8 @@ const sampleRecordedLessons: RecordedLesson[] = [
     category: 'كتابي',
     duration: 5100,
     views: 670,
+    rating: 4.5,
+    level: 'متوسط',
     createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
     attachments: [
       { name: 'نماذج نصوص أدبية.pdf', type: 'PDF', size: '4.5 MB' },
@@ -141,6 +162,8 @@ const sampleRecordedLessons: RecordedLesson[] = [
     category: 'كتابي',
     duration: 3900,
     views: 540,
+    rating: 4.4,
+    level: 'متوسط',
     createdAt: new Date(Date.now() - 86400000 * 1).toISOString(),
     attachments: [
       { name: 'نماذج مقالات.pdf', type: 'PDF', size: '2.8 MB' },
@@ -161,12 +184,35 @@ function formatDate(dateStr: string) {
   })
 }
 
+function getLevelColor(level: string) {
+  switch (level) {
+    case 'مبتدئ': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+    case 'متوسط': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+    case 'متقدم': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+    default: return 'bg-muted text-muted-foreground'
+  }
+}
+
 const categories = ['الكل', 'كتابي', 'شفهي']
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 },
+}
 
 export default function RecordedLessonsSection() {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('الكل')
   const [selectedLesson, setSelectedLesson] = useState<RecordedLesson | null>(null)
+  const { bookmarks, toggleBookmark, isBookmarked } = useAppStore()
 
   const filteredLessons = sampleRecordedLessons.filter(lesson => {
     const matchesSearch = lesson.title.includes(searchQuery) || lesson.description.includes(searchQuery)
@@ -174,84 +220,144 @@ export default function RecordedLessonsSection() {
     return matchesSearch && matchesCategory
   })
 
+  const bookmarkedCount = sampleRecordedLessons.filter(l => isBookmarked(l.id)).length
+
   return (
-    <div className="space-y-10">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-10"
+    >
       {/* Header */}
-      <div className="text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-3">دروس مسجلة</h2>
-        <p className="text-muted-foreground">مكتبة شاملة للدروس المسجلة مع مرفقات وملحقات تعليمية</p>
-      </div>
+      <SectionHeader
+        title="دروس مسجلة"
+        description="مكتبة شاملة للدروس المسجلة مع مرفقات وملحقات تعليمية"
+        icon={<BookOpen className="h-9 w-9" />}
+        gradient="from-amber-500 to-amber-700"
+        shareTitle="دروس مسجلة - التحرير الكتابي والشفهي"
+      />
+
+      {/* Stats bar */}
+      <motion.div variants={itemVariants}>
+        <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border/50">
+          <div className="flex items-center gap-2 text-sm">
+            <BookOpen className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">إجمالي الدروس:</span>
+            <span className="font-bold">{sampleRecordedLessons.length}</span>
+          </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-2 text-sm">
+            <BookmarkCheck className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">المحفوظة:</span>
+            <span className="font-bold">{bookmarkedCount}</span>
+          </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-2 text-sm">
+            <Eye className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">إجمالي المشاهدات:</span>
+            <span className="font-bold">{sampleRecordedLessons.reduce((s, l) => s + l.views, 0).toLocaleString('ar-SA')}</span>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Search and Filter */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="ابحث في الدروس..."
-            className="pr-10"
-          />
+      <motion.div variants={itemVariants}>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="ابحث في الدروس..."
+              className="pr-10"
+            />
+          </div>
+          <div className="flex gap-2">
+            {categories.map(cat => (
+              <Button
+                key={cat}
+                variant={activeCategory === cat ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveCategory(cat)}
+                className="gap-1"
+              >
+                <Filter className="h-3 w-3" />
+                {cat}
+              </Button>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-2">
-          {categories.map(cat => (
-            <Button
-              key={cat}
-              variant={activeCategory === cat ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setActiveCategory(cat)}
-              className="gap-1"
-            >
-              <Filter className="h-3 w-3" />
-              {cat}
-            </Button>
-          ))}
-        </div>
-      </div>
+      </motion.div>
 
       {/* Lessons Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredLessons.map((lesson) => (
-          <Card
-            key={lesson.id}
-            className="group cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-            onClick={() => setSelectedLesson(lesson)}
-          >
-            <div className="relative aspect-video bg-gradient-to-bl from-primary/20 to-primary/5 flex items-center justify-center">
-              <div className="w-14 h-14 rounded-full bg-primary/80 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-                <Play className="h-6 w-6 mr-[-2px]" />
-              </div>
-              <div className="absolute bottom-2 left-2 flex items-center gap-1">
-                <Badge variant="secondary" className="text-xs bg-black/60 text-white border-0">
-                  <Clock className="h-3 w-3 ml-1" />
-                  {formatDuration(lesson.duration)}
-                </Badge>
-              </div>
-              <div className="absolute top-2 right-2">
-                <Badge variant={lesson.category === 'شفهي' ? 'default' : 'secondary'} className="text-xs">
-                  {lesson.category}
-                </Badge>
-              </div>
-            </div>
-            <CardContent className="p-4">
-              <h3 className="font-bold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                {lesson.title}
-              </h3>
-              <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-                {lesson.description}
-              </p>
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Eye className="h-3 w-3" />
-                  {lesson.views} مشاهدة
+          <motion.div key={lesson.id} variants={itemVariants}>
+            <Card
+              className="group cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+              onClick={() => setSelectedLesson(lesson)}
+            >
+              <div className="relative aspect-video bg-gradient-to-bl from-primary/20 to-primary/5 flex items-center justify-center">
+                {/* Colored gradient based on category */}
+                <div className={`absolute inset-0 ${lesson.category === 'شفهي' ? 'bg-gradient-to-bl from-teal-500/20 to-teal-600/5' : 'bg-gradient-to-bl from-amber-500/20 to-amber-600/5'}`} />
+                <div className="w-14 h-14 rounded-full bg-primary/80 flex items-center justify-center text-white group-hover:scale-110 transition-transform shadow-lg relative z-10">
+                  <Play className="h-6 w-6 mr-[-2px]" />
                 </div>
-                <div className="flex items-center gap-1">
-                  <Paperclip className="h-3 w-3" />
-                  {lesson.attachments.length} مرفق
+                <div className="absolute bottom-2 left-2 flex items-center gap-1">
+                  <Badge variant="secondary" className="text-xs bg-black/60 text-white border-0">
+                    <Clock className="h-3 w-3 ml-1" />
+                    {formatDuration(lesson.duration)}
+                  </Badge>
                 </div>
+                <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                  <Badge className={`text-xs ${getLevelColor(lesson.level)}`}>
+                    {lesson.level}
+                  </Badge>
+                </div>
+                <div className="absolute top-2 left-2">
+                  <Badge variant={lesson.category === 'شفهي' ? 'default' : 'secondary'} className="text-xs">
+                    {lesson.category}
+                  </Badge>
+                </div>
+                {/* Bookmark button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleBookmark(lesson.id); }}
+                  className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors"
+                  title={isBookmarked(lesson.id) ? 'إزالة من المحفوظات' : 'حفظ الدرس'}
+                >
+                  {isBookmarked(lesson.id) ? (
+                    <BookmarkCheck className="h-3.5 w-3.5 text-primary" />
+                  ) : (
+                    <Bookmark className="h-3.5 w-3.5 text-white" />
+                  )}
+                </button>
               </div>
-            </CardContent>
-          </Card>
+              <CardContent className="p-4">
+                <h3 className="font-bold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                  {lesson.title}
+                </h3>
+                <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+                  {lesson.description}
+                </p>
+                {/* Rating */}
+                <div className="flex items-center gap-1 mb-3">
+                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                  <span className="text-xs font-medium">{lesson.rating}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Eye className="h-3 w-3" />
+                    {lesson.views} مشاهدة
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Paperclip className="h-3 w-3" />
+                    {lesson.attachments.length} مرفق
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
 
@@ -273,9 +379,12 @@ export default function RecordedLessonsSection() {
               </DialogHeader>
               
               {/* Video Player Placeholder */}
-              <div className="aspect-video bg-black/90 rounded-xl flex items-center justify-center mb-4">
-                <div className="text-center text-white">
-                  <Play className="h-12 w-12 mx-auto mb-3 opacity-50" />
+              <div className="aspect-video bg-black/90 rounded-xl flex items-center justify-center mb-4 relative overflow-hidden">
+                <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                <div className="text-center text-white relative z-10">
+                  <div className="w-16 h-16 rounded-full bg-primary/30 flex items-center justify-center mx-auto mb-3 animate-pulse">
+                    <Play className="h-8 w-8" />
+                  </div>
                   <p className="text-sm text-white/70">مشغل الفيديو</p>
                 </div>
               </div>
@@ -300,6 +409,19 @@ export default function RecordedLessonsSection() {
                   <Badge variant={selectedLesson.category === 'شفهي' ? 'default' : 'secondary'}>
                     {selectedLesson.category}
                   </Badge>
+                  <Badge className={getLevelColor(selectedLesson.level)}>
+                    {selectedLesson.level}
+                  </Badge>
+                  <Badge variant="outline" className="gap-1">
+                    <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                    {selectedLesson.rating}
+                  </Badge>
+                </div>
+
+                {/* Share */}
+                <div className="flex items-center gap-2 pt-2">
+                  <span className="text-sm text-muted-foreground">مشاركة:</span>
+                  <ShareButton title={selectedLesson.title} />
                 </div>
 
                 {/* Attachments */}
@@ -316,8 +438,8 @@ export default function RecordedLessonsSection() {
                           className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded bg-red-100 flex items-center justify-center">
-                              <FileText className="h-4 w-4 text-red-600" />
+                            <div className="w-8 h-8 rounded bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                              <FileText className="h-4 w-4 text-red-600 dark:text-red-400" />
                             </div>
                             <div>
                               <p className="text-sm font-medium">{attachment.name}</p>
@@ -338,6 +460,6 @@ export default function RecordedLessonsSection() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   )
 }

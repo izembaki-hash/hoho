@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
 import ThemeProvider from '@/components/ThemeProvider'
+import ReadingProgressBar from '@/components/ReadingProgressBar'
 import HeroSection from '@/components/sections/HeroSection'
 import AboutSection from '@/components/sections/AboutSection'
 import LiveLessonsSection from '@/components/sections/LiveLessonsSection'
@@ -34,6 +35,16 @@ const sectionTitles: Record<string, string> = {
   contact: 'اتصل بنا',
 }
 
+const sectionIcons: Record<string, string> = {
+  home: '🏠',
+  about: '👨‍🏫',
+  'live-lessons': '📡',
+  'recorded-lessons': '📚',
+  'oral-expression': '🎤',
+  'written-expression': '✍️',
+  contact: '✉️',
+}
+
 export default function Home() {
   const { activeSection } = useAppStore()
   const ActiveSectionComponent = sectionComponents[activeSection] || HeroSection
@@ -41,6 +52,7 @@ export default function Home() {
   return (
     <ThemeProvider>
       <div className="min-h-screen flex flex-col">
+        <ReadingProgressBar />
         <Navbar />
         <main className="flex-1 pt-16 lg:pt-20">
           {/* Breadcrumb */}
@@ -56,7 +68,10 @@ export default function Home() {
                     الرئيسية
                   </button>
                   <ChevronLeft className="h-3 w-3" />
-                  <span className="text-foreground font-medium">{sectionTitles[activeSection]}</span>
+                  <span className="flex items-center gap-1.5 text-foreground font-medium">
+                    <span className="text-xs">{sectionIcons[activeSection]}</span>
+                    {sectionTitles[activeSection]}
+                  </span>
                 </div>
               </div>
             </div>

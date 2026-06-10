@@ -10,8 +10,12 @@ import {
   Pen, Users, GraduationCap, School, BookOpen, 
   Lightbulb, Mic, FileText, ScrollText, 
   ClipboardList, MessageSquare, Briefcase, UserCheck, Newspaper, MessagesSquare,
-  CheckCircle2, ArrowLeft 
+  CheckCircle2, ArrowLeft, Bookmark, BookmarkCheck
 } from 'lucide-react'
+import { useAppStore } from '@/lib/store'
+import SectionHeader from '@/components/SectionHeader'
+import ShareButton from '@/components/ShareButton'
+import { motion } from 'framer-motion'
 
 type TargetAudience = 'students' | 'professors' | 'pupils'
 
@@ -434,23 +438,75 @@ const audienceTabs: { id: TargetAudience; label: string; icon: React.ReactNode; 
   { id: 'pupils', label: 'التلاميذ', icon: <School className="h-5 w-5" />, description: 'محتوى مبسط وتطبيقي للتلاميذ' },
 ]
 
+const topicColors: Record<string, string> = {
+  oratory: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+  summary: 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400',
+  report: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  textBuilding: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+  punctuation: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+  adminLetters: 'bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400',
+  cv: 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',
+  essay: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
+  intervention: 'bg-lime-100 text-lime-600 dark:bg-lime-900/30 dark:text-lime-400',
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 },
+}
+
 export default function WrittenExpressionSection() {
   const [activeAudience, setActiveAudience] = useState<TargetAudience>('students')
+  const { bookmarks, toggleBookmark, isBookmarked } = useAppStore()
 
   return (
-    <div className="space-y-10">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-10"
+    >
       {/* Header */}
-      <div className="text-center">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-bl from-primary to-emerald-800 flex items-center justify-center text-white mx-auto mb-4">
-          <Pen className="h-8 w-8" />
+      <SectionHeader
+        title="التحرير الكتابي"
+        description="قسم متخصص في مهارات التحرير الكتابي، اختر الفئة المناسبة لك واستكشف المحتوى التعليمي"
+        icon={<Pen className="h-9 w-9" />}
+        gradient="from-primary to-emerald-800"
+        shareTitle="التحرير الكتابي - التحرير الكتابي والشفهي"
+      />
+
+      {/* Quick Stats */}
+      <motion.div variants={itemVariants}>
+        <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border/50">
+          <div className="flex items-center gap-2 text-sm">
+            <BookOpen className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">عدد الموضوعات:</span>
+            <span className="font-bold">9</span>
+          </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-2 text-sm">
+            <BookmarkCheck className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">المحفوظة:</span>
+            <span className="font-bold">{bookmarks.filter(b => b.startsWith('written-')).length}</span>
+          </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-2 text-sm">
+            <Users className="h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">3 فئات مستهدفة</span>
+          </div>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold mb-3">التحرير الكتابي</h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          قسم متخصص في مهارات التحرير الكتابي، اختر الفئة المناسبة لك واستكشف المحتوى التعليمي
-        </p>
-      </div>
+      </motion.div>
 
       {/* Audience Tabs */}
+      <motion.div variants={itemVariants}>
       <Tabs value={activeAudience} onValueChange={(v) => setActiveAudience(v as TargetAudience)}>
         <TabsList className="grid w-full grid-cols-3 h-auto p-1">
           {audienceTabs.map((tab) => (
@@ -469,7 +525,7 @@ export default function WrittenExpressionSection() {
         {audienceTabs.map((tab) => (
           <TabsContent key={tab.id} value={tab.id} className="mt-8">
             {/* Audience Description */}
-            <Card className="border-0 shadow-sm bg-muted/30 mb-8">
+            <Card className="border-0 shadow-sm bg-gradient-to-l from-primary/5 to-transparent mb-8">
               <CardContent className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">{tab.description}</p>
               </CardContent>
@@ -480,16 +536,29 @@ export default function WrittenExpressionSection() {
               {topics.map((topic) => {
                 const topicContent = contentByAudience[tab.id][topic.key]
                 if (!topicContent) return null
+                const isSaved = isBookmarked(`written-${tab.id}-${topic.key}`)
                 return (
-                  <Card key={topic.key} className="border-0 shadow-sm bg-gradient-to-bl from-primary/5 to-primary/0 hover:shadow-md transition-shadow">
+                  <Card key={topic.key} className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer relative overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-l from-primary to-emerald-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
                     <CardContent className="p-4 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${topicColors[topic.key] || 'bg-primary/10 text-primary'}`}>
                         {topic.icon}
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-sm">{topic.label}</h4>
                         <p className="text-xs text-muted-foreground line-clamp-1">{topicContent.title}</p>
                       </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleBookmark(`written-${tab.id}-${topic.key}`); }}
+                        className="p-1 rounded hover:bg-muted transition-colors shrink-0"
+                        title={isSaved ? 'إزالة من المحفوظات' : 'حفظ المحتوى'}
+                      >
+                        {isSaved ? (
+                          <BookmarkCheck className="h-4 w-4 text-primary" />
+                        ) : (
+                          <Bookmark className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </button>
                     </CardContent>
                   </Card>
                 )
@@ -501,18 +570,31 @@ export default function WrittenExpressionSection() {
               {topics.map((topic) => {
                 const topicContent = contentByAudience[tab.id][topic.key]
                 if (!topicContent) return null
+                const isSaved = isBookmarked(`written-${tab.id}-${topic.key}`)
                 return (
-                  <Card key={topic.key} className="border-0 shadow-md">
+                  <Card key={topic.key} className="border-0 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden relative group">
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-l from-primary to-emerald-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
                     <Accordion type="single" collapsible>
                       <AccordionItem value={topic.key} className="border-0">
                         <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${topicColors[topic.key] || 'bg-primary/10 text-primary'}`}>
                               {topic.icon}
                             </div>
-                            <div className="text-right">
+                            <div className="text-right flex-1">
                               <h3 className="font-bold text-base">{topicContent.title}</h3>
                             </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleBookmark(`written-${tab.id}-${topic.key}`); }}
+                              className="p-1 rounded hover:bg-muted transition-colors shrink-0"
+                              title={isSaved ? 'إزالة من المحفوظات' : 'حفظ المحتوى'}
+                            >
+                              {isSaved ? (
+                                <BookmarkCheck className="h-4 w-4 text-primary" />
+                              ) : (
+                                <Bookmark className="h-4 w-4 text-muted-foreground" />
+                              )}
+                            </button>
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-6 pb-6">
@@ -537,9 +619,9 @@ export default function WrittenExpressionSection() {
                                   </h4>
                                   <ul className="space-y-2">
                                     {topicContent.tips.map((tip, idx) => (
-                                      <li key={idx} className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-100">
+                                      <li key={idx} className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
                                         <ArrowLeft className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                                        <span className="text-sm text-amber-900">{tip}</span>
+                                        <span className="text-sm text-amber-900 dark:text-amber-200">{tip}</span>
                                       </li>
                                     ))}
                                   </ul>
@@ -557,6 +639,7 @@ export default function WrittenExpressionSection() {
           </TabsContent>
         ))}
       </Tabs>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
