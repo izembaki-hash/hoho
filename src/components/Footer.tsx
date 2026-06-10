@@ -103,7 +103,7 @@ export default function Footer() {
 
             {/* Quick Links */}
             <div className="space-y-4">
-              <h3 className="text-base font-bold border-b border-background/15 pb-2 relative">
+              <h3 className="text-base font-bold border-b border-background/15 pb-2 relative text-gradient-hover">
                 روابط سريعة
                 <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-gradient-to-l from-primary to-amber-500" />
               </h3>
@@ -112,7 +112,7 @@ export default function Footer() {
                   <li key={link.id}>
                     <button
                       onClick={() => handleLinkClick(link.id)}
-                      className="quick-link-hover flex items-center gap-2 text-sm text-background/60 hover:text-primary transition-all duration-300 group py-2 min-h-[44px]"
+                      className="quick-link-hover nav-slide-underline flex items-center gap-2 text-sm text-background/60 hover:text-primary transition-all duration-300 group py-2 min-h-[44px]"
                     >
                       <ChevronLeft className="h-3 w-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
                       <span className="relative group-hover:pr-2 transition-all duration-300">{link.label}</span>
@@ -124,7 +124,7 @@ export default function Footer() {
 
             {/* Contact Info */}
             <div className="space-y-4">
-              <h3 className="text-base font-bold border-b border-background/15 pb-2 relative">
+              <h3 className="text-base font-bold border-b border-background/15 pb-2 relative text-gradient-hover">
                 تواصل معنا
                 <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-gradient-to-l from-primary to-amber-500" />
               </h3>
@@ -152,7 +152,7 @@ export default function Footer() {
 
             {/* Newsletter */}
             <div className="space-y-4">
-              <h3 className="text-base font-bold border-b border-background/15 pb-2 relative">
+              <h3 className="text-base font-bold border-b border-background/15 pb-2 relative text-gradient-hover">
                 النشرة البريدية
                 <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-gradient-to-l from-primary to-amber-500" />
               </h3>

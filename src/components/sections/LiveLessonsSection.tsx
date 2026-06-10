@@ -485,7 +485,7 @@ export default function LiveLessonsSection() {
 
       {/* Upcoming Lessons Schedule */}
       <motion.div variants={itemVariants}>
-        <Card className="border-0 shadow-md overflow-hidden">
+        <Card className="border-0 shadow-md overflow-hidden premium-card">
           <div className="h-1 bg-gradient-to-l from-primary via-amber-500 to-primary" />
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -575,7 +575,7 @@ export default function LiveLessonsSection() {
                               size="sm" 
                               variant="outline"
                               onClick={() => { setSelectedLesson(lesson); setRegisterDialogOpen(true); }}
-                              className="gap-1 hover:bg-primary hover:text-primary-foreground transition-all"
+                              className="gap-1 hover:bg-primary hover:text-primary-foreground transition-all card-lift"
                             >
                               <Plus className="h-3 w-3" />
                               انضمام

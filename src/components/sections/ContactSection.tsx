@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { motion, AnimatePresence } from 'framer-motion'
+import ShareButton from '@/components/ShareButton'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -144,7 +145,10 @@ export default function ContactSection() {
     >
       {/* Header */}
       <motion.div variants={itemVariants} className="text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-3">اتصل بنا</h2>
+        <div className="flex items-center justify-center gap-2">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3">اتصل بنا</h2>
+          <ShareButton title="اتصل بنا" sectionId="contact" />
+        </div>
         <p className="text-muted-foreground">تواصل معنا لطرح انشغالاتكم ومقترحاتكم</p>
         {/* Response time indicator */}
         <div className="flex items-center justify-center gap-2 mt-3">
@@ -159,7 +163,7 @@ export default function ContactSection() {
       {/* Quick Help */}
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => handleQuickNav('live-lessons')}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer card-lift" onClick={() => handleQuickNav('live-lessons')}>
             <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0 group-hover:scale-110 transition-transform">
                 <Video className="h-5 w-5" />
@@ -170,7 +174,7 @@ export default function ContactSection() {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => handleQuickNav('recorded-lessons')}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer card-lift" onClick={() => handleQuickNav('recorded-lessons')}>
             <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0 group-hover:scale-110 transition-transform">
                 <BookOpen className="h-5 w-5" />
@@ -181,7 +185,7 @@ export default function ContactSection() {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer" onClick={() => handleQuickNav('oral-expression')}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer card-lift" onClick={() => handleQuickNav('oral-expression')}>
             <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0 group-hover:scale-110 transition-transform">
                 <Mic className="h-5 w-5" />
@@ -342,7 +346,7 @@ export default function ContactSection() {
         {/* Contact Info */}
         <div className="space-y-4">
           <motion.div variants={itemVariants}>
-            <Card className="border-0 shadow-md overflow-hidden">
+            <Card className="border-0 shadow-md overflow-hidden frosted-card">
               <div className="h-1 bg-gradient-to-l from-primary to-emerald-600" />
               <CardContent className="p-6">
                 <h3 className="font-bold text-lg mb-4">معلومات التواصل</h3>
@@ -472,7 +476,7 @@ export default function ContactSection() {
                 <AccordionItem 
                   key={idx} 
                   value={`faq-${idx}`}
-                  className="border border-border/50 rounded-xl px-4 data-[state=open]:bg-muted/30 data-[state=open]:border-primary/20 transition-all duration-300"
+                  className="border border-border/50 rounded-xl px-4 data-[state=open]:bg-muted/30 data-[state=open]:border-primary/20 transition-all duration-300 gradient-shadow-hover"
                 >
                   <AccordionTrigger className="hover:no-underline py-4 group/trigger">
                     <div className="flex items-center gap-3 text-right flex-1">

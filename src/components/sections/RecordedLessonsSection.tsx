@@ -322,7 +322,7 @@ export default function RecordedLessonsSection() {
         {filteredLessons.map((lesson) => (
           <motion.div key={lesson.id} variants={itemVariants}>
             <Card
-              className="group cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+              className="group cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden card-lift"
               onClick={() => setSelectedLesson(lesson)}
             >
               <div className="relative aspect-video bg-gradient-to-bl from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
@@ -411,7 +411,7 @@ export default function RecordedLessonsSection() {
 
       {/* Lesson Detail Dialog */}
       <Dialog open={!!selectedLesson} onOpenChange={(open) => !open && setSelectedLesson(null)}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw]">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] premium-card">
           {selectedLesson && (
             <>
               <DialogHeader>

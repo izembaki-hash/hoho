@@ -9,6 +9,8 @@ import DailyQuote from '@/components/DailyQuote'
 import DailyChallenge from '@/components/DailyChallenge'
 import TypingEffect from '@/components/TypingEffect'
 import WasThisHelpful from '@/components/WasThisHelpful'
+import LearningPath from '@/components/LearningPath'
+import ShareButton from '@/components/ShareButton'
 import { 
   BookOpen, Mic, Pen, Video, User, Mail, 
   Sparkles, GraduationCap, Users, School, ArrowRight,
@@ -428,7 +430,7 @@ export default function HeroSection() {
               <Button
                 size="lg"
                 onClick={() => handleNavigate('oral-expression')}
-                className="bg-white text-primary hover:bg-white/90 font-semibold shadow-lg shadow-black/20 transition-all duration-300 hover:scale-105"
+                className="bg-white text-primary hover:bg-white/90 font-semibold shadow-lg shadow-black/20 transition-all duration-300 hover:scale-105 btn-press ripple-effect"
               >
                 <Mic className="h-4 w-4 ml-2" />
                 التحرير الشفهي
@@ -437,7 +439,7 @@ export default function HeroSection() {
                 size="lg"
                 variant="outline"
                 onClick={() => handleNavigate('written-expression')}
-                className="border-white/30 text-white hover:bg-white/15 font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                className="border-white/30 text-white hover:bg-white/15 font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 btn-press ripple-effect"
               >
                 <Pen className="h-4 w-4 ml-2" />
                 التحرير الكتابي
@@ -465,7 +467,7 @@ export default function HeroSection() {
         <div className="relative grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {stats.map((stat, idx) => (
             <motion.div key={idx} variants={itemVariants}>
-              <Card className="text-center border-0 glassmorphism-stat shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 group relative overflow-hidden">
+              <Card className="text-center border-0 glassmorphism-stat shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 group relative overflow-hidden stat-card-accent">
                 {/* Gradient top bar */}
                 <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${stat.color}`} />
                 <CardContent className="pt-8 pb-6 px-4">
@@ -497,7 +499,10 @@ export default function HeroSection() {
         viewport={{ once: true, margin: '-50px' }}
       >
         <div className="text-center mb-6 sm:mb-10">
-          <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">لماذا تختار منصتنا؟</h2>
+          <div className="flex items-center justify-center gap-2">
+            <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">لماذا تختار منصتنا؟</h2>
+            <ShareButton title="لماذا تختار منصتنا؟" sectionId="home-features" />
+          </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             نقدم تجربة تعليمية فريدة تجمع بين المحتوى الأكاديمي الرصين والتفاعل المباشر
           </p>
@@ -509,7 +514,7 @@ export default function HeroSection() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 relative z-10">
             {features.map((feature, idx) => (
               <motion.div key={idx} variants={itemVariants}>
-                <div className="feature-gradient-border feature-icon-hover h-full rounded-lg">
+                <div className="feature-gradient-border feature-icon-hover h-full rounded-lg premium-card">
                   <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-500 group h-full relative overflow-hidden rounded-lg">
                     {/* Hover gradient background */}
                     <div className={`absolute inset-0 bg-gradient-to-bl ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
@@ -547,7 +552,10 @@ export default function HeroSection() {
         viewport={{ once: true, margin: '-50px' }}
       >
         <div className="text-center mb-6 sm:mb-10">
-          <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">استكشف أقسام الموقع</h2>
+          <div className="flex items-center justify-center gap-2">
+            <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">استكشف أقسام الموقع</h2>
+            <ShareButton title="استكشف أقسام الموقع" sectionId="home-sections" />
+          </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             اختر القسم الذي يناسب اهتماماتك وابدأ رحلتك التعليمية في عالم التحرير الكتابي والشفهي
           </p>
@@ -559,7 +567,7 @@ export default function HeroSection() {
                 className={`cursor-pointer ${card.isNew ? 'new-badge' : ''}`}
                 onClick={() => handleNavigate(card.id)}
               >
-                <Card className="group border-0 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden card-glow-hover card-dots-pattern">
+                <Card className="group border-0 shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden card-glow-hover card-dots-pattern card-lift">
                   <CardContent className="p-0 relative z-10">
                     <div className={`h-1.5 bg-gradient-to-l ${card.color}`} />
                     <div className={`${card.bgPattern} p-4 sm:p-6`}>
@@ -620,7 +628,7 @@ export default function HeroSection() {
           {testimonials.map((testimonial, idx) => (
             <motion.div key={idx} variants={itemVariants}>
               <TiltCard>
-                <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 h-full relative overflow-hidden group quote-watermark">
+                <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 h-full relative overflow-hidden group quote-watermark gradient-shadow-hover">
                   {/* Gradient top bar */}
                   <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${testimonial.color} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
                   <CardContent className="p-6 pt-7 relative z-10">
@@ -672,6 +680,16 @@ export default function HeroSection() {
         viewport={{ once: true, margin: '-50px' }}
       >
         <DailyChallenge />
+      </motion.section>
+
+      {/* Learning Path */}
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-50px' }}
+      >
+        <LearningPath />
       </motion.section>
 
       {/* Was this helpful */}

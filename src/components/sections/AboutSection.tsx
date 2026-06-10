@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { BookOpen, Award, GraduationCap, Briefcase, Quote, Clock, Globe, Users, Download, FileText, ChevronLeft } from 'lucide-react'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
+import ShareButton from '@/components/ShareButton'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -104,7 +105,7 @@ function DrawInTimeline({ items }: { items: typeof timeline }) {
             initial={{ opacity: 0, x: -20 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
             transition={{ delay: 0.2 + idx * 0.15, duration: 0.5, ease: 'easeOut' }}
-            className="flex items-start gap-4 relative group"
+            className="flex items-start gap-4 relative group content-card-accent rounded-lg"
           >
             <motion.div 
               className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 z-10 shadow-md group-hover:scale-110 group-hover:shadow-lg transition-all duration-300"
@@ -157,7 +158,7 @@ function SkillBar({ name, level, color, delay }: { name: string; level: number; 
 // Achievement card with hover expansion
 function AchievementCard({ icon, value, label, color, bgColor }: { icon: React.ReactNode; value: string; label: string; color: string; bgColor: string }) {
   return (
-    <Card className="border-0 shadow-md text-center group hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden">
+    <Card className="border-0 shadow-md text-center group hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden card-lift">
       <CardContent className="pt-6 pb-4 relative">
         {/* Expanding background on hover */}
         <div className={`absolute inset-0 ${bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
@@ -187,7 +188,10 @@ export default function AboutSection() {
     >
       {/* Header */}
       <motion.div variants={itemVariants} className="text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-3">نبذة عن المؤلف</h2>
+        <div className="flex items-center justify-center gap-2">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3">نبذة عن المؤلف</h2>
+          <ShareButton title="نبذة عن المؤلف" sectionId="about" />
+        </div>
         <p className="text-muted-foreground">تعرف على صاحب الموقع ومسيرته العلمية والأدبية</p>
       </motion.div>
 

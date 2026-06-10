@@ -26,6 +26,7 @@ import ProgressDashboard from '@/components/sections/ProgressDashboard'
 import QuizSection from '@/components/sections/QuizSection'
 import { useAppStore, type SectionId } from '@/lib/store'
 import { HomeIcon, ChevronLeft, Printer, Clock, HelpCircle } from 'lucide-react'
+import ShareSystem from '@/components/ShareSystem'
 import { Button } from '@/components/ui/button'
 
 const sectionComponents: Record<string, React.ComponentType> = {
@@ -239,6 +240,8 @@ export default function Home() {
                       <Printer className="h-3.5 w-3.5" />
                       <span className="hidden sm:inline">طباعة</span>
                     </Button>
+                    {/* Share Button */}
+                    <ShareSystem sectionTitle={sectionTitles[activeSection]} sectionId={activeSection} />
                     {/* Help Button - reopens onboarding */}
                     <Button
                       variant="ghost"

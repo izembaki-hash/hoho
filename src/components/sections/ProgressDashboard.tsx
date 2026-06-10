@@ -21,6 +21,7 @@ import {
 import { useAppStore } from '@/lib/store'
 import { motion, AnimatePresence } from 'framer-motion'
 import StudyPlanner from '@/components/StudyPlanner'
+import ProgressBadges from '@/components/ProgressBadges'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -492,6 +493,11 @@ export default function ProgressDashboard() {
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">لوحة التقدم التعليمي</h2>
           <p className="text-muted-foreground max-w-lg mx-auto">تتبع تقدمك في رحلة تعلّم مهارات التحرير الكتابي والشفهي</p>
+        </motion.div>
+
+        {/* ─── Progress Badges ────────────────────────────────── */}
+        <motion.div variants={itemVariants}>
+          <ProgressBadges />
         </motion.div>
 
         {/* ─── Top Grid: Progress + Streak + Quick Actions ─────── */}
