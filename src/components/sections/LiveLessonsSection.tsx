@@ -8,11 +8,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Textarea } from '@/components/ui/textarea'
+import { useAppStore } from '@/lib/store'
 import { 
   Video, Calendar, Clock, Users, Radio, Plus, CheckCircle, 
-  MessageSquare, Phone, Mail, User 
+  MessageSquare, Phone, Mail, User, Bookmark, BookmarkCheck,
+  Send, AlertCircle 
 } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 interface LiveLesson {
   id: string
@@ -103,12 +105,35 @@ function formatTime(dateStr: string) {
   })
 }
 
+function getDaysUntil(dateStr: string) {
+  const now = new Date()
+  const date = new Date(dateStr)
+  const diff = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  if (diff <= 0) return 'اليوم'
+  if (diff === 1) return 'غداً'
+  return `بعد ${diff} أيام`
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 },
+}
+
 export default function LiveLessonsSection() {
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false)
   const [selectedLesson, setSelectedLesson] = useState<LiveLesson | null>(null)
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
+  const { bookmarks, toggleBookmark, isBookmarked } = useAppStore()
   const [chatMessages, setChatMessages] = useState<{ user: string; message: string }[]>([
     { user: 'أحمد', message: 'السلام عليكم، درس مفيد جداً' },
     { user: 'فاطمة', message: 'هل يمكن شرح نقطة لغة الجسد بالتفصيل؟' },
@@ -150,216 +175,284 @@ export default function LiveLessonsSection() {
   }
 
   return (
-    <div className="space-y-10">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-10"
+    >
       {/* Header */}
-      <div className="text-center">
+      <motion.div variants={itemVariants} className="text-center">
         <h2 className="text-2xl sm:text-3xl font-bold mb-3">دروس مباشرة</h2>
         <p className="text-muted-foreground">انضم إلى الدروس الحية وتفاعل مع الأساتذة مباشرة</p>
-      </div>
+      </motion.div>
 
       {/* Live Stream */}
-      <Card className="border-0 shadow-lg overflow-hidden">
-        <div className="bg-gradient-to-l from-red-600 to-red-800 p-1">
-          <div className="flex items-center justify-center gap-2 text-white text-sm font-medium py-1">
-            <Radio className="h-4 w-4 animate-pulse" />
-            <span>بث مباشر الآن</span>
-          </div>
-        </div>
-        <CardContent className="p-0">
-          <div className="grid grid-cols-1 lg:grid-cols-3">
-            {/* Video Area */}
-            <div className="lg:col-span-2 bg-black/90 aspect-video flex items-center justify-center relative">
-              <div className="text-center text-white">
-                <Video className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                <h3 className="text-xl font-bold mb-2">{liveLesson.title}</h3>
-                <p className="text-white/70 text-sm mb-4">{liveLesson.description}</p>
-                <Badge variant="destructive" className="gap-1">
-                  <Radio className="h-3 w-3 animate-pulse" />
-                  مباشر
-                </Badge>
-              </div>
-              <div className="absolute top-4 left-4 flex items-center gap-2">
-                <Badge variant="destructive" className="gap-1">
-                  <Users className="h-3 w-3" />
-                  {liveLesson.viewers} مشاهد
-                </Badge>
-              </div>
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-xl overflow-hidden">
+          <div className="bg-gradient-to-l from-red-600 to-red-800 p-1.5">
+            <div className="flex items-center justify-center gap-2 text-white text-sm font-medium">
+              <Radio className="h-4 w-4 animate-pulse" />
+              <span>بث مباشر الآن</span>
             </div>
-            
-            {/* Chat Area */}
-            <div className="border-r border-border flex flex-col h-full min-h-[300px] lg:min-h-0">
-              <div className="p-3 border-b border-border bg-muted/30">
-                <h4 className="font-medium text-sm flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-primary" />
-                  المحادثة المباشرة
-                </h4>
-              </div>
-              <div className="flex-1 overflow-y-auto p-3 space-y-2 max-h-[300px]">
-                {chatMessages.map((msg, idx) => (
-                  <div key={idx} className="text-sm">
-                    <span className="font-medium text-primary">{msg.user}: </span>
-                    <span className="text-muted-foreground">{msg.message}</span>
+          </div>
+          <CardContent className="p-0">
+            <div className="grid grid-cols-1 lg:grid-cols-3">
+              {/* Video Area */}
+              <div className="lg:col-span-2 bg-gradient-to-bl from-gray-900 to-black aspect-video flex items-center justify-center relative">
+                {/* Decorative grid */}
+                <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                <div className="text-center text-white relative z-10">
+                  <div className="w-20 h-20 rounded-full bg-red-600/30 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                    <Video className="h-10 w-10" />
                   </div>
-                ))}
+                  <h3 className="text-xl font-bold mb-2">{liveLesson.title}</h3>
+                  <p className="text-white/70 text-sm mb-4 max-w-md mx-auto">{liveLesson.description}</p>
+                  <div className="flex items-center justify-center gap-3">
+                    <Badge variant="destructive" className="gap-1 animate-pulse">
+                      <Radio className="h-3 w-3" />
+                      مباشر
+                    </Badge>
+                    <span className="text-white/50 text-sm">{liveLesson.instructor}</span>
+                  </div>
+                </div>
+                <div className="absolute top-4 left-4 flex items-center gap-2">
+                  <Badge variant="destructive" className="gap-1 bg-red-600">
+                    <Users className="h-3 w-3" />
+                    {liveLesson.viewers} مشاهد
+                  </Badge>
+                </div>
               </div>
-              <div className="p-3 border-t border-border">
-                <div className="flex gap-2">
-                  <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="اكتب رسالتك..."
-                    className="text-sm"
-                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  />
-                  <Button size="icon" onClick={handleSendMessage}>
-                    <MessageSquare className="h-4 w-4" />
-                  </Button>
+              
+              {/* Chat Area */}
+              <div className="border-r border-border flex flex-col h-full min-h-[300px] lg:min-h-0 bg-muted/20">
+                <div className="p-3 border-b border-border bg-muted/50 flex items-center justify-between">
+                  <h4 className="font-medium text-sm flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4 text-primary" />
+                    المحادثة المباشرة
+                  </h4>
+                  <Badge variant="secondary" className="text-xs">{chatMessages.length} رسالة</Badge>
+                </div>
+                <div className="flex-1 overflow-y-auto p-3 space-y-3 max-h-[300px] custom-scrollbar">
+                  {chatMessages.map((msg, idx) => (
+                    <div key={idx} className="text-sm group">
+                      <div className={`inline-block max-w-[85%] rounded-xl px-3 py-2 ${
+                        msg.user === 'أنت' 
+                          ? 'bg-primary text-primary-foreground rounded-br-none' 
+                          : msg.user === 'الأستاذ'
+                          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-foreground rounded-bl-none'
+                          : 'bg-muted rounded-bl-none'
+                      }`}>
+                        <span className={`font-medium text-xs block mb-0.5 ${
+                          msg.user === 'أنت' ? 'text-primary-foreground/70' : 'text-primary'
+                        }`}>{msg.user}</span>
+                        <span>{msg.message}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-3 border-t border-border">
+                  <div className="flex gap-2">
+                    <Input
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder="اكتب رسالتك..."
+                      className="text-sm"
+                      onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                    />
+                    <Button size="icon" onClick={handleSendMessage} className="shrink-0">
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Upcoming Lessons Schedule */}
-      <Card className="border-0 shadow-md">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                <Calendar className="h-5 w-5" />
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-md">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                  <Calendar className="h-5 w-5" />
+                </div>
+                <CardTitle className="text-xl">جدول الدروس القادمة</CardTitle>
               </div>
-              <CardTitle className="text-xl">جدول الدروس القادمة</CardTitle>
+              {bookmarks.length > 0 && (
+                <Badge variant="secondary" className="gap-1">
+                  <BookmarkCheck className="h-3 w-3" />
+                  {bookmarks.length} محفوظ
+                </Badge>
+              )}
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">الدرس</TableHead>
-                  <TableHead className="text-right hidden sm:table-cell">التاريخ</TableHead>
-                  <TableHead className="text-right hidden md:table-cell">الوقت</TableHead>
-                  <TableHead className="text-right hidden md:table-cell">المدة</TableHead>
-                  <TableHead className="text-right hidden lg:table-cell">التصنيف</TableHead>
-                  <TableHead className="text-right">التسجيل</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sampleLessons.map((lesson) => (
-                  <TableRow key={lesson.id}>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{lesson.title}</div>
-                        <div className="text-xs text-muted-foreground sm:hidden">{formatDate(lesson.scheduledAt)}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell text-sm">{formatDate(lesson.scheduledAt)}</TableCell>
-                    <TableCell className="hidden md:table-cell text-sm">{formatTime(lesson.scheduledAt)}</TableCell>
-                    <TableCell className="hidden md:table-cell text-sm">{lesson.duration} دقيقة</TableCell>
-                    <TableCell className="hidden lg:table-cell">
-                      <Badge variant={lesson.category === 'شفهي' ? 'default' : 'secondary'}>
-                        {lesson.category}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Dialog open={registerDialogOpen && selectedLesson?.id === lesson.id} onOpenChange={(open) => {
-                        if (!open) { setRegisterDialogOpen(false); setSelectedLesson(null); setSubmitSuccess(false); }
-                      }}>
-                        <DialogTrigger asChild>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => { setSelectedLesson(lesson); setRegisterDialogOpen(true); }}
-                            className="gap-1"
-                          >
-                            <Plus className="h-3 w-3" />
-                            انضمام
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>التسجيل في الدرس</DialogTitle>
-                          </DialogHeader>
-                          {submitSuccess ? (
-                            <div className="flex flex-col items-center py-8 gap-3">
-                              <CheckCircle className="h-16 w-16 text-emerald-500" />
-                              <h3 className="text-lg font-bold">تم التسجيل بنجاح!</h3>
-                              <p className="text-sm text-muted-foreground text-center">
-                                سيتم إرسال رابط الدرس إلى بريدك الإلكتروني قبل الموعد المحدد
-                              </p>
-                            </div>
-                          ) : (
-                            <>
-                              <div className="space-y-2 mb-2">
-                                <p className="text-sm font-medium">{selectedLesson?.title}</p>
-                                <p className="text-xs text-muted-foreground">{selectedLesson && formatDate(selectedLesson.scheduledAt)}</p>
-                              </div>
-                              <div className="space-y-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="reg-name" className="flex items-center gap-2">
-                                    <User className="h-4 w-4" />
-                                    الاسم الكامل
-                                  </Label>
-                                  <Input
-                                    id="reg-name"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                    placeholder="أدخل اسمك الكامل"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="reg-email" className="flex items-center gap-2">
-                                    <Mail className="h-4 w-4" />
-                                    البريد الإلكتروني
-                                  </Label>
-                                  <Input
-                                    id="reg-email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                    placeholder="example@email.com"
-                                    dir="ltr"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="reg-phone" className="flex items-center gap-2">
-                                    <Phone className="h-4 w-4" />
-                                    رقم الهاتف (اختياري)
-                                  </Label>
-                                  <Input
-                                    id="reg-phone"
-                                    value={formData.phone}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                                    placeholder="+213 XXX XXX XXX"
-                                    dir="ltr"
-                                  />
-                                </div>
-                              </div>
-                              <DialogFooter className="gap-2 sm:gap-0 mt-4">
-                                <DialogClose asChild>
-                                  <Button variant="outline">إلغاء</Button>
-                                </DialogClose>
-                                <Button 
-                                  onClick={handleRegister} 
-                                  disabled={isSubmitting || !formData.name || !formData.email}
-                                >
-                                  {isSubmitting ? 'جاري التسجيل...' : 'تأكيد التسجيل'}
-                                </Button>
-                              </DialogFooter>
-                            </>
-                          )}
-                        </DialogContent>
-                      </Dialog>
-                    </TableCell>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-right">الدرس</TableHead>
+                    <TableHead className="text-right hidden sm:table-cell">التاريخ</TableHead>
+                    <TableHead className="text-right hidden md:table-cell">الوقت</TableHead>
+                    <TableHead className="text-right hidden md:table-cell">المدة</TableHead>
+                    <TableHead className="text-right hidden lg:table-cell">التصنيف</TableHead>
+                    <TableHead className="text-right hidden lg:table-cell">موعد</TableHead>
+                    <TableHead className="text-right">التسجيل</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+                </TableHeader>
+                <TableBody>
+                  {sampleLessons.map((lesson) => (
+                    <TableRow key={lesson.id} className="group">
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => toggleBookmark(lesson.id)}
+                            className="text-muted-foreground hover:text-primary transition-colors shrink-0"
+                            title={isBookmarked(lesson.id) ? 'إزالة من المحفوظات' : 'حفظ الدرس'}
+                          >
+                            {isBookmarked(lesson.id) ? (
+                              <BookmarkCheck className="h-4 w-4 text-primary" />
+                            ) : (
+                              <Bookmark className="h-4 w-4" />
+                            )}
+                          </button>
+                          <div>
+                            <div className="font-medium">{lesson.title}</div>
+                            <div className="text-xs text-muted-foreground sm:hidden">{formatDate(lesson.scheduledAt)}</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell text-sm">{formatDate(lesson.scheduledAt)}</TableCell>
+                      <TableCell className="hidden md:table-cell text-sm">{formatTime(lesson.scheduledAt)}</TableCell>
+                      <TableCell className="hidden md:table-cell text-sm">{lesson.duration} دقيقة</TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <Badge variant={lesson.category === 'شفهي' ? 'default' : 'secondary'}>
+                          {lesson.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <Badge variant="outline" className="text-xs gap-1">
+                          <Clock className="h-3 w-3" />
+                          {getDaysUntil(lesson.scheduledAt)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Dialog open={registerDialogOpen && selectedLesson?.id === lesson.id} onOpenChange={(open) => {
+                          if (!open) { setRegisterDialogOpen(false); setSelectedLesson(null); setSubmitSuccess(false); }
+                        }}>
+                          <DialogTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => { setSelectedLesson(lesson); setRegisterDialogOpen(true); }}
+                              className="gap-1 hover:bg-primary hover:text-primary-foreground transition-all"
+                            >
+                              <Plus className="h-3 w-3" />
+                              انضمام
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                              <DialogTitle>التسجيل في الدرس</DialogTitle>
+                            </DialogHeader>
+                            {submitSuccess ? (
+                              <div className="flex flex-col items-center py-8 gap-3">
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+                                >
+                                  <CheckCircle className="h-16 w-16 text-emerald-500" />
+                                </motion.div>
+                                <h3 className="text-lg font-bold">تم التسجيل بنجاح!</h3>
+                                <p className="text-sm text-muted-foreground text-center">
+                                  سيتم إرسال رابط الدرس إلى بريدك الإلكتروني قبل الموعد المحدد
+                                </p>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="p-3 rounded-lg bg-muted/50 mb-4">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <AlertCircle className="h-4 w-4 text-primary" />
+                                    <p className="text-sm font-medium">{selectedLesson?.title}</p>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mr-6">{selectedLesson && formatDate(selectedLesson.scheduledAt)}</p>
+                                </div>
+                                <div className="space-y-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="reg-name" className="flex items-center gap-2">
+                                      <User className="h-4 w-4" />
+                                      الاسم الكامل
+                                    </Label>
+                                    <Input
+                                      id="reg-name"
+                                      value={formData.name}
+                                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                      placeholder="أدخل اسمك الكامل"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="reg-email" className="flex items-center gap-2">
+                                      <Mail className="h-4 w-4" />
+                                      البريد الإلكتروني
+                                    </Label>
+                                    <Input
+                                      id="reg-email"
+                                      type="email"
+                                      value={formData.email}
+                                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                      placeholder="example@email.com"
+                                      dir="ltr"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="reg-phone" className="flex items-center gap-2">
+                                      <Phone className="h-4 w-4" />
+                                      رقم الهاتف (اختياري)
+                                    </Label>
+                                    <Input
+                                      id="reg-phone"
+                                      value={formData.phone}
+                                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                                      placeholder="+213 XXX XXX XXX"
+                                      dir="ltr"
+                                    />
+                                  </div>
+                                </div>
+                                <DialogFooter className="gap-2 sm:gap-0 mt-4">
+                                  <DialogClose asChild>
+                                    <Button variant="outline">إلغاء</Button>
+                                  </DialogClose>
+                                  <Button 
+                                    onClick={handleRegister} 
+                                    disabled={isSubmitting || !formData.name || !formData.email}
+                                    className="gap-2"
+                                  >
+                                    {isSubmitting ? (
+                                      <span className="animate-spin">⏳</span>
+                                    ) : (
+                                      <CheckCircle className="h-4 w-4" />
+                                    )}
+                                    {isSubmitting ? 'جاري التسجيل...' : 'تأكيد التسجيل'}
+                                  </Button>
+                                </DialogFooter>
+                              </>
+                            )}
+                          </DialogContent>
+                        </Dialog>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
   )
 }

@@ -26,8 +26,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('alta7reer-store');
+                  if (stored) {
+                    var parsed = JSON.parse(stored);
+                    if (parsed.state && parsed.state.theme === 'dark') {
+                      document.documentElement.classList.add('dark');
+                    }
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
-        className={`${cairo.variable} antialiased bg-background text-foreground font-sans`}
+        className={`${cairo.variable} antialiased bg-background text-foreground font-sans transition-colors duration-300`}
       >
         {children}
         <Toaster />

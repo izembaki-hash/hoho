@@ -3,7 +3,21 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { BookOpen, Award, GraduationCap, Briefcase, Quote } from 'lucide-react'
+import { BookOpen, Award, GraduationCap, Briefcase, Quote, Clock, Globe, Users } from 'lucide-react'
+import { motion } from 'framer-motion'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 },
+}
 
 const authorWorks = [
   {
@@ -11,187 +25,255 @@ const authorWorks = [
     type: 'كتاب',
     year: '2023',
     description: 'مؤلف شامل يتناول أسس وقواعد التحرير الكتابي مع تطبيقات عملية ونماذج محللة',
+    color: 'bg-emerald-500',
   },
   {
     title: 'مهارات العرض الشفهي والإلقاء',
     type: 'كتاب',
     year: '2022',
     description: 'دليل متكامل لتطوير مهارات التحدث أمام الجمهور والإقناع الصوتي',
+    color: 'bg-teal-500',
   },
   {
     title: 'دليل التعبير الإداري والمهني',
     type: 'مرجع',
     year: '2021',
     description: 'مرجع عملي لكتابة الرسائل الإدارية والتقارير والمحاضر بأسلوب احترافي',
+    color: 'bg-amber-500',
   },
   {
     title: 'علامات الترقيم في اللغة العربية',
     type: 'بحث',
     year: '2020',
     description: 'بحث أكاديمي معمّق حول قواعد واستخدامات علامات الترقيم في الكتابة العربية',
+    color: 'bg-primary',
   },
   {
     title: 'الخطابة فنّاً وأداءً',
     type: 'كتاب',
     year: '2019',
     description: 'دراسة في فن الخطابة العربية من الجذور التاريخية إلى الممارسة المعاصرة',
+    color: 'bg-red-500',
   },
+]
+
+const timeline = [
+  { year: '2003', event: 'الحصول على دكتوراه دولة في اللسانيات العربية', icon: <GraduationCap className="h-4 w-4" /> },
+  { year: '2005', event: 'التعيين أستاذاً محاضراً في الجامعة', icon: <Briefcase className="h-4 w-4" /> },
+  { year: '2010', event: 'نشر أول مؤلّف في فنون التحرير الكتابي', icon: <BookOpen className="h-4 w-4" /> },
+  { year: '2015', event: 'المشاركة في المؤتمرات الدولية', icon: <Globe className="h-4 w-4" /> },
+  { year: '2020', event: 'إطلاق المنصة التعليمية الرقمية', icon: <Users className="h-4 w-4" /> },
+  { year: '2024', event: 'إطلاق موقع التحرير الكتابي والشفهي', icon: <Award className="h-4 w-4" /> },
 ]
 
 export default function AboutSection() {
   return (
-    <div className="space-y-10">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-10"
+    >
       {/* Header */}
-      <div className="text-center">
+      <motion.div variants={itemVariants} className="text-center">
         <h2 className="text-2xl sm:text-3xl font-bold mb-3">نبذة عن المؤلف</h2>
         <p className="text-muted-foreground">تعرف على صاحب الموقع ومسيرته العلمية والأدبية</p>
-      </div>
+      </motion.div>
 
       {/* Author Profile */}
-      <Card className="border-0 shadow-lg overflow-hidden">
-        <div className="bg-gradient-to-l from-primary to-emerald-800 h-32 sm:h-40" />
-        <CardContent className="relative px-6 pb-8 -mt-16 sm:-mt-20">
-          <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6">
-            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl border-4 border-background overflow-hidden shadow-xl bg-muted shrink-0">
-              <img
-                src="/images/author-portrait.png"
-                alt="صورة المؤلف"
-                className="w-full h-full object-cover"
-              />
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-l from-primary via-emerald-800 to-primary/80 h-32 sm:h-44 relative">
+            {/* Decorative */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-4 right-8 w-20 h-20 border border-white rounded-full" />
+              <div className="absolute bottom-4 left-12 w-14 h-14 border border-white rotate-45" />
             </div>
-            <div className="text-center sm:text-right flex-1 pb-2">
-              <h3 className="text-2xl font-bold mb-1">أ.د. محمد بن عبد الله</h3>
-              <p className="text-primary font-medium mb-2">أستاذ التحرير الكتابي والشفهي</p>
-              <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                <Badge variant="secondary" className="gap-1">
-                  <GraduationCap className="h-3 w-3" />
-                  دكتوراه دولة
-                </Badge>
-                <Badge variant="secondary" className="gap-1">
-                  <Briefcase className="h-3 w-3" />
-                  أستاذ محاضر
-                </Badge>
-                <Badge variant="secondary" className="gap-1">
-                  <Award className="h-3 w-3" />
-                  باحث وأديب
-                </Badge>
+          </div>
+          <CardContent className="relative px-6 pb-8 -mt-16 sm:-mt-20">
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6">
+              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl border-4 border-background overflow-hidden shadow-2xl bg-muted shrink-0">
+                <img
+                  src="/images/author-portrait.png"
+                  alt="صورة المؤلف"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="text-center sm:text-right flex-1 pb-2">
+                <h3 className="text-2xl font-bold mb-1">أ.د. محمد بن عبد الله</h3>
+                <p className="text-primary font-medium mb-3">أستاذ التحرير الكتابي والشفهي</p>
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                  <Badge className="gap-1 bg-primary/10 text-primary hover:bg-primary/20 border-0">
+                    <GraduationCap className="h-3 w-3" />
+                    دكتوراه دولة
+                  </Badge>
+                  <Badge className="gap-1 bg-amber-100 text-amber-700 hover:bg-amber-200 border-0">
+                    <Briefcase className="h-3 w-3" />
+                    أستاذ محاضر
+                  </Badge>
+                  <Badge className="gap-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-0">
+                    <Award className="h-3 w-3" />
+                    باحث وأديب
+                  </Badge>
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Biography */}
-      <Card className="border-0 shadow-md">
-        <CardContent className="p-6 sm:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-              <Quote className="h-5 w-5" />
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-md">
+          <CardContent className="p-6 sm:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <Quote className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-bold">السيرة الذاتية</h3>
             </div>
-            <h3 className="text-xl font-bold">السيرة الذاتية</h3>
-          </div>
-          <div className="space-y-4 text-muted-foreground leading-relaxed">
-            <p>
-              أستاذ التعليم العالي في تخصص اللغة العربية وآدابها، ومختص في فنون التحرير الكتابي والشفهي. 
-              حاصل على دكتوراه دولة في اللسانيات العربية وتحليل الخطاب، مع خبرة تزيد عن عشرين عاماً 
-              في ميدان التعليم الجامعي والبحث العلمي.
-            </p>
-            <p>
-              شارك في العديد من المؤتمرات العلمية الدولية والوطنية، وأشرف على عشرات المذكرات والرسائل الجامعية. 
-              نشر أبحاثاً في مجلات محكّمة متخصصة، وألّف كتباً في مجالات التحرير والبلاغة والتواصل الفعّال.
-            </p>
-            <p>
-              يؤمن بأن إتقان مهارات التعبير الكتابي والشفهي هو مفتاح النجاح في الحياة الأكاديمية والمهنية، 
-              وسعى من خلال هذا الموقع إلى إتاحة محتوى تعليمي نوعي لكل فئات المتعلمين.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="space-y-4 text-muted-foreground leading-relaxed">
+              <p>
+                أستاذ التعليم العالي في تخصص اللغة العربية وآدابها، ومختص في فنون التحرير الكتابي والشفهي. 
+                حاصل على دكتوراه دولة في اللسانيات العربية وتحليل الخطاب، مع خبرة تزيد عن عشرين عاماً 
+                في ميدان التعليم الجامعي والبحث العلمي.
+              </p>
+              <p>
+                شارك في العديد من المؤتمرات العلمية الدولية والوطنية، وأشرف على عشرات المذكرات والرسائل الجامعية. 
+                نشر أبحاثاً في مجلات محكّمة متخصصة، وألّف كتباً في مجالات التحرير والبلاغة والتواصل الفعّال.
+              </p>
+              <p>
+                يؤمن بأن إتقان مهارات التعبير الكتابي والشفهي هو مفتاح النجاح في الحياة الأكاديمية والمهنية، 
+                وسعى من خلال هذا الموقع إلى إتاحة محتوى تعليمي نوعي لكل فئات المتعلمين.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Academic Achievements */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border-0 shadow-md text-center">
-          <CardContent className="pt-6 pb-4">
-            <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3 text-amber-600">
-              <Award className="h-6 w-6" />
+      <motion.div variants={itemVariants}>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Card className="border-0 shadow-md text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <CardContent className="pt-6 pb-4">
+              <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mx-auto mb-3 text-amber-600 group-hover:scale-110 transition-transform duration-300">
+                <Award className="h-7 w-7" />
+              </div>
+              <div className="text-3xl font-bold text-amber-600 mb-1">20+</div>
+              <div className="text-sm text-muted-foreground">سنة خبرة أكاديمية</div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-md text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <CardContent className="pt-6 pb-4">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-3 text-emerald-600 group-hover:scale-110 transition-transform duration-300">
+                <BookOpen className="h-7 w-7" />
+              </div>
+              <div className="text-3xl font-bold text-emerald-600 mb-1">15+</div>
+              <div className="text-sm text-muted-foreground">مؤلّف منشور</div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-md text-center group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <CardContent className="pt-6 pb-4">
+              <div className="w-14 h-14 rounded-2xl bg-teal-100 flex items-center justify-center mx-auto mb-3 text-teal-600 group-hover:scale-110 transition-transform duration-300">
+                <GraduationCap className="h-7 w-7" />
+              </div>
+              <div className="text-3xl font-bold text-teal-600 mb-1">50+</div>
+              <div className="text-sm text-muted-foreground">إشراف على رسائل جامعية</div>
+            </CardContent>
+          </Card>
+        </div>
+      </motion.div>
+
+      {/* Academic Timeline */}
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-md">
+          <CardContent className="p-6 sm:p-8">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <Clock className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-bold">المسيرة الأكاديمية</h3>
             </div>
-            <div className="text-3xl font-bold text-amber-600 mb-1">20+</div>
-            <div className="text-sm text-muted-foreground">سنة خبرة أكاديمية</div>
+            <div className="relative">
+              {/* Timeline line */}
+              <div className="absolute right-5 top-0 bottom-0 w-0.5 bg-primary/20" />
+              <div className="space-y-6">
+                {timeline.map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-4 relative">
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 z-10 shadow-md">
+                      {item.icon}
+                    </div>
+                    <div className="flex-1 pt-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge variant="outline" className="text-xs font-bold">{item.year}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{item.event}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-md text-center">
-          <CardContent className="pt-6 pb-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3 text-emerald-600">
-              <BookOpen className="h-6 w-6" />
-            </div>
-            <div className="text-3xl font-bold text-emerald-600 mb-1">15+</div>
-            <div className="text-sm text-muted-foreground">مؤلّف منشور</div>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-md text-center">
-          <CardContent className="pt-6 pb-4">
-            <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center mx-auto mb-3 text-teal-600">
-              <GraduationCap className="h-6 w-6" />
-            </div>
-            <div className="text-3xl font-bold text-teal-600 mb-1">50+</div>
-            <div className="text-sm text-muted-foreground">إشراف على رسائل جامعية</div>
-          </CardContent>
-        </Card>
-      </div>
+      </motion.div>
 
       {/* Published Works */}
-      <Card className="border-0 shadow-md">
-        <CardContent className="p-6 sm:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-              <BookOpen className="h-5 w-5" />
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-md">
+          <CardContent className="p-6 sm:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <BookOpen className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-bold">المؤلفات والأعمال</h3>
             </div>
-            <h3 className="text-xl font-bold">المؤلفات والأعمال</h3>
-          </div>
-          <div className="space-y-4">
-            {authorWorks.map((work, idx) => (
-              <div key={idx}>
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-1">
-                    <BookOpen className="h-5 w-5" />
-                  </div>
+            <div className="space-y-3">
+              {authorWorks.map((work, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-start gap-4 p-4 rounded-xl hover:bg-muted/50 transition-all duration-200 group"
+                >
+                  <div className={`w-1 h-12 rounded-full ${work.color} shrink-0 mt-1 group-hover:h-14 transition-all`} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <h4 className="font-bold text-foreground">{work.title}</h4>
+                      <h4 className="font-bold text-foreground group-hover:text-primary transition-colors">{work.title}</h4>
                       <Badge variant="outline" className="text-xs">{work.type}</Badge>
                       <Badge variant="secondary" className="text-xs">{work.year}</Badge>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">{work.description}</p>
                   </div>
                 </div>
-                {idx < authorWorks.length - 1 && <Separator className="my-2 opacity-0" />}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Books to be Published */}
-      <Card className="border-0 shadow-md border-r-4 border-r-amber-500">
-        <CardContent className="p-6 sm:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
-              <Award className="h-5 w-5" />
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-md overflow-hidden">
+          <div className="h-1 bg-gradient-to-l from-amber-400 to-amber-600" />
+          <CardContent className="p-6 sm:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
+                <Award className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-bold">كتب قيد النشر</h3>
+              <Badge className="bg-amber-100 text-amber-700 border-0">قريباً</Badge>
             </div>
-            <h3 className="text-xl font-bold">كتب قيد النشر</h3>
-          </div>
-          <div className="space-y-3">
-            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200">
-              <h4 className="font-bold text-amber-900 mb-1">الإلقاء الإبداعي - نظرية وتطبيق</h4>
-              <p className="text-sm text-amber-700">كتاب شامل يتناول فنون الإلقاء الإبداعي من المنظورين النظري والتطبيقي</p>
+            <div className="space-y-3">
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow">
+                <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-1">الإلقاء الإبداعي - نظرية وتطبيق</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-300">كتاب شامل يتناول فنون الإلقاء الإبداعي من المنظورين النظري والتطبيقي</p>
+              </div>
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow">
+                <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-1">لغة الجسد في العرض التقديمي</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-300">دليل عملي لفهم واستخدام لغة الجسد بشكل فعّال في العروض والتواصل</p>
+              </div>
             </div>
-            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200">
-              <h4 className="font-bold text-amber-900 mb-1">لغة الجسد في العرض التقديمي</h4>
-              <p className="text-sm text-amber-700">دليل عملي لفهم واستخدام لغة الجسد بشكل فعّال في العروض والتواصل</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
   )
 }
