@@ -501,6 +501,47 @@ Unresolved Issues/Risks:
 - Future: real video player, user auth, AI writing feedback, collaborative writing, peer review
 
 ---
+Task ID: 4-d
+Agent: Feature Development Agent
+Task: Reading Time Estimation + Enhanced Print Feature
+
+Work Log:
+- Read worklog.md to understand project context (9 sections, feature-rich Arabic RTL educational website)
+- Created `/src/hooks/useReadingTime.ts` - Custom hook for Arabic reading time estimation
+  - Arabic reading speed: ~180 words per minute (slower than English due to RTL complexity)
+  - Two exports: `useReadingTime(text)` for text input, `useReadingTimeFromWordCount(wordCount)` for word count
+  - Arabic grammar-aware display text: دقيقة/دقيقتان/دقائق/دقيقة based on number
+  - Handles edge cases: empty text (0), very short text (1 min minimum)
+- Created `/src/components/PrintButton.tsx` - Enhanced print button component
+  - Printer icon + "طباعة المحتوى" label (text hidden on mobile)
+  - Adds `printing` class to body before print, removes after
+  - Injects print header with site name and current section title
+  - Cleans up via afterprint event + timeout fallback
+  - Has `no-print` class on itself (hidden during print)
+- Added enhanced print styles to globals.css
+  - Hides floating buttons, chatbot, glossary, mobile nav, achievement toast, share system, etc.
+  - Body.printing: white background, black text, 12pt font, 1.8 line-height
+  - Main content reset: no padding/margin, 100% max-width
+  - Shadow removal, page break utilities, print header styling
+- Integrated reading time Badge into 6 section components:
+  - OralExpressionSection: ~2700 words → "15 دقيقة قراءة" (teal badge)
+  - WrittenExpressionSection: ~3600 words → "20 دقيقة قراءة" (primary badge)
+  - AboutSection: ~1800 words → "10 دقائق قراءة" (primary badge)
+  - ContactSection: ~1200 words → "7 دقائق قراءة" (primary badge)
+  - LiveLessonsSection: ~1500 words → "9 دقائق قراءة" (red badge)
+  - RecordedLessonsSection: ~2100 words → "12 دقيقة قراءة" (amber badge)
+- Updated page.tsx: replaced inline print Button with PrintButton component
+- Ran `bun run lint` — passes cleanly with no errors
+- Dev server stable, all pages compiling
+
+Stage Summary:
+- Custom useReadingTime hook with Arabic grammar-aware display text
+- Enhanced PrintButton with body class management and dynamic print header
+- Comprehensive print styles hiding all floating/interactive elements
+- Reading time Badge added to all 6 content sections with section-themed colors
+- All code lint-clean, dev server stable
+
+---
 Task ID: 11-a
 Agent: Visual Polish Agent
 Task: Massively upgrade micro-interactions, visual depth, and card sophistication
@@ -632,3 +673,111 @@ Stage Summary:
 - Progress Badge System with 8 badge types, horizontal scroll, tooltips, localStorage persistence
 - All 3 features integrated into existing components
 - Lint passes, no errors, dev server stable
+
+---
+Task ID: 4-b
+Agent: Feature Development Agent
+Task: Quote of the Day / Arabic Literary Calendar Widget
+
+Work Log:
+- Read worklog.md to understand project context (9 sections, feature-rich Arabic RTL educational website)
+- Read HeroSection.tsx to understand existing structure and DailyQuote import (already existed but component file was missing)
+- Created `/src/components/DailyQuote.tsx` - Arabic Literary Quote of the Day widget
+  - **30 Arabic Literary Quotes** covering writing, eloquence, and expression:
+    - Each quote has: text (نص الاقتباس), author (اسم المؤلف), category, era
+    - 5 categories with color-coded badges: شعر (emerald), نثر (amber), بلاغة (teal), نقد (rose), حكمة (purple)
+    - 4 eras with muted badges: العصر الجاهلي, العصر العباسي, العصر الأندلسي, العصر الحديث
+    - Quotes from famous Arab scholars: ابن قتيبة, الجاحظ, المتنبي, ابن خلدون, طه حسين, الرافعي, etc.
+  - **Daily Rotation**: Deterministic based on day of month (1-30), no randomness
+  - **Visual Design**:
+    - Card with `gradient-border-animate` CSS class (animated emerald→amber→teal border)
+    - Large decorative quotation marks ❝ and ❞ in faded style (text-primary/8)
+    - Author name with dash prefix (— المؤلف)
+    - Category badge with color coding per specification
+    - Era badge in muted slate style
+    - Gradient top bar (emerald → amber → teal)
+    - Subtle CSS background pattern (Arabic geometric cross pattern at 3% opacity)
+    - Arabic numeral counter (e.g., ٣/٣٠) using toArabicNumeral helper
+    - "اقتباس اليوم" badge shown when viewing the daily quote
+  - **Framer-motion Animations**:
+    - AnimatePresence for quote transitions (fade in + slide up, fade out + slide up)
+    - Smooth entrance animation with cubic-bezier easing
+  - **Interactive Features**:
+    - Share button: copies quote with attribution to clipboard (❝quote❞\n— Author\nCategory | Era\nPlatform)
+    - Previous/Next arrows with ChevronRight/ChevronLeft (RTL-aware)
+    - Auto-rotate every 10 seconds with pause on hover (mouseenter/mouseleave)
+    - Auto-rotate indicator dot (pulsing when active, muted when paused)
+    - Favorite/bookmark button with BookmarkCheck/Bookmark icons (persists to localStorage key 'alta7reer-favorite-quotes')
+    - Heart button with fill animation when favorited
+    - Copy feedback: Check icon appears for 2 seconds after copying
+    - useState lazy initialization for localStorage reads (no useEffect+setState)
+  - **Responsive Design**: Single column mobile, wider padding on desktop (p-4 sm:p-8)
+  - **RTL Layout**: dir="rtl" on card, all text in Arabic
+- Moved DailyQuote in HeroSection.tsx:
+  - Previously placed after testimonials section
+  - Moved to be right after "استكشف أقسام الموقع" section cards and before testimonials
+  - Wrapped in motion.section with containerVariants and whileInView viewport={{ once: true }}
+- Ran `bun run lint` — passes cleanly with no errors
+- Dev server compiling successfully, all pages returning 200
+
+Stage Summary:
+- DailyQuote widget with 30 Arabic literary quotes from 4 eras and 5 categories
+- Daily rotation based on day of month (deterministic)
+- Beautiful visual design: gradient border, decorative quotation marks, category/era badges
+- Interactive: share, prev/next, auto-rotate (10s, pause on hover), favorite/bookmark, copy
+- AnimatePresence for smooth quote transitions
+- Repositioned in HeroSection after "استكشف أقسام الموقع" section
+- All code lint-clean, dev server stable
+
+---
+Task ID: 4-c
+Agent: Feature Development Agent
+Task: Content Comparison Tool Widget
+
+Work Log:
+- Read worklog.md to understand project context (9 sections, feature-rich Arabic RTL educational website)
+- Created `/src/components/ContentComparison.tsx` - Interactive side-by-side content comparison tool
+  - **5 pre-built Arabic comparisons:**
+    - مقارنة بين التعبير الشفهي والكتابي (Oral vs Written Expression)
+    - مقارنة بين المقال والخطبة (Essay vs Oration)
+    - مقارنة بين الرسالة الإدارية والرسالة الشخصية (Administrative vs Personal Letter)
+    - مقارنة بين السيرة الذاتية والملف الشخصي (CV vs Profile)
+    - مقارنة بين التلخيص والتحليل (Summary vs Analysis)
+  - **Each comparison has:**
+    - Title (عنوان المقارنة)
+    - Left side (الجانب الأول) with icon, title, 4-5 bullet points, emerald color scheme
+    - Right side (الجانب الثاني) with icon, title, 4-5 bullet points, amber color scheme
+    - Shared characteristics (أوجه التشابه) - 2-3 points with CheckCircle icon
+    - Key differences (أوجه الاختلاف) - 2-3 points with X icon
+  - **Visual Design:**
+    - Card with `gradient-border-animate` CSS class (animated border)
+    - Tab selector for switching between 5 comparisons with animated active indicator
+    - Side-by-side layout on desktop (md:grid-cols-[1fr_auto_1fr]), stacked on mobile
+    - VS badge in center between columns (circular, emerald→primary→amber gradient)
+    - Shared/Differences sections below with icons (CheckCircle for shared, X for differences)
+    - Framer-motion AnimatePresence animations for content switching
+    - Each side has subtle different background color (emerald for left, amber for right)
+    - Hover effects on bullet points (text color change, dot scale)
+  - **Interactive Features:**
+    - Tab-based comparison selector with animated active state
+    - Hover effects on bullet points (group-hover scale + color transition)
+    - "Show differences only" toggle button (Eye/EyeOff icons, toggles visibility of similarities section)
+    - Print-friendly layout (`no-print` class on interactive elements)
+    - Staggered animation on bullet points (delay based on index)
+  - **ComparisonSideCard sub-component:**
+    - Reusable component for rendering each side of comparison
+    - Takes ComparisonSide interface with icon, title, points, color classes
+    - Hover effects on each point with dot scale and text color change
+- Integrated ContentComparison into WrittenExpressionSection.tsx:
+  - Added import for ContentComparison component
+  - Added after Audience Tabs section, wrapped in motion.div with itemVariants
+- Ran `bun run lint` — passes cleanly with no errors
+- Dev server stable, all pages returning 200
+
+Stage Summary:
+- Interactive Content Comparison tool with 5 Arabic educational comparisons
+- Side-by-side layout with VS badge, similarities/differences sections
+- "Show differences only" toggle, hover effects, print-friendly
+- Framer-motion animations for content switching
+- Integrated into WrittenExpressionSection after Audience Tabs
+- All code lint-clean, dev server stable

@@ -8,6 +8,8 @@ import { BookOpen, Award, GraduationCap, Briefcase, Quote, Clock, Globe, Users, 
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import ShareButton from '@/components/ShareButton'
+import { useReadingTimeFromWordCount } from '@/hooks/useReadingTime'
+import KnowledgeMap from '@/components/KnowledgeMap'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -105,10 +107,10 @@ function DrawInTimeline({ items }: { items: typeof timeline }) {
             initial={{ opacity: 0, x: -20 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
             transition={{ delay: 0.2 + idx * 0.15, duration: 0.5, ease: 'easeOut' }}
-            className="flex items-start gap-4 relative group content-card-accent rounded-lg"
+            className="flex items-start gap-4 relative group content-card-accent rounded-lg card-depth-2"
           >
             <motion.div 
-              className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 z-10 shadow-md group-hover:scale-110 group-hover:shadow-lg transition-all duration-300"
+              className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 z-10 shadow-md group-hover:scale-110 group-hover:shadow-lg transition-all duration-300 icon-bounce"
               whileHover={{ scale: 1.1 }}
             >
               {item.icon}
@@ -121,7 +123,7 @@ function DrawInTimeline({ items }: { items: typeof timeline }) {
             />
             <div className="flex-1 pt-2 group-hover:translate-x-1 transition-transform duration-300">
               <div className="flex items-center gap-2 mb-1">
-                <Badge variant="outline" className="text-xs font-bold border-primary/30">{item.year}</Badge>
+                <Badge variant="outline" className="text-xs font-bold border-primary/30 badge-hover-pop">{item.year}</Badge>
               </div>
               <p className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">{item.event}</p>
             </div>
@@ -158,13 +160,13 @@ function SkillBar({ name, level, color, delay }: { name: string; level: number; 
 // Achievement card with hover expansion
 function AchievementCard({ icon, value, label, color, bgColor }: { icon: React.ReactNode; value: string; label: string; color: string; bgColor: string }) {
   return (
-    <Card className="border-0 shadow-md text-center group hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden card-lift">
+    <Card className="border-0 shadow-md text-center group hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden card-lift card-hover-lift card-depth-2">
       <CardContent className="pt-6 pb-4 relative">
         {/* Expanding background on hover */}
         <div className={`absolute inset-0 ${bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
         <div className="relative z-10">
           <motion.div 
-            className={`w-14 h-14 rounded-2xl ${bgColor} flex items-center justify-center mx-auto mb-3 ${color} group-hover:scale-110 transition-transform duration-500`}
+            className={`w-14 h-14 rounded-2xl ${bgColor} flex items-center justify-center mx-auto mb-3 ${color} group-hover:scale-110 transition-transform duration-500 icon-bounce`}
             whileHover={{ rotate: [0, -5, 5, 0] }}
             transition={{ duration: 0.4 }}
           >
@@ -189,10 +191,17 @@ export default function AboutSection() {
       {/* Header */}
       <motion.div variants={itemVariants} className="text-center">
         <div className="flex items-center justify-center gap-2">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">نبذة عن المؤلف</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3 heading-lg text-shadow-sm">نبذة عن المؤلف</h2>
           <ShareButton title="نبذة عن المؤلف" sectionId="about" />
         </div>
         <p className="text-muted-foreground">تعرف على صاحب الموقع ومسيرته العلمية والأدبية</p>
+        {/* Reading Time */}
+        <div className="flex items-center justify-center gap-2 mt-3">
+          <Badge variant="outline" className="gap-1 text-xs border-primary/30 text-primary bg-primary/5">
+            <Clock className="h-3 w-3" />
+            📖 {useReadingTimeFromWordCount(1800).displayText}
+          </Badge>
+        </div>
       </motion.div>
 
       {/* Author Profile */}
@@ -359,6 +368,17 @@ export default function AboutSection() {
             <DrawInTimeline items={timeline} />
           </CardContent>
         </Card>
+      </motion.div>
+
+      {/* Knowledge Map */}
+      <motion.div
+        variants={itemVariants}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <KnowledgeMap />
       </motion.div>
 
       {/* Published Works */}

@@ -18,6 +18,7 @@ import {
 import { useAppStore } from '@/lib/store'
 import { motion, AnimatePresence } from 'framer-motion'
 import ShareButton from '@/components/ShareButton'
+import { useReadingTimeFromWordCount } from '@/hooks/useReadingTime'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -146,7 +147,7 @@ export default function ContactSection() {
       {/* Header */}
       <motion.div variants={itemVariants} className="text-center">
         <div className="flex items-center justify-center gap-2">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">اتصل بنا</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3 heading-lg text-shadow-sm">اتصل بنا</h2>
           <ShareButton title="اتصل بنا" sectionId="contact" />
         </div>
         <p className="text-muted-foreground">تواصل معنا لطرح انشغالاتكم ومقترحاتكم</p>
@@ -157,6 +158,13 @@ export default function ContactSection() {
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 absolute top-0 left-0 animate-ping opacity-75" />
           </div>
           <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">متوسط وقت الرد: أقل من 24 ساعة</span>
+        </div>
+        {/* Reading Time */}
+        <div className="flex items-center justify-center gap-2 mt-2">
+          <Badge variant="outline" className="gap-1 text-xs border-primary/30 text-primary bg-primary/5">
+            <Clock className="h-3 w-3" />
+            📖 {useReadingTimeFromWordCount(1200).displayText}
+          </Badge>
         </div>
       </motion.div>
 
@@ -202,7 +210,7 @@ export default function ContactSection() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Contact Form */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
-          <Card className="border-0 shadow-lg overflow-hidden">
+          <Card className="border-0 shadow-lg overflow-hidden card-depth-3">
             <div className="h-1 bg-gradient-to-l from-primary to-emerald-600" />
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -258,7 +266,7 @@ export default function ContactSection() {
                       onFocus={() => setFocusedField('name')}
                       onBlur={() => setFocusedField(null)}
                       placeholder="أدخل اسمك الكامل"
-                      className={`transition-all duration-300 ${focusedField === 'name' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''}`}
+                      className={`transition-all duration-300 ${focusedField === 'name' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''} input-focus-glow`}
                       required
                     />
                   </div>
@@ -276,7 +284,7 @@ export default function ContactSection() {
                       onBlur={() => setFocusedField(null)}
                       placeholder="example@email.com"
                       dir="ltr"
-                      className={`transition-all duration-300 ${focusedField === 'email' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''}`}
+                      className={`transition-all duration-300 ${focusedField === 'email' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''} input-focus-glow`}
                       required
                     />
                   </div>
@@ -294,7 +302,7 @@ export default function ContactSection() {
                     onFocus={() => setFocusedField('subject')}
                     onBlur={() => setFocusedField(null)}
                     placeholder="موضوع رسالتك"
-                    className={`transition-all duration-300 ${focusedField === 'subject' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''}`}
+                    className={`transition-all duration-300 ${focusedField === 'subject' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''} input-focus-glow`}
                     required
                   />
                 </div>
@@ -315,7 +323,7 @@ export default function ContactSection() {
                     onBlur={() => setFocusedField(null)}
                     placeholder="اكتب رسالتك هنا..."
                     rows={6}
-                    className={`resize-none transition-all duration-300 ${focusedField === 'message' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''}`}
+                    className={`resize-none transition-all duration-300 ${focusedField === 'message' ? 'ring-2 ring-primary/20 border-primary shadow-sm' : ''} input-focus-glow`}
                     required
                   />
                 </div>
@@ -324,7 +332,7 @@ export default function ContactSection() {
                   type="submit"
                   size="lg"
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto gap-2 hover:scale-105 transition-transform bg-gradient-to-l from-primary to-emerald-700 hover:from-primary/90 hover:to-emerald-700/90"
+                  className="w-full sm:w-auto gap-2 hover:scale-105 transition-transform bg-gradient-to-l from-primary to-emerald-700 hover:from-primary/90 hover:to-emerald-700/90 btn-ripple btn-glow"
                 >
                   {isSubmitting ? (
                     <>
@@ -346,7 +354,7 @@ export default function ContactSection() {
         {/* Contact Info */}
         <div className="space-y-4">
           <motion.div variants={itemVariants}>
-            <Card className="border-0 shadow-md overflow-hidden frosted-card">
+            <Card className="border-0 shadow-md overflow-hidden frosted-card card-depth-2 card-hover-lift">
               <div className="h-1 bg-gradient-to-l from-primary to-emerald-600" />
               <CardContent className="p-6">
                 <h3 className="font-bold text-lg mb-4">معلومات التواصل</h3>

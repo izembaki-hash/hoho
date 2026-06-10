@@ -723,7 +723,7 @@ function CircularScore({ score, size = 160 }: { score: number; size?: number }) 
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <motion.span
-          className="text-4xl font-bold"
+          className="text-4xl font-bold number-pop"
           style={{ color: getColor() }}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -1177,7 +1177,7 @@ export default function QuizSection() {
             exit="exit"
             className="flex-1"
           >
-            <Card className="border-0 shadow-lg overflow-hidden mb-6">
+            <Card className="border-0 shadow-lg overflow-hidden mb-6 card-hover-glow">
               <div className={`h-1.5 bg-gradient-to-l ${selectedCategory.gradientFrom} ${selectedCategory.gradientTo}`} />
               <CardContent className="p-6 sm:p-8">
                 {/* Question number & Score */}
@@ -1213,7 +1213,7 @@ export default function QuizSection() {
                         key={idx}
                         onClick={() => handleSelectAnswer(idx)}
                         disabled={isAnswered}
-                        className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-right transition-all duration-300 ${
+                        className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-right transition-all duration-300 btn-ripple ${
                           showCorrect
                             ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 shadow-md shadow-emerald-500/10'
                             : showWrong

@@ -17,6 +17,7 @@ import {
   Send, AlertCircle, Eye, Timer, UsersRound, Zap, CircleDot
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useReadingTimeFromWordCount } from '@/hooks/useReadingTime'
 
 interface LiveLesson {
   id: string
@@ -298,15 +299,25 @@ export default function LiveLessonsSection() {
         shareTitle="دروس مباشرة - التحرير الكتابي والشفهي"
       />
 
+      {/* Reading Time */}
+      <motion.div variants={itemVariants}>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="gap-1 text-xs border-red-300 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30">
+            <Clock className="h-3 w-3" />
+            📖 {useReadingTimeFromWordCount(1500).displayText}
+          </Badge>
+        </div>
+      </motion.div>
+
       {/* Live Now Indicator + Next Lesson Countdown */}
       <motion.div variants={itemVariants}>
         <div className="flex flex-col sm:flex-row items-stretch gap-3 sm:gap-4">
           {/* Live Now Badge */}
-          <Card className="border-0 shadow-md flex-1 overflow-hidden">
+          <Card className="border-0 shadow-md flex-1 overflow-hidden card-depth-2">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                  <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse icon-pulse-hover" />
                   <div className="w-3 h-3 rounded-full bg-red-500 absolute top-0 left-0 animate-ping" />
                 </div>
                 <div>
@@ -331,7 +342,7 @@ export default function LiveLessonsSection() {
           </Card>
           
           {/* Countdown to Next Lesson */}
-          <Card className="border-0 shadow-md flex-1 overflow-hidden">
+          <Card className="border-0 shadow-md flex-1 overflow-hidden card-depth-2">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -403,7 +414,7 @@ export default function LiveLessonsSection() {
                 </div>
                 
                 {/* Chat Area */}
-                <div className="border-r border-border flex flex-col h-full min-h-[200px] sm:min-h-[300px] lg:min-h-0 bg-muted/20">
+                <div className="border-r border-border flex flex-col h-full min-h-[200px] sm:min-h-[300px] lg:min-h-0 bg-muted/20 card-glass">
                   <div className="p-3 border-b border-border bg-muted/50 flex items-center justify-between">
                     <h4 className="font-medium text-sm flex items-center gap-2">
                       <MessageSquare className="h-4 w-4 text-primary" />
@@ -575,7 +586,7 @@ export default function LiveLessonsSection() {
                               size="sm" 
                               variant="outline"
                               onClick={() => { setSelectedLesson(lesson); setRegisterDialogOpen(true); }}
-                              className="gap-1 hover:bg-primary hover:text-primary-foreground transition-all card-lift"
+                              className="gap-1 hover:bg-primary hover:text-primary-foreground transition-all card-lift card-hover-lift"
                             >
                               <Plus className="h-3 w-3" />
                               انضمام
@@ -703,7 +714,7 @@ export default function LiveLessonsSection() {
                                   <Button 
                                     onClick={handleRegister} 
                                     disabled={isSubmitting || !formData.name || !formData.email}
-                                    className="gap-2 bg-gradient-to-l from-primary to-emerald-700 hover:from-primary/90 hover:to-emerald-700/90"
+                                    className="gap-2 bg-gradient-to-l from-primary to-emerald-700 hover:from-primary/90 hover:to-emerald-700/90 btn-ripple btn-glow"
                                   >
                                     {isSubmitting ? (
                                       <span className="animate-spin">⏳</span>

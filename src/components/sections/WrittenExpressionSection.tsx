@@ -19,6 +19,8 @@ import ShareButton from '@/components/ShareButton'
 import TableOfContents from '@/components/TableOfContents'
 import { motion } from 'framer-motion'
 import WritingExercise from '@/components/WritingExercise'
+import ContentComparison from '@/components/ContentComparison'
+import { useReadingTimeFromWordCount } from '@/hooks/useReadingTime'
 
 type TargetAudience = 'students' | 'professors' | 'pupils'
 
@@ -627,6 +629,16 @@ export default function WrittenExpressionSection() {
         shareTitle="التحرير الكتابي - التحرير الكتابي والشفهي"
       />
 
+      {/* Reading Time */}
+      <motion.div variants={itemVariants}>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="gap-1 text-xs border-primary/30 text-primary bg-primary/5">
+            <Clock className="h-3 w-3" />
+            📖 {useReadingTimeFromWordCount(3600).displayText}
+          </Badge>
+        </div>
+      </motion.div>
+
       {/* Quick Stats */}
       <motion.div variants={itemVariants}>
         <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border/50">
@@ -674,7 +686,7 @@ export default function WrittenExpressionSection() {
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300"
+              className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 tab-indicator-animated"
             >
               {tab.icon}
               <span className="text-xs sm:text-sm">{tab.label}</span>
@@ -751,18 +763,18 @@ export default function WrittenExpressionSection() {
                   <Card 
                     key={topic.key} 
                     id={`written-${tab.id}-${topic.key}`} 
-                    className={`border-0 shadow-md hover:shadow-xl ${topicGlowColors[topic.key] || ''} transition-all duration-300 overflow-hidden relative group scroll-mt-24 border-r-4 ${topicBorderColors[topic.key] || ''}`}
+                    className={`border-0 shadow-md hover:shadow-xl ${topicGlowColors[topic.key] || ''} transition-all duration-300 overflow-hidden relative group scroll-mt-24 border-r-4 ${topicBorderColors[topic.key] || ''} card-depth-1 card-hover-glow`}
                   >
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-l from-transparent via-primary/60 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <Accordion type="single" collapsible>
                       <AccordionItem value={topic.key} className="border-0">
                         <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline">
                           <div className="flex items-center gap-3 flex-1">
-                            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center ${topicColors[topic.key] || 'bg-primary/10 text-primary'}`}>
+                            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center ${topicColors[topic.key] || 'bg-primary/10 text-primary'} icon-bounce`}>
                               {topic.icon}
                             </div>
                             <div className="text-right flex-1">
-                              <h3 className="font-bold text-base">{topicContent.title}</h3>
+                              <h3 className="font-bold text-base heading-sm">{topicContent.title}</h3>
                             </div>
                             {/* Difficulty Badge */}
                             {topicContent.difficulty && (
@@ -873,6 +885,11 @@ export default function WrittenExpressionSection() {
           </TabsContent>
         ))}
       </Tabs>
+      </motion.div>
+
+      {/* Content Comparison Tool */}
+      <motion.div variants={itemVariants}>
+        <ContentComparison />
       </motion.div>
     </motion.div>
   )

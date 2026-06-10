@@ -17,6 +17,7 @@ import { useAppStore } from '@/lib/store'
 import SectionHeader from '@/components/SectionHeader'
 import ShareButton from '@/components/ShareButton'
 import { motion } from 'framer-motion'
+import { useReadingTimeFromWordCount } from '@/hooks/useReadingTime'
 
 interface RecordedLesson {
   id: string
@@ -251,6 +252,16 @@ export default function RecordedLessonsSection() {
         shareTitle="دروس مسجلة - التحرير الكتابي والشفهي"
       />
 
+      {/* Reading Time */}
+      <motion.div variants={itemVariants}>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="gap-1 text-xs border-amber-300 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30">
+            <Clock className="h-3 w-3" />
+            📖 {useReadingTimeFromWordCount(2100).displayText}
+          </Badge>
+        </div>
+      </motion.div>
+
       {/* Stats bar */}
       <motion.div variants={itemVariants}>
         <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border/50">
@@ -289,7 +300,7 @@ export default function RecordedLessonsSection() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="ابحث في الدروس..."
-              className="pr-10 pl-4 h-11 bg-background border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              className="pr-10 pl-4 h-11 bg-background border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all input-focus-glow"
             />
             {searchQuery && (
               <button 
@@ -307,7 +318,7 @@ export default function RecordedLessonsSection() {
                 variant={activeCategory === cat ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setActiveCategory(cat)}
-                className={`gap-1 transition-all ${activeCategory === cat ? 'shadow-md' : ''}`}
+                className={`gap-1 transition-all badge-hover-pop ${activeCategory === cat ? 'shadow-md' : ''}`}
               >
                 <Filter className="h-3 w-3" />
                 {cat}
@@ -322,7 +333,7 @@ export default function RecordedLessonsSection() {
         {filteredLessons.map((lesson) => (
           <motion.div key={lesson.id} variants={itemVariants}>
             <Card
-              className="group cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden card-lift"
+              className="group cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden card-lift card-hover-lift card-depth-2"
               onClick={() => setSelectedLesson(lesson)}
             >
               <div className="relative aspect-video bg-gradient-to-bl from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
@@ -411,7 +422,7 @@ export default function RecordedLessonsSection() {
 
       {/* Lesson Detail Dialog */}
       <Dialog open={!!selectedLesson} onOpenChange={(open) => !open && setSelectedLesson(null)}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] premium-card">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] premium-card card-depth-3">
           {selectedLesson && (
             <>
               <DialogHeader>

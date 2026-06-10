@@ -386,7 +386,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-5 leading-tight"
+              className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-5 leading-tight heading-xl text-shadow-lg"
             >
               التحرير الكتابي
               <br />
@@ -430,7 +430,7 @@ export default function HeroSection() {
               <Button
                 size="lg"
                 onClick={() => handleNavigate('oral-expression')}
-                className="bg-white text-primary hover:bg-white/90 font-semibold shadow-lg shadow-black/20 transition-all duration-300 hover:scale-105 btn-press ripple-effect"
+                className="bg-white text-primary hover:bg-white/90 font-semibold shadow-lg shadow-black/20 transition-all duration-300 hover:scale-105 btn-press ripple-effect btn-ripple btn-glow btn-slide-fill"
               >
                 <Mic className="h-4 w-4 ml-2" />
                 التحرير الشفهي
@@ -439,7 +439,7 @@ export default function HeroSection() {
                 size="lg"
                 variant="outline"
                 onClick={() => handleNavigate('written-expression')}
-                className="border-white/30 text-white hover:bg-white/15 font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 btn-press ripple-effect"
+                className="border-white/30 text-white hover:bg-white/15 font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 btn-press ripple-effect btn-ripple btn-glow btn-slide-fill"
               >
                 <Pen className="h-4 w-4 ml-2" />
                 التحرير الكتابي
@@ -467,7 +467,7 @@ export default function HeroSection() {
         <div className="relative grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {stats.map((stat, idx) => (
             <motion.div key={idx} variants={itemVariants}>
-              <Card className="text-center border-0 glassmorphism-stat shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 group relative overflow-hidden stat-card-accent">
+              <Card className="text-center border-0 glassmorphism-stat shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 group relative overflow-hidden stat-card-accent card-depth-2 card-hover-lift">
                 {/* Gradient top bar */}
                 <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-l ${stat.color}`} />
                 <CardContent className="pt-8 pb-6 px-4">
@@ -500,7 +500,7 @@ export default function HeroSection() {
       >
         <div className="text-center mb-6 sm:mb-10">
           <div className="flex items-center justify-center gap-2">
-            <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">لماذا تختار منصتنا؟</h2>
+            <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3 heading-lg text-shadow-sm">لماذا تختار منصتنا؟</h2>
             <ShareButton title="لماذا تختار منصتنا؟" sectionId="home-features" />
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -514,7 +514,7 @@ export default function HeroSection() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 relative z-10">
             {features.map((feature, idx) => (
               <motion.div key={idx} variants={itemVariants}>
-                <div className="feature-gradient-border feature-icon-hover h-full rounded-lg premium-card">
+                <div className="feature-gradient-border feature-icon-hover h-full rounded-lg premium-card card-depth-3 card-hover-glow">
                   <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-500 group h-full relative overflow-hidden rounded-lg">
                     {/* Hover gradient background */}
                     <div className={`absolute inset-0 bg-gradient-to-bl ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
@@ -522,7 +522,7 @@ export default function HeroSection() {
                       {/* Step number indicator */}
                       <div className="flex flex-col items-center gap-2 shrink-0">
                         <div className="relative">
-                          <div className={`w-12 h-12 rounded-xl bg-gradient-to-bl ${feature.gradient} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-500 feature-icon-inner`}>
+                          <div className={`w-12 h-12 rounded-xl bg-gradient-to-bl ${feature.gradient} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-500 feature-icon-inner icon-bounce`}>
                             {feature.icon}
                           </div>
                         </div>
@@ -553,7 +553,7 @@ export default function HeroSection() {
       >
         <div className="text-center mb-6 sm:mb-10">
           <div className="flex items-center justify-center gap-2">
-            <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">استكشف أقسام الموقع</h2>
+            <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3 heading-lg text-shadow-sm">استكشف أقسام الموقع</h2>
             <ShareButton title="استكشف أقسام الموقع" sectionId="home-sections" />
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -608,6 +608,16 @@ export default function HeroSection() {
         </div>
       </motion.section>
 
+      {/* Daily Quote */}
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-50px' }}
+      >
+        <DailyQuote />
+      </motion.section>
+
       {/* Testimonials with 3D Tilt + quote watermark + star glow + gradient bg */}
       <motion.section
         variants={containerVariants}
@@ -619,7 +629,7 @@ export default function HeroSection() {
         {/* Subtle background gradient for testimonials section */}
         <div className="absolute inset-0 -m-4 bg-gradient-to-b from-emerald-50/50 via-transparent to-amber-50/50 dark:from-emerald-950/20 dark:via-transparent dark:to-amber-950/20 rounded-3xl" />
         <div className="relative text-center mb-6 sm:mb-10">
-          <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">ماذا يقول طلابنا؟</h2>
+          <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3 heading-lg text-shadow-sm">ماذا يقول طلابنا؟</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             آراء حقيقية من مستخدمي المنصة الذين استفادوا من المحتوى التعليمي
           </p>
@@ -657,16 +667,6 @@ export default function HeroSection() {
             </motion.div>
           ))}
         </div>
-      </motion.section>
-
-      {/* Daily Quote */}
-      <motion.section
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-50px' }}
-      >
-        <DailyQuote />
       </motion.section>
 
       {/* Newsletter */}

@@ -19,6 +19,8 @@ import SectionHeader from '@/components/SectionHeader'
 import ShareButton from '@/components/ShareButton'
 import TableOfContents from '@/components/TableOfContents'
 import { motion } from 'framer-motion'
+import { useReadingTimeFromWordCount } from '@/hooks/useReadingTime'
+import WordOfTheDay from '@/components/WordOfTheDay'
 
 type TargetAudience = 'students' | 'professors' | 'pupils'
 
@@ -389,6 +391,27 @@ export default function OralExpressionSection() {
         shareTitle="التحرير الشفهي - التحرير الكتابي والشفهي"
       />
 
+      {/* Reading Time */}
+      <motion.div variants={itemVariants}>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="gap-1 text-xs border-primary/30 text-primary bg-primary/5">
+            <Clock className="h-3 w-3" />
+            📖 {useReadingTimeFromWordCount(2700).displayText}
+          </Badge>
+        </div>
+      </motion.div>
+
+      {/* Word of the Day */}
+      <motion.div
+        variants={itemVariants}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <WordOfTheDay />
+      </motion.div>
+
       {/* Audience Tabs with colored underlines */}
       <motion.div variants={itemVariants}>
         <Tabs value={activeAudience} onValueChange={(v) => setActiveAudience(v as TargetAudience)}>
@@ -397,7 +420,7 @@ export default function OralExpressionSection() {
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
-                className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 relative"
+                className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 relative tab-indicator-animated"
               >
                 {tab.icon}
                 <span className="text-xs sm:text-sm">{tab.label}</span>
@@ -438,7 +461,7 @@ export default function OralExpressionSection() {
                   <Card 
                     key={key} 
                     id={`oral-${tab.id}-${key}`} 
-                    className={`border-0 shadow-md hover:shadow-xl ${sectionGlowColors[key] || ''} transition-all duration-300 overflow-hidden relative group scroll-mt-24 border-r-4 ${sectionBorderColors[key] || ''}`}
+                    className={`border-0 shadow-md hover:shadow-xl ${sectionGlowColors[key] || ''} transition-all duration-300 overflow-hidden relative group scroll-mt-24 border-r-4 ${sectionBorderColors[key] || ''} card-depth-1 card-hover-glow`}
                   >
                     {/* Color bar top with gradient */}
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-l from-transparent via-teal-400 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -446,11 +469,11 @@ export default function OralExpressionSection() {
                       <AccordionItem value={key} className="border-0">
                         <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline">
                           <div className="flex items-center gap-3">
-                            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center ${sectionColors[key]}`}>
+                            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center ${sectionColors[key]} icon-bounce`}>
                               {sectionIcons[key]}
                             </div>
                             <div className="text-right flex-1">
-                              <h3 className="font-bold text-base">{section.title}</h3>
+                              <h3 className="font-bold text-base heading-sm">{section.title}</h3>
                             </div>
                             {/* Difficulty Badge */}
                             {section.difficulty && (

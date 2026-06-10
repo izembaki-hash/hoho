@@ -92,7 +92,7 @@ export default function Footer() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`w-11 h-11 rounded-full bg-background/10 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg ${link.hoverColor}`}
+                    className={`w-11 h-11 rounded-full bg-background/10 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg ${link.hoverColor} icon-pulse-hover`}
                     title={link.label}
                   >
                     {link.icon}
@@ -112,7 +112,7 @@ export default function Footer() {
                   <li key={link.id}>
                     <button
                       onClick={() => handleLinkClick(link.id)}
-                      className="quick-link-hover nav-slide-underline flex items-center gap-2 text-sm text-background/60 hover:text-primary transition-all duration-300 group py-2 min-h-[44px]"
+                      className="quick-link-hover nav-slide-underline link-underline-animated flex items-center gap-2 text-sm text-background/60 hover:text-primary transition-all duration-300 group py-2 min-h-[44px]"
                     >
                       <ChevronLeft className="h-3 w-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
                       <span className="relative group-hover:pr-2 transition-all duration-300">{link.label}</span>

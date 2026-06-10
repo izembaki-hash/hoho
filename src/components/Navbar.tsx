@@ -122,7 +122,7 @@ export default function Navbar() {
                     <button
                       data-nav-id={item.id}
                       onClick={() => handleNavClick(item.id)}
-                      className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 z-10 nav-item-underline ${
+                      className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 z-10 nav-item-underline link-underline-animated ${
                         activeSection === item.id
                           ? 'bg-gradient-to-l from-primary via-emerald-600 to-primary bg-clip-text text-transparent scale-[1.02]'
                           : 'text-muted-foreground hover:text-foreground'
@@ -163,9 +163,9 @@ export default function Navbar() {
                 >
                   <span className={themeAnimating ? 'animate-theme-rotate' : ''}>
                     {theme === 'light' ? (
-                      <Moon className="h-4 w-4 text-amber-500" />
+                      <Moon className="h-4 w-4 text-amber-500 icon-pulse-hover" />
                     ) : (
-                      <Sun className="h-4 w-4 text-amber-400" />
+                      <Sun className="h-4 w-4 text-amber-400 icon-pulse-hover" />
                     )}
                   </span>
                   <span className="sr-only">تبديل المظهر</span>
@@ -191,15 +191,15 @@ export default function Navbar() {
               >
                 <span className={themeAnimating ? 'animate-theme-rotate' : ''}>
                   {theme === 'light' ? (
-                    <Moon className="h-4 w-4 text-amber-500" />
+                    <Moon className="h-4 w-4 text-amber-500 icon-pulse-hover" />
                   ) : (
-                    <Sun className="h-4 w-4 text-amber-400" />
+                    <Sun className="h-4 w-4 text-amber-400 icon-pulse-hover" />
                   )}
                 </span>
               </Button>
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 overflow-hidden btn-ripple">
                     <Menu className="h-6 w-6" />
                     <span className="sr-only">فتح القائمة</span>
                   </Button>
