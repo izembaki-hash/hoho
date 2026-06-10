@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import NewsletterSection from '@/components/NewsletterSection'
+import DailyQuote from '@/components/DailyQuote'
+import WasThisHelpful from '@/components/WasThisHelpful'
 import { 
   BookOpen, Mic, Pen, Video, User, Mail, 
   Sparkles, GraduationCap, Users, School, ArrowRight,
   PlayCircle, Calendar, Download, MessageCircle, Star, Quote,
-  Zap, Trophy, Target, Radio
+  Zap, Trophy, Target, Radio, TrendingUp, BarChart3
 } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef, useEffect, useState, useCallback } from 'react'
@@ -69,6 +71,15 @@ const sectionCards: { id: SectionId; label: string; description: string; icon: R
     color: 'from-slate-500 to-slate-700',
     bgPattern: 'bg-slate-50 dark:bg-slate-950/30',
     stat: 'رد سريع',
+  },
+  {
+    id: 'progress' as SectionId,
+    label: 'لوحة التقدم',
+    description: 'تتبع تقدمك التعليمي وحقق الإنجازات',
+    icon: <BarChart3 className="h-7 w-7" />,
+    color: 'from-primary to-emerald-600',
+    bgPattern: 'bg-primary/5 dark:bg-primary/10',
+    stat: 'تتبع إنجازاتك',
   },
 ]
 
@@ -514,8 +525,21 @@ export default function HeroSection() {
         </div>
       </motion.section>
 
+      {/* Daily Quote */}
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-50px' }}
+      >
+        <DailyQuote />
+      </motion.section>
+
       {/* Newsletter */}
       <NewsletterSection />
+
+      {/* Was this helpful */}
+      <WasThisHelpful sectionId="home" title="الصفحة الرئيسية" />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import ScrollToTop from '@/components/ScrollToTop'
 import ThemeProvider from '@/components/ThemeProvider'
 import ReadingProgressBar from '@/components/ReadingProgressBar'
 import ContentReader from '@/components/ContentReader'
+import MobileBottomNav from '@/components/MobileBottomNav'
 import HeroSection from '@/components/sections/HeroSection'
 import AboutSection from '@/components/sections/AboutSection'
 import LiveLessonsSection from '@/components/sections/LiveLessonsSection'
@@ -13,6 +14,7 @@ import RecordedLessonsSection from '@/components/sections/RecordedLessonsSection
 import OralExpressionSection from '@/components/sections/OralExpressionSection'
 import WrittenExpressionSection from '@/components/sections/WrittenExpressionSection'
 import ContactSection from '@/components/sections/ContactSection'
+import ProgressDashboard from '@/components/sections/ProgressDashboard'
 import { useAppStore } from '@/lib/store'
 import { HomeIcon, ChevronLeft, Printer, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -25,6 +27,7 @@ const sectionComponents: Record<string, React.ComponentType> = {
   'oral-expression': OralExpressionSection,
   'written-expression': WrittenExpressionSection,
   contact: ContactSection,
+  progress: ProgressDashboard,
 }
 
 const sectionTitles: Record<string, string> = {
@@ -35,6 +38,7 @@ const sectionTitles: Record<string, string> = {
   'oral-expression': 'التحرير الشفهي',
   'written-expression': 'التحرير الكتابي',
   contact: 'اتصل بنا',
+  progress: 'لوحة التقدم',
 }
 
 const sectionIcons: Record<string, string> = {
@@ -45,6 +49,7 @@ const sectionIcons: Record<string, string> = {
   'oral-expression': '🎤',
   'written-expression': '✍️',
   contact: '✉️',
+  progress: '📊',
 }
 
 const sectionContent: Record<string, string> = {
@@ -55,6 +60,7 @@ const sectionContent: Record<string, string> = {
   'oral-expression': 'التحرير الشفهي. تعلّم مهارات العرض والتعبير الشفهي والإلقاء الإبداعي. يشمل التعريف بالتعبير الشفهي وأنواعه ومهاراته الأساسية. تعلّم فن الإلقاء الإبداعي ولغة الجسد في العرض التقديمي. محتوى مصمم للطلبة الجامعيين والأساتذة والتلاميذ.',
   'written-expression': 'التحرير الكتابي. فنون الكتابة والتأليف من خطابة ومقال ورسائل. يشمل تعلّم فن الخطابة وكتابة المقال والتلخيص وكتابة التقرير والرسالة الإدارية والمقال التحليلي والمقال الجدلي والسيرة الذاتية والبحث العلمي. تسعة موضوعات شاملة لتطوير مهارات الكتابة. محتوى مصمم للطلبة الجامعيين والأساتذة والتلاميذ.',
   contact: 'اتصل بنا. تواصل معنا لطرح انشغالاتكم ومقترحاتكم. نحن هنا لمساعدتكم والإجابة على جميع استفساراتكم. يمكنكم التواصل عبر نموذج الاتصال أو عبر البريد الإلكتروني أو الهاتف. نلتزم بالرد على جميع الرسائل في أقرب وقت ممكن.',
+  progress: 'لوحة التقدم التعليمي. تتبع تقدمك في رحلة تعلّم مهارات التحرير الكتابي والشفهي. احفظ المحتويات المهمة واستكشف جميع الأقسام وحقق الإنجازات. مسارات التعلّم تشمل أساسيات التعبير الشفهي والإلقاء الإبداعي المتقدم وأساسيات الكتابة الإبداعية والكتابة الأكاديمية والمهنية.',
 }
 
 // Estimated reading time per section (in minutes)
@@ -66,6 +72,7 @@ const readingTime: Record<string, number> = {
   'oral-expression': 15,
   'written-expression': 20,
   contact: 4,
+  progress: 6,
 }
 
 export default function Home() {
@@ -83,7 +90,7 @@ export default function Home() {
       <div className="min-h-screen flex flex-col">
         <ReadingProgressBar />
         <Navbar />
-        <main className="flex-1 pt-16 lg:pt-20">
+        <main className="flex-1 pt-16 lg:pt-20 pb-16 lg:pb-0">
           {/* Breadcrumb */}
           {activeSection !== 'home' && (
             <div className="bg-muted/30 border-b border-border/50 animate-in fade-in slide-in-from-top-2 duration-300 print:bg-white print:border-none">
@@ -135,6 +142,7 @@ export default function Home() {
         <Footer />
         <ContentReader content={readerContent} />
         <ScrollToTop />
+        <MobileBottomNav />
       </div>
     </ThemeProvider>
   )

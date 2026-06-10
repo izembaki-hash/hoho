@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAppStore, type SectionId } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
-import { Menu, BookOpen, Mic, Pen, Video, User, Mail, Home, Sun, Moon, Search } from 'lucide-react'
+import { Menu, BookOpen, Mic, Pen, Video, User, Mail, Home, Sun, Moon, Search, BarChart3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navItems: { id: SectionId; label: string; icon: React.ReactNode }[] = [
@@ -15,6 +15,7 @@ const navItems: { id: SectionId; label: string; icon: React.ReactNode }[] = [
   { id: 'oral-expression', label: 'التحرير الشفهي', icon: <Mic className="h-4 w-4" /> },
   { id: 'written-expression', label: 'التحرير الكتابي', icon: <Pen className="h-4 w-4" /> },
   { id: 'contact', label: 'اتصل بنا', icon: <Mail className="h-4 w-4" /> },
+  { id: 'progress', label: 'لوحة التقدم', icon: <BarChart3 className="h-4 w-4" /> },
 ]
 
 export default function Navbar() {
