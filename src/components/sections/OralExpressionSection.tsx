@@ -467,9 +467,12 @@ export default function OralExpressionSection() {
                               </Badge>
                             )}
                             {/* Bookmark */}
-                            <button
+                            <div
+                              role="button"
+                              tabIndex={0}
                               onClick={(e) => { e.stopPropagation(); toggleBookmark(`oral-${tab.id}-${key}`); }}
-                              className="p-1 rounded hover:bg-muted transition-colors"
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); toggleBookmark(`oral-${tab.id}-${key}`); } }}
+                              className="p-1 rounded hover:bg-muted transition-colors cursor-pointer"
                               title={isBookmarked(`oral-${tab.id}-${key}`) ? 'إزالة من المحفوظات' : 'حفظ المحتوى'}
                             >
                               {isBookmarked(`oral-${tab.id}-${key}`) ? (
@@ -477,7 +480,7 @@ export default function OralExpressionSection() {
                               ) : (
                                 <Bookmark className="h-4 w-4 text-muted-foreground" />
                               )}
-                            </button>
+                            </div>
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-4 sm:px-6 pb-4 sm:pb-6">

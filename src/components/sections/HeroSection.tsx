@@ -6,6 +6,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import NewsletterSection from '@/components/NewsletterSection'
 import DailyQuote from '@/components/DailyQuote'
+import DailyChallenge from '@/components/DailyChallenge'
+import TypingEffect from '@/components/TypingEffect'
 import WasThisHelpful from '@/components/WasThisHelpful'
 import { 
   BookOpen, Mic, Pen, Video, User, Mail, 
@@ -197,15 +199,33 @@ function ArabesquePattern() {
   )
 }
 
-// Floating particles component
+// Pre-computed particle values to avoid Math.random() hydration mismatch
+const PARTICLES = [
+  { id: 0, size: 3.2, left: 15.7, delay: 1.2, duration: 8.5 },
+  { id: 1, size: 4.8, left: 42.3, delay: 3.8, duration: 7.2 },
+  { id: 2, size: 2.5, left: 68.9, delay: 5.1, duration: 10.3 },
+  { id: 3, size: 5.1, left: 23.4, delay: 0.7, duration: 9.1 },
+  { id: 4, size: 3.7, left: 87.2, delay: 2.3, duration: 6.8 },
+  { id: 5, size: 4.2, left: 55.6, delay: 4.5, duration: 11.2 },
+  { id: 6, size: 2.8, left: 8.1, delay: 6.7, duration: 7.9 },
+  { id: 7, size: 5.5, left: 73.4, delay: 1.9, duration: 8.7 },
+  { id: 8, size: 3.4, left: 31.8, delay: 3.2, duration: 10.6 },
+  { id: 9, size: 4.6, left: 91.5, delay: 5.8, duration: 6.4 },
+  { id: 10, size: 2.3, left: 47.2, delay: 0.4, duration: 9.8 },
+  { id: 11, size: 5.3, left: 19.6, delay: 7.1, duration: 7.5 },
+  { id: 12, size: 3.9, left: 63.8, delay: 2.6, duration: 11.5 },
+  { id: 13, size: 4.1, left: 82.3, delay: 4.9, duration: 8.2 },
+  { id: 14, size: 2.7, left: 36.5, delay: 6.3, duration: 9.4 },
+  { id: 15, size: 5.0, left: 58.1, delay: 1.5, duration: 7.1 },
+  { id: 16, size: 3.1, left: 11.9, delay: 3.6, duration: 10.1 },
+  { id: 17, size: 4.4, left: 76.7, delay: 5.4, duration: 6.9 },
+  { id: 18, size: 2.9, left: 29.3, delay: 7.8, duration: 8.8 },
+  { id: 19, size: 4.7, left: 94.2, delay: 2.1, duration: 11.0 },
+]
+
+// Floating particles component - uses deterministic values to avoid hydration mismatch
 function FloatingParticles() {
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    size: Math.random() * 4 + 2,
-    left: Math.random() * 100,
-    delay: Math.random() * 8,
-    duration: Math.random() * 6 + 6,
-  }))
+  const particles = PARTICLES
 
   return (
     <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
@@ -368,7 +388,13 @@ export default function HeroSection() {
             >
               التحرير الكتابي
               <br />
-              <span className="text-amber-200">والشفهي</span>
+              <TypingEffect
+                texts={['والشفهي', 'والإبداعي', 'والأكاديمي']}
+                className="text-amber-200"
+                speed={100}
+                deleteSpeed={50}
+                pauseDuration={3000}
+              />
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -637,6 +663,16 @@ export default function HeroSection() {
 
       {/* Newsletter */}
       <NewsletterSection />
+
+      {/* Daily Challenge */}
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-50px' }}
+      >
+        <DailyChallenge />
+      </motion.section>
 
       {/* Was this helpful */}
       <WasThisHelpful sectionId="home" title="الصفحة الرئيسية" />

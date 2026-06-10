@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
@@ -13,6 +13,8 @@ import OnboardingModal from '@/components/OnboardingModal'
 import ChatbotWidget from '@/components/ChatbotWidget'
 import GlossaryWidget from '@/components/GlossaryWidget'
 import AchievementToast from '@/components/AchievementToast'
+import ReadingMode from '@/components/ReadingMode'
+import KeyboardShortcuts from '@/components/KeyboardShortcuts'
 import HeroSection from '@/components/sections/HeroSection'
 import AboutSection from '@/components/sections/AboutSection'
 import LiveLessonsSection from '@/components/sections/LiveLessonsSection'
@@ -22,7 +24,7 @@ import WrittenExpressionSection from '@/components/sections/WrittenExpressionSec
 import ContactSection from '@/components/sections/ContactSection'
 import ProgressDashboard from '@/components/sections/ProgressDashboard'
 import QuizSection from '@/components/sections/QuizSection'
-import { useAppStore } from '@/lib/store'
+import { useAppStore, type SectionId } from '@/lib/store'
 import { HomeIcon, ChevronLeft, Printer, Clock, HelpCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -100,8 +102,21 @@ const readingTime: Record<string, number> = {
   quiz: 10,
 }
 
+// Section order for number key navigation (1-9)
+const sectionOrder: SectionId[] = [
+  'home',
+  'about',
+  'live-lessons',
+  'recorded-lessons',
+  'oral-expression',
+  'written-expression',
+  'contact',
+  'progress',
+  'quiz',
+]
+
 export default function Home() {
-  const { activeSection, skeletonSection } = useAppStore()
+  const { activeSection, skeletonSection, readingMode, toggleReadingMode, toggleTheme } = useAppStore()
   const ActiveSectionComponent = sectionComponents[activeSection] || HeroSection
   const readerContent = sectionContent[activeSection] || ''
   const estimatedTime = readingTime[activeSection] || 5
@@ -131,15 +146,61 @@ export default function Home() {
     } catch {}
   }, [activeSection])
 
-  const handlePrint = () => {
+  // Keyboard shortcuts handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts when typing in inputs
+      const target = e.target as HTMLElement
+      const isInputFocused = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable
+
+      if (isInputFocused) return
+
+      // R key: toggle reading mode
+      if (e.key === 'r' || e.key === 'R') {
+        // Don't trigger if Ctrl/Meta is held (could be browser reload)
+        if (e.ctrlKey || e.metaKey) return
+        e.preventDefault()
+        toggleReadingMode()
+      }
+
+      // D key: toggle dark mode
+      if (e.key === 'd' || e.key === 'D') {
+        if (e.ctrlKey || e.metaKey) return
+        e.preventDefault()
+        toggleTheme()
+      }
+
+      // ? key: toggle shortcuts panel
+      if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        e.preventDefault()
+        window.dispatchEvent(new Event('open-shortcuts'))
+      }
+
+      // 1-9 keys: navigate to sections
+      if (/^[1-9]$/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const index = parseInt(e.key, 10) - 1
+        if (index >= 0 && index < sectionOrder.length) {
+          e.preventDefault()
+          const section = sectionOrder[index]
+          useAppStore.getState().setActiveSection(section)
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [toggleReadingMode, toggleTheme])
+
+  const handlePrint = useCallback(() => {
     window.print()
-  }
+  }, [])
 
   const showSkeleton = skeletonSection === activeSection
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen flex flex-col">
+      <div className={`min-h-screen flex flex-col ${readingMode ? 'reading-mode-active' : ''}`}>
         <ReadingProgressBar />
         <Navbar />
         <main className="flex-1 pt-16 lg:pt-20 pb-16 lg:pb-0">
@@ -197,6 +258,7 @@ export default function Home() {
           <div
             key={activeSection}
             className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-12"
+            data-reading-content
           >
             {/* Skeleton loading */}
             {showSkeleton && (
@@ -224,6 +286,8 @@ export default function Home() {
         <AchievementToast />
         <MobileBottomNav />
         <OnboardingModal open={onboardingOpen} onOpenChange={setOnboardingOpen} />
+        <ReadingMode />
+        <KeyboardShortcuts />
       </div>
     </ThemeProvider>
   )

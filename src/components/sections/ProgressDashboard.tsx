@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { motion, AnimatePresence } from 'framer-motion'
+import StudyPlanner from '@/components/StudyPlanner'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -1072,6 +1073,16 @@ export default function ProgressDashboard() {
               )
             })}
           </div>
+        </motion.div>
+
+        {/* ─── Section Divider ──────────────────────────────────── */}
+        <div className="decorative-separator py-2">
+          <span className="relative z-10 bg-background px-4 text-muted-foreground text-lg">✦</span>
+        </div>
+
+        {/* ─── Study Planner & Notes ────────────────────────────── */}
+        <motion.div variants={itemVariants}>
+          <StudyPlanner />
         </motion.div>
       </motion.div>
     </TooltipProvider>

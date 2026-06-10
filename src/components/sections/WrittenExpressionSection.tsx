@@ -18,6 +18,7 @@ import SectionHeader from '@/components/SectionHeader'
 import ShareButton from '@/components/ShareButton'
 import TableOfContents from '@/components/TableOfContents'
 import { motion } from 'framer-motion'
+import WritingExercise from '@/components/WritingExercise'
 
 type TargetAudience = 'students' | 'professors' | 'pupils'
 
@@ -660,6 +661,11 @@ export default function WrittenExpressionSection() {
         </div>
       </motion.div>
 
+      {/* Interactive Exercise */}
+      <motion.div variants={itemVariants}>
+        <WritingExercise />
+      </motion.div>
+
       {/* Audience Tabs */}
       <motion.div variants={itemVariants}>
       <Tabs value={activeAudience} onValueChange={(v) => setActiveAudience(v as TargetAudience)}>
@@ -772,9 +778,12 @@ export default function WrittenExpressionSection() {
                                 {topicContent.readingTime} دقائق
                               </Badge>
                             )}
-                            <button
+                            <div
+                              role="button"
+                              tabIndex={0}
                               onClick={(e) => { e.stopPropagation(); toggleBookmark(`written-${tab.id}-${topic.key}`); }}
-                              className="p-1 rounded hover:bg-muted transition-colors shrink-0"
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); toggleBookmark(`written-${tab.id}-${topic.key}`); } }}
+                              className="p-1 rounded hover:bg-muted transition-colors shrink-0 cursor-pointer"
                               title={isSaved ? 'إزالة من المحفوظات' : 'حفظ المحتوى'}
                             >
                               {isSaved ? (
@@ -782,7 +791,7 @@ export default function WrittenExpressionSection() {
                               ) : (
                                 <Bookmark className="h-4 w-4 text-muted-foreground" />
                               )}
-                            </button>
+                            </div>
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-6 pb-6">

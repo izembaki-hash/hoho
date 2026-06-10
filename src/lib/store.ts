@@ -23,6 +23,8 @@ interface AppState {
   toggleBookmark: (id: string) => void
   isBookmarked: (id: string) => boolean
   skeletonSection: string | null
+  readingMode: boolean
+  toggleReadingMode: () => void
 }
 
 function getStoredTheme(): 'light' | 'dark' {
@@ -108,4 +110,6 @@ export const useAppStore = create<AppState>()((set, get) => ({
   },
   isBookmarked: (id) => get().bookmarks.includes(id),
   skeletonSection: null,
+  readingMode: false,
+  toggleReadingMode: () => set((state) => ({ readingMode: !state.readingMode })),
 }))
